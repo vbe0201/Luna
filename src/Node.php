@@ -21,7 +21,7 @@ class Node {
     
     /**
      * The link to the lavalink node.
-     * @var \CharlotteDunois\Luna\Node
+     * @var \CharlotteDunois\Luna\Link
      */
     protected $link;
     
