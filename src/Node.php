@@ -12,15 +12,7 @@ namespace CharlotteDunois\Luna;
 /**
  * This class represents a node. Each node connects to the representing lavalink node.
  */
-class Node implements \CharlotteDunois\Events\EventEmitterInterface {
-    use \CharlotteDunois\Events\EventEmitterTrait;
-    
-    /**
-     * The version of Luna.
-     * @var string
-     */
-    const VERSION = '0.1.0-dev';
-    
+class Node {
     /**
      * The player.
      * @var \CharlotteDunois\Luna\Player

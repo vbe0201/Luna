@@ -16,6 +16,12 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
     use \CharlotteDunois\Events\EventEmitterTrait;
     
     /**
+     * The version of Luna.
+     * @var string
+     */
+    const VERSION = '0.1.0-dev';
+    
+    /**
      * A collection of nodes, mapped by name.
      * @param \CharlotteDunois\Collect\Collection
      */
@@ -79,7 +85,7 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
         );
         
         foreach($listeners as $event => $listener) {
-            $node->on($event, $listener);
+            $node->link->on($event, $listener);
         }
         
         $this->nodes->set($node->name, $node);
@@ -99,7 +105,7 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
         $listeners = $this->nodeListeners->get($node->name);
         
         foreach($listeners as $event => $listener) {
-            $node->removeListener($event, $listener);
+            $node->link->removeListener($event, $listener);
         }
         
         $this->nodes->delete($node->name);
