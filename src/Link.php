@@ -83,12 +83,11 @@ class Link implements \CharlotteDunois\Events\EventEmitterInterface {
      * Constructor.
      * @param \CharlotteDunois\Luna\Client  $client
      * @param \CharlotteDunois\Luna\Node    $node
-     * @param \React\Socket\Connector|null  $connector
      */
-    function __construct(\CharlotteDunois\Luna\Client $client, \CharlotteDunois\Luna\Node $node, ?\React\Socket\Connector $connector = null) {
+    function __construct(\CharlotteDunois\Luna\Client $client, \CharlotteDunois\Luna\Node $node) {
         $this->client = $client;
         $this->node = $node;
-        $this->connector = new \Ratchet\Client\Connector($client->getLoop(), $connector);
+        $this->connector = new \Ratchet\Client\Connector($client->getLoop(), $client->getOption('connector'));
     }
     
     /**
@@ -176,7 +175,7 @@ class Link implements \CharlotteDunois\Events\EventEmitterInterface {
                 }
                 
                 $this->wsStatus = self::STATUS_RECONNECTING;
-                $this->renewConnection();
+                $this->renewConnection(true);
             });
             
             $this->client->emit('debug', 'Connected to node');
@@ -187,7 +186,7 @@ class Link implements \CharlotteDunois\Events\EventEmitterInterface {
                 $this->ws->close(1006);
             }
             $this->wsStatus = self::STATUS_DISCONNECTED;
-            return $this->renewConnection();
+            return $this->renewConnection(false);
         });
     }
     
@@ -206,18 +205,31 @@ class Link implements \CharlotteDunois\Events\EventEmitterInterface {
     
     /**
      * Renews the WS connection.
+     * @param bool  $try
      * @return \React\Promise\ExtendedPromiseInterface
      */
-    protected function renewConnection() {
-        return $this->connect()->otherwise(function () {
-            $this->emit('debug', 'Error reconnecting after failed connection attempt... retrying in 30 seconds');
-            
-            return (new \React\Promise\Promise(function (callable $resolve, callable $reject) use ($forceNewGateway) {
-                $this->client->addTimer(30, function () use ($resolve, $reject) {
-                    $this->renewConnection()->done($resolve, $reject);
-                });
-            }));
-        });
+    protected function renewConnection(bool $try = true) {
+        if($try) {
+            return $this->connect()->otherwise(function () {
+                $this->emit('debug', 'Error reconnecting after failed connection attempt... retrying in 30 seconds');
+                return $this->scheduleConnect();
+            });
+        }
+        
+        $this->emit('debug', 'Scheduling reconnection for executing in 30 seconds');
+        return $this->scheduleConnect();
+    }
+    
+    /**
+     * Schedules a connect.
+     * @return \React\Promise\ExtendedPromiseInterface
+     */
+    protected function scheduleConnect() {
+        return (new \React\Promise\Promise(function (callable $resolve, callable $reject) {
+            $this->client->addTimer(30, function () use ($resolve, $reject) {
+                $this->renewConnection()->done($resolve, $reject);
+            });
+        }));
     }
     
     /**
@@ -249,7 +261,13 @@ class Link implements \CharlotteDunois\Events\EventEmitterInterface {
         
         switch(($data['op'] ?? null)) {
             case 'playerUpdate':
-                $this->node->player->updateState($data);
+                $player = $this->node->players->get($data['guildId']);
+                if(!$player) {
+                    $this->emit('debug', 'Unexpected playerUpdate for unknown player for guild '.($data['guildId'] ?? ''));
+                    return;
+                }
+                
+                $player->updateState($data['state']);
             break;
             case 'stats':
                 $stats = new \CharlotteDunois\Luna\RemoteStats($data);

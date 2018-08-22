@@ -12,12 +12,18 @@ namespace CharlotteDunois\Luna;
 /**
  * This class represents a node. Each node connects to the representing lavalink node.
  */
-class Node {
+class Node implements \JsonSerializable {
     /**
-     * The player.
-     * @var \CharlotteDunois\Luna\Player
+     * The client.
+     * @var \CharlotteDunois\Luna\Client
      */
-    protected $player;
+    protected $client;
+
+    /**
+     * All players of the node.
+     * @var \CharlotteDunois\Collect\Collection
+     */
+    protected $players;
     
     /**
      * The link to the lavalink node.
@@ -57,14 +63,17 @@ class Node {
     
     /**
      * Constructor.
-     * @param string  $name      The name for the node.
-     * @param string  $password  The password.
-     * @param string  $httpHost  The complete URI to the node's HTTP API.
-     * @param string  $wsHost    The complete URI to the node's Websocket server.
-     * @param string  $region    A region identifier. Used to decide which is the best node to switch to when a node fails.
+     * @param \CharlotteDunois\Luna\Client  $client
+     * @param string                        $name      The name for the node.
+     * @param string                        $password  The password.
+     * @param string                        $httpHost  The complete URI to the node's HTTP API.
+     * @param string                        $wsHost    The complete URI to the node's Websocket server.
+     * @param string                        $region    A region identifier. Used to decide which is the best node to switch to when a node fails.
      */
-    function __construct(string $name, string $password, string $httpHost, string $wsHost, string $region) {
-        
+    function __construct(\CharlotteDunois\Luna\Client $client, string $name, string $password, string $httpHost, string $wsHost, string $region) {
+        $this->client = $client;
+        $this->link = new \CharlotteDunois\Luna\Link($client, $this);
+        $this->players = new \CharlotteDunois\Collect\Collection();
     }
     
     /**
@@ -95,5 +104,38 @@ class Node {
         }
         
         throw new \RuntimeException('Undefined property: '.\get_class($this).'::$'.$name);
+    }
+    
+    /**
+     * @return array
+     * @internal
+     */
+    function jsonSerialize() {
+        return array(
+            'name' => $this->name,
+            'password' => $this->password,
+            'httpHost' => $this->httpHost,
+            'wsHost' => $this->wsHost,
+            'region' => $this->region
+        );
+    }
+    
+    /**
+     * Creates a new player and adds it to the collection.
+     * @param int  $guildID
+     * @return \CharlotteDunois\Luna\Player
+     */
+    function createPlayer(int $guildID) {
+        $player = new \CharlotteDunois\Luna\Player($this, $guildID);
+        $this->players->set($guildID, $player);
+        
+        return $player;
+    }
+    
+    /**
+     *
+     */
+    function resolveTrack() {
+        
     }
 }
