@@ -35,7 +35,7 @@ interface ClientEvents {
     function disconnect(\CharlotteDunois\Luna\Node $node, int $code, string $reason);
     
     /**
-     * Emitted when a failover happens.
+     * Emitted when a failover happens. Only emitted on the client.
      * @return void
      */
     function failover(\CharlotteDunois\Luna\Node $node, \CharlotteDunois\Luna\Player $newPlayer);
