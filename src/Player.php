@@ -40,7 +40,7 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
     protected $paused = false;
     
     /**
-     * The volume from 0 to 100(%).
+     * The volume of the player from 0 to 100.
      * @var int
      */
     protected $volume = 100;
@@ -55,7 +55,7 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
      * The current position of the track, in milliseconds.
      * @var int
      */
-    protected $position = -1;
+    protected $position = 0;
     
     /**
      * Constructor.
@@ -70,15 +70,16 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
     /**
      * Plays a track.
      * @param \CharlotteDunois\Luna\AudioTrack  $track
+     * @param int                               $startTime  The start time in milliseconds to seek to, or the player's position.
      * @return void
      * @throws \RuntimeException
      */
-    function playTrack(\CharlotteDunois\Luna\AudioTrack $track) {
+    function play(\CharlotteDunois\Luna\AudioTrack $track, int $startTime = 0) {
         $packet = array(
             'op' => 'play',
             'guildId' => $this->guildID,
             'track' => $track->track,
-            'startTime' => $this->position,
+            'startTime' => ($startTime > 0 ? $startTime : $this->position),
             'pause' => $this->paused,
             'volume' => $this->volume
         );
@@ -92,16 +93,130 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
     }
     
     /**
-     * Changes the node. Used when we are moved to a new socket.
+     * Stops playing a track.
+     * @return void
+     * @throws \RuntimeException
+     */
+    function stop() {
+        if($this->track) {
+            $packet = array(
+                'op' => 'stop',
+                'guildId' => $this->guildID
+            );
+            
+            $this->node->link->send($packet);
+            
+            $this->updateTime = \time();
+            $this->track = null;
+            
+            $this->emit('stop');
+        }
+    }
+    
+    /**
+     * Destroys the player.
+     * @return void
+     * @throws \RuntimeException
+     */
+    function destroy() {
+        $packet = array(
+            'op' => 'destroy',
+            'guildId' => $this->guildID
+        );
+        
+        try {
+            $this->node->link->send($packet);
+        } catch (\RuntimeException $e) {
+            /* Continue regardless of error */
+        }
+        
+        $this->track = null;
+        $this->node->players->delete($this->guildID);
+        
+        $this->emit('destroy');
+        $this->node = null;
+    }
+    
+    /**
+     * Gets the last position of the played track in milliseconds.
+     * @return int
+     */
+    function getLastPosition() {
+        $timeDiff = (\time() - $this->updateTime) * 1000;
+        return \min(($this->position + $timeDiff), $this->track->duration);
+    }
+    
+    /**
+     * Seeks the track.
+     * @param int  $position
+     * @return void
+     * @throws \RuntimeException
+     * @throws \BadMethodCallException
+     */
+    function seekTo(int $position) {
+        if($this->track) {
+            if(!$this->track->seekable) {
+                throw new \BadMethodCallException('Track is not seekable');
+            }
+            
+            $packet = array(
+                'op' => 'seek',
+                'guildId' => $this->guildID,
+                'position' => $position
+            );
+            
+            $this->node->link->send($packet);
+        }
+    }
+    
+    /**
+     * Sets the paused state of the track.
+     * @param bool $paused
+     * @return void
+     * @throws \RuntimeException
+     */
+    function setPaused(bool $paused) {
+        if($this->track && $paused !== $this->paused) {
+            $packet = array(
+                'op' => 'pause',
+                'guildId' => $this->guildID,
+                'pause' => $paused
+            );
+            
+            $this->node->link->send($packet);
+            
+            $this->paused = $paused;
+            $this->emit('paused', $this);
+        }
+    }
+    
+    /**
+     * Sets the volume of the player.
+     * @param bool $paused
+     * @return void
+     * @throws \RuntimeException
+     */
+    function setVolume(int $volume) {
+        $volume = \min(1000, \max(0, $volume)); // Lavaplayer bounds
+        
+        if($this->track && $volume !== $this->volume) {
+            $packet = array(
+                'op' => 'volume',
+                'guildId' => $this->guildID,
+                'volume' => $volume
+            );
+            
+            $this->node->link->send($packet);
+        }
+    }
+    
+    /**
+     * Clears the internal track.
      * @return void
      * @internal
      */
-    function changeNode() {
-        if($this->track) {
-            $time = \time() - $this->updateTime;
-            $this->track->setPosition(\min($time, $this->track->duration));
-            $this->playTrack($this->track);
-        }
+    function clearTrack() {
+        $this->track = null;
     }
     
     /**
@@ -111,7 +226,8 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
      * @internal
      */
     function updateState(array $state) {
-        $this->updateTime = (int) (((int) $state['updateTime']) / 1000);
+        $time = (int) $state['updateTime'];
+        $this->updateTime = (int) ($time / 1000);
         $this->position  = (int) $state['position'];
     }
 }

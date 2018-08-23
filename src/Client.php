@@ -11,6 +11,8 @@ namespace CharlotteDunois\Luna;
 
 /**
  * The generic Lavalink Client. It does absolutely nothing for you on the Discord side.
+ * The lavalink Client implements automatic failover. That means, if a lavalink node unexpectedly disconnects,
+ * the client will automatically look for a new node and starts playing the track on it.
  */
 class Client implements \CharlotteDunois\Events\EventEmitterInterface {
     use \CharlotteDunois\Events\EventEmitterTrait;
@@ -26,6 +28,12 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
      * @var \React\EventLoop\LoopInterface
      */
     protected $loop;
+    
+    /**
+     * The HTTP client.
+     * @var \Clue\React\Buzz\Browser
+     */
+    protected $browser;
     
     /**
      * The Discord User ID.
@@ -64,7 +72,7 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
      * Optional options are as following:
      * ```
      * array(
-     *     'connector' => \React\Socket\Connector, (a specific connector instance to use)
+     *     'connector' => \React\Socket\Connector, (a specific connector instance to use for both the websocket and the HTTP client)
      * )
      * ```
      *
@@ -77,9 +85,43 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
         $this->loop = $loop;
         $this->userID = $userID;
         $this->numShards = $numShards;
+        $this->options = \array_merge($this->options, $options);
+        
+        if($this->getOption('internal.disableBrowser', false) !== true) {
+            $this->browser = new \Clue\React\Buzz\Browser($loop, $this->getOption('connector'));
+        }
         
         $this->nodes = new \CharlotteDunois\Collect\Collection();
         $this->nodeListeners = new \CharlotteDunois\Collect\Collection();
+        
+        $this->on('disconnect', function (\CharlotteDunois\Luna\Node $node, int $code, string $reason) {
+            $playing = 0;
+            
+            if($node->players->count() > 0) {
+                $playing = $node->players->filter(function (\CharlotteDunois\Luna\Player $player) {
+                    return ($player->track !== null);
+                })->count();
+            }
+            
+            if($code > 1000 && $playing > 0) {
+                foreach($node->players as $player) {
+                    $track = $player->track;
+                    $position = $player->getLastPosition();
+                    
+                    $player->destroy();
+                    $newNode = $this->getIdealNode($node->region);
+                    
+                    $newPlayer = $newNode->sendVoiceUpdate($node->lastVoiceUpdate['guildId'], $node->lastVoiceUpdate['sessionId'], $node->lastVoiceUpdate['event']);
+                    $newPlayer->play($track, $position);
+                    
+                    $this->emit('failover', $node, $newPlayer);
+                }
+            } else {
+                foreach($node->players as $player) {
+                    $player->destroy();
+                }
+            }
+        });
     }
     
     /**
@@ -147,11 +189,12 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
         $listeners = array(
             'debug' => $this->createDebugListener($node),
             'error' => $this->createErrorListener($node),
-            'disconnect' => $this->createDisconnectListener($node)
+            'disconnect' => $this->createDisconnectListener($node),
+            'stats' => $this->createStatsListener($node)
         );
         
         foreach($listeners as $event => $listener) {
-            $node->link->on($event, $listener);
+            $node->on($event, $listener);
         }
         
         $this->nodes->set($node->name, $node);
@@ -178,13 +221,40 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
         $listeners = $this->nodeListeners->get($node->name);
         
         foreach($listeners as $event => $listener) {
-            $node->link->removeListener($event, $listener);
+            $node->removeListener($event, $listener);
         }
         
         $this->nodes->delete($node->name);
         $this->nodeListeners->delete($node->name);
         
         return $this;
+    }
+    
+    /**
+     * Get an ideal node for the region. If there is no ideal node, this will return the first node in the list.
+     * @param string  $region
+     * @param bool    $autoConnect  Automatically make the node connect if it is disconnected (idling).
+     * @return \CharlotteDunois\Luna\Node
+     * @throws \UnderflowException
+     */
+    function getIdealNode(string $region, bool $autoConnect = true) {
+        if($this->nodes->count() === 0) {
+            throw new \UnderflowException('No nodes added');
+        }
+        
+        $node = $this->nodes->first(function (\CharlotteDunois\Luna\Node $node) use ($region) {
+            return ($node->region === $region);
+        });
+        
+        if(!$node) {
+            $node = $this->nodes->first();
+        }
+        
+        if($node->link->status === \CharlotteDunois\Luna\Link::STATUS_IDLE) {
+            $node->link->connect();
+        }
+        
+        return $node;
     }
     
     /**
@@ -228,6 +298,20 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
     }
     
     /**
+     * Executes an asychronous HTTP request. Resolves with an instance of ResponseInterface.
+     * @param string       $method
+     * @param string       $url
+     * @param string[]     $headers
+     * @param string|null  $body
+     * @return \React\Promise\ExtendedPromiseInterface
+     * @internal
+     */
+    function createHTTPRequest(string $method, string $url, array $headers, string $body = null) {
+        $method = \strtolower($method);
+        return $this->browser->$method($url, $headers, $body);
+    }
+    
+    /**
      * Creates a node-specific debug listener.
      * @param \CharlotteDunois\Luna\Node  $node
      * @return \Closure
@@ -257,6 +341,17 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
     protected function createDisconnectListener(\CharlotteDunois\Luna\Node $node) {
         return (function (int $code, string $reason) use (&$node) {
             $this->emit('disconnect', $node, $code, $reason);
+        });
+    }
+    
+    /**
+     * Creates a node-specific stats listener.
+     * @param \CharlotteDunois\Luna\Node  $node
+     * @return \Closure
+     */
+    protected function createStatsListener(\CharlotteDunois\Luna\Node $node) {
+        return (function ($stats) use (&$node) {
+            $this->emit('stats', $node, $stats);
         });
     }
 }

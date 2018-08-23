@@ -12,9 +12,7 @@ namespace CharlotteDunois\Luna;
 /**
  * A link connects to the lavalink node and listens for events and sends packets.
  */
-class Link implements \CharlotteDunois\Events\EventEmitterInterface {
-    use \CharlotteDunois\Events\EventEmitterTrait;
-    
+class Link {
     /**
      * WS connection status: Disconnected.
      * @var int
@@ -74,10 +72,10 @@ class Link implements \CharlotteDunois\Events\EventEmitterInterface {
     protected $expectedClose = false;
     
     /**
-     * The WS connection status
+     * The connection status.
      * @var int
      */
-    protected $wsStatus = self::STATUS_DISCONNECTED;
+    protected $status = self::STATUS_IDLE;
     
     /**
      * Constructor.
@@ -125,17 +123,17 @@ class Link implements \CharlotteDunois\Events\EventEmitterInterface {
      * @throws \Exception
      */
     function connect() {
+        $this->expectedClose = false;
+        
         if($this->ws) {
             return \React\Promise\resolve();
         }
         
-        $this->expectedClose = false;
-        
-        $this->emit('debug', 'Connecting to node');
-        
         if($this->wsStatus < self::STATUS_CONNECTING || $this->wsStatus > self::STATUS_RECONNECTING) {
             $this->wsStatus = self::STATUS_CONNECTING;
         }
+        
+        $this->node->emit('debug', 'Connecting to node');
         
         $connector = $this->connector;
         return $connector($this->node->wsHost, array(), array(
@@ -144,7 +142,7 @@ class Link implements \CharlotteDunois\Events\EventEmitterInterface {
             'User-Id' => $this->client->userID
         ))->done(function (\Ratchet\Client\WebSocket $conn) {
             $this->ws = &$conn;
-            $this->wsStatus = self::STATUS_NEARLY;
+            $this->wsStatus = self::STATUS_CONNECTED;
             
             $this->ws->on('message', function (\Ratchet\RFC6455\Messaging\Message $message) {
                 $message = $message->getPayload();
@@ -156,7 +154,7 @@ class Link implements \CharlotteDunois\Events\EventEmitterInterface {
             });
             
             $this->ws->on('error', function (\Throwable $error) {
-                $this->emit('error', $error);
+                $this->node->emit('error', $error);
             });
             
             $this->ws->on('close', function (int $code, string $reason) {
@@ -166,8 +164,8 @@ class Link implements \CharlotteDunois\Events\EventEmitterInterface {
                     $this->wsStatus = self::STATUS_DISCONNECTED;
                 }
                 
-                $this->emit('debug', 'Disconnected from node');
-                $this->emit('disconnect', $code, $reason);
+                $this->node->emit('debug', 'Disconnected from node');
+                $this->node->emit('disconnect', $code, $reason);
                 
                 if($code === 1000 && $this->expectedClose) {
                     $this->wsStatus = self::STATUS_IDLE;
@@ -178,13 +176,14 @@ class Link implements \CharlotteDunois\Events\EventEmitterInterface {
                 $this->renewConnection(true);
             });
             
-            $this->client->emit('debug', 'Connected to node');
+            $this->node->emit('debug', 'Connected to node');
         }, function (\Throwable $error) {
-            $this->emit('error', $error);
+            $this->node->emit('error', $error);
             
             if($this->ws) {
                 $this->ws->close(1006);
             }
+            
             $this->wsStatus = self::STATUS_DISCONNECTED;
             return $this->renewConnection(false);
         });
@@ -211,12 +210,12 @@ class Link implements \CharlotteDunois\Events\EventEmitterInterface {
     protected function renewConnection(bool $try = true) {
         if($try) {
             return $this->connect()->otherwise(function () {
-                $this->emit('debug', 'Error reconnecting after failed connection attempt... retrying in 30 seconds');
+                $this->node->emit('debug', 'Error reconnecting after failed connection attempt... retrying in 30 seconds');
                 return $this->scheduleConnect();
             });
         }
         
-        $this->emit('debug', 'Scheduling reconnection for executing in 30 seconds');
+        $this->node->emit('debug', 'Scheduling reconnection for executing in 30 seconds');
         return $this->scheduleConnect();
     }
     
@@ -243,7 +242,7 @@ class Link implements \CharlotteDunois\Events\EventEmitterInterface {
             throw new \RuntimeException('Unable to send WS message before a WS connection is established');
         }
         
-        $this->emit('debug', 'Sending WS packet');
+        $this->node->emit('debug', 'Sending WS packet');
         $this->ws->send(\json_encode($packet));
     }
     
@@ -255,7 +254,7 @@ class Link implements \CharlotteDunois\Events\EventEmitterInterface {
     protected function handleMessage(string $payload) {
         $data = \json_decode($payload);
         if($data === false && \json_last_error() !== \JSON_ERROR_NONE) {
-            $this->emit('debug', 'Invalid message received');
+            $this->node->emit('debug', 'Invalid message received');
             return;
         }
         
@@ -263,21 +262,20 @@ class Link implements \CharlotteDunois\Events\EventEmitterInterface {
             case 'playerUpdate':
                 $player = $this->node->players->get($data['guildId']);
                 if(!$player) {
-                    $this->emit('debug', 'Unexpected playerUpdate for unknown player for guild '.($data['guildId'] ?? ''));
+                    $this->node->emit('debug', 'Unexpected playerUpdate for unknown player for guild '.($data['guildId'] ?? ''));
                     return;
                 }
                 
                 $player->updateState($data['state']);
             break;
             case 'stats':
-                $stats = new \CharlotteDunois\Luna\RemoteStats($data);
-                $this->emit('stats', $stats);
+                $this->node->emit('stats', $this->node->updateStats($data));
             break;
             case 'event':
                 $this->handleEvent($data);
             break;
             default:
-                $this->emit('debug', 'Unexpected message op: '.($data['op'] ?? ''));
+                $this->node->emit('debug', 'Unexpected message op: '.($data['op'] ?? ''));
             break;
         }
     }
@@ -288,15 +286,30 @@ class Link implements \CharlotteDunois\Events\EventEmitterInterface {
      * @return void
      */
     protected function handleEvent(array $data) {
+        $player = $this->node->players->get($data['guildId']);
+        if(!$player) {
+            $this->node->emit('debug', 'Unexpected event for unknown player for guild '.($data['guildId'] ?? ''));
+            return;
+        }
+        
+        $track = $data['track'];
+        if($player->track && $player->track->track === $track) {
+            $track = $player['track'];
+        }
+        
         switch(($data['type'] ?? null)) {
             case 'TrackEndEvent':
+                $mayStartNext = \in_array($data['reason'], \CharlotteDunois\Luna\AudioTrack::AUDIO_END_REASON_CONTINUE);
+                $player->emit('end', $track, $data['reason'], $mayStartNext);
             break;
             case 'TrackExceptionEvent':
+                $player->emit('error', $track, (new \CharlotteDunois\Luna\RemoteTrackException($data['error'])));
             break;
             case 'TrackStuckEvent':
+                $player->emit('stuck', $track, ((int) $data['thresholdMs']));
             break;
             default:
-                $this->emit('debug', 'Unexpected event type: '.($data['type'] ?? ''));
+                $this->node->emit('debug', 'Unexpected event type: '.($data['type'] ?? ''));
             break;
         }
     }
