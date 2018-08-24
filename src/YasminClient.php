@@ -10,7 +10,7 @@
 namespace CharlotteDunois\Luna;
 
 /**
- * The Lavalink Client for Yasmin. This class interacts with Yasmin to do all the updates for you.
+ * The Lavalink Client for Yasmin. This class interacts with Yasmin to do all the updates for you. It will not handle actual Discord disconnect.
  * @property \CharlotteDunois\Yasmin\Client            $client       The yasmin client.
  * @property \CharlotteDunois\Yasmin\Utils\Collection  $connections  The open connections, mapped by guild ID (as int) to players.
  */
@@ -22,10 +22,16 @@ class YasminClient extends Client {
     protected $client;
     
     /**
-     * The open connections, mapped by guild ID to players.
+     * The open connections, mapped by guild ID (as int) to players.
      * @var \CharlotteDunois\Yasmin\Utils\Collection
      */
     protected $connections;
+    
+    /**
+     * Scheduled voice state updates.
+     * @var array
+     */
+    protected $scheduledVoiceStates = array();
     
     /**
      * Constructor.
@@ -48,6 +54,49 @@ class YasminClient extends Client {
                 $this->userID = (int) $this->client->user->id;
             });
         }
+        
+        $this->client->on('disconnect', function () {
+            $this->emit('debug', null, 'Yasmin got disconnected from Discord, destroying all players...');
+            
+            foreach($this->nodes as $node) {
+                foreach($node->players as $guildID => $player) {
+                    $this->scheduledVoiceStates[] = $guildID;
+                    $player->destroy();
+                }
+            }
+            
+            $this->connections->clear();
+        });
+        
+        $this->client->on('reconnect', function () {
+            while($guildID = \array_shift($this->scheduledVoiceStates)) {
+                $guildID = (string) $guildID;
+                
+                if(!$this->client->guilds->has($guildID)) {
+                    continue;
+                }
+                
+                $this->emit('debug', null, 'Yasmin reconnected to Discord, sending voice state update to disconnect for guild '.$guildID);
+                $member = $this->client->guilds->get($guildID)->me;
+                
+                $this->client->wsmanager()->send(array(
+                    'op' => \CharlotteDunois\Yasmin\WebSocket\WSManager::OPCODES['VOICE_STATE_UPDATE'],
+                    'd' => array(
+                        'guild_id' => $guildID,
+                        'channel_id' => null,
+                        'self_deaf' => $member->selfDeaf,
+                        'self_mute' => $member->selfMute
+                    )
+                ));
+            }
+        });
+        
+        $this->client->on('guildDelete', function (\CharlotteDunois\Yasmin\Models\Guild $guild) {
+            if($this->connections->has($guild->id)) {
+                $this->connections->get($guild->id)->destroy();
+                $this->connections->delete($guild->id);
+            }
+        });
         
         $this->on('failover', function (\CharlotteDunois\Luna\Node $node, \CharlotteDunois\Luna\Player $newPlayer) {
             $this->connections->set($newPlayer->guildID, $newPlayer);

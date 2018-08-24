@@ -165,6 +165,8 @@ class Node implements \CharlotteDunois\Events\EventEmitterInterface, \JsonSerial
             'event' => $event
         );
         
+        $this->emit('debug', 'Sending voice update for guild '.$guildID);
+        
         $this->link->send($packet);
         $this->lastVoiceUpdate = $packet;
         
@@ -184,6 +186,8 @@ class Node implements \CharlotteDunois\Events\EventEmitterInterface, \JsonSerial
      * @see \CharlotteDunois\Luna\AudioPlaylist
      */
     function resolveTrack(string $search) {
+        $this->emit('debug', 'Resolving track "'.$search.'"');
+        
         return $this->client->createHTTPRequest('GET', $this->httpHost.'/loadtracks?identifier='.\rawurlencode($search), array(
             'Authorization' => $this->password
         ))->then(function (\Psr\Http\Message\ResponseInterface $response) {

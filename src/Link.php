@@ -167,6 +167,10 @@ class Link {
                 $this->node->emit('debug', 'Disconnected from node');
                 $this->node->emit('disconnect', $code, $reason, $this->expectedClose);
                 
+                foreach($this->node->players as $player) {
+                    $player->destroy();
+                }
+                
                 if($code === 1000 && $this->expectedClose) {
                     $this->status = self::STATUS_IDLE;
                     return;
@@ -294,7 +298,6 @@ class Link {
     protected function handleEvent(array $data) {
         $player = $this->node->players->get($data['guildId']);
         if(!$player) {
-            $this->node->emit('debug', 'Unexpected event for unknown player for guild '.($data['guildId'] ?? ''));
             return;
         }
         

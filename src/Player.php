@@ -128,6 +128,7 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
         }
         
         $this->node->link->send($packet);
+        $this->emit('debug', 'Started playing track "'.($track->author ? $track->author.' - ' : '').$track->title.'"');
         
         $this->updateTime = \time();
         $this->track = $track;
@@ -148,6 +149,7 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
             );
             
             $this->node->link->send($packet);
+            $this->emit('debug', 'Stopped music playback');
             
             $this->updateTime = \time();
             $this->track = null;
@@ -162,22 +164,26 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
      * @throws \RuntimeException
      */
     function destroy() {
-        $packet = array(
-            'op' => 'destroy',
-            'guildId' => ((string) $this->guildID)
-        );
-        
-        try {
-            $this->node->link->send($packet);
-        } catch (\RuntimeException $e) {
-            /* Continue regardless of error */
+        if($this->node && $this->node->link) {
+            $packet = array(
+                'op' => 'destroy',
+                'guildId' => ((string) $this->guildID)
+            );
+            
+            try {
+                $this->node->link->send($packet);
+            } catch (\RuntimeException $e) {
+                /* Continue regardless of error */
+            }
+            
+            $this->track = null;
+            $this->node->players->delete($this->guildID);
+            
+            $this->emit('debug', 'Destroyed music playback');
+            
+            $this->emit('destroy');
+            $this->node = null;
         }
-        
-        $this->track = null;
-        $this->node->players->delete($this->guildID);
-        
-        $this->emit('destroy');
-        $this->node = null;
     }
     
     /**
@@ -212,6 +218,7 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
                 );
                 
                 $this->node->link->send($packet);
+                $this->emit('debug', 'Seeked to position '.$pos.'ms');
             }
         }
     }
@@ -231,6 +238,7 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
             );
             
             $this->node->link->send($packet);
+            $this->emit('debug', 'Set paused to '.($paused ? 'true' : 'false'));
             
             $this->paused = $paused;
             $this->emit('paused', $this);
@@ -254,6 +262,8 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
             );
             
             $this->node->link->send($packet);
+            $this->emit('debug', 'Set volume to '.$volume);
+            
             $this->volume = $volume;
         }
     }
@@ -265,6 +275,7 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
      */
     function clearTrack() {
         $this->track = null;
+        $this->emit('debug', 'Cleared the track');
     }
     
     /**
