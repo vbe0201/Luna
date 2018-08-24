@@ -10,7 +10,8 @@
 namespace CharlotteDunois\Luna;
 
 /**
- * The Lavalink Client for Yasmin. This class interacts with Yasmin to do all the updates for you. It will not handle actual Discord disconnect.
+ * The Lavalink Client for Yasmin. This class interacts with Yasmin to do all the updates for you.
+ * If you get disconnected from the Discord Gateway, then all players will be destroyed (which is a consequence of the disconnect).
  * @property \CharlotteDunois\Yasmin\Client            $client       The yasmin client.
  * @property \CharlotteDunois\Yasmin\Utils\Collection  $connections  The open connections, mapped by guild ID (as int) to players.
  */
