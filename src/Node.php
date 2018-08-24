@@ -160,7 +160,7 @@ class Node implements \CharlotteDunois\Events\EventEmitterInterface, \JsonSerial
     function sendVoiceUpdate(int $guildID, string $sessionID, array $event) {
         $packet = array(
             'op' => 'voiceUpdate',
-            'guildId' => $guildID,
+            'guildId' => ((string) $guildID),
             'sessionId' => $sessionID,
             'event' => $event
         );
@@ -188,7 +188,7 @@ class Node implements \CharlotteDunois\Events\EventEmitterInterface, \JsonSerial
             'Authorization' => $this->password
         ))->then(function (\Psr\Http\Message\ResponseInterface $response) {
             $body = (string) $response->getBody();
-            $data = \json_decode($body);
+            $data = \json_decode($body, true);
             
             if($data === false && \json_last_error() !== \JSON_ERROR_NONE) {
                 throw new \RuntimeException('Invalid JSON while trying to resolve tracks. Error: '.\json_last_error_msg());

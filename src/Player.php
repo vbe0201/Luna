@@ -74,21 +74,58 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
     }
     
     /**
+     * @return bool
+     * @throws \RuntimeException
+     * @internal
+     */
+    function __isset($name) {
+        try {
+            return ($this->$name !== null);
+        } catch (\RuntimeException $e) {
+            if($e->getTrace()[0]['function'] === '__get') {
+                return false;
+            }
+            
+            throw $e;
+        }
+    }
+    
+    /**
+     * @return mixed
+     * @throws \RuntimeException
+     * @internal
+     */
+    function __get($name) {
+        if(\property_exists($this, $name)) {
+            return $this->$name;
+        }
+        
+        throw new \RuntimeException('Undefined property: '.\get_class($this).'::$'.$name);
+    }
+    
+    /**
      * Plays a track.
      * @param \CharlotteDunois\Luna\AudioTrack  $track
-     * @param int                               $startTime  The start time in milliseconds to seek to, or the player's position.
+     * @param int                               $startTime  The start time in milliseconds to seek to.
+     * @param int                               $endtTime   The end time when to stop playing in milliseconds.
      * @return void
      * @throws \RuntimeException
      */
-    function play(\CharlotteDunois\Luna\AudioTrack $track, int $startTime = 0) {
+    function play(\CharlotteDunois\Luna\AudioTrack $track, int $startTime = 0, int $endTime = 0) {
         $packet = array(
             'op' => 'play',
-            'guildId' => $this->guildID,
+            'guildId' => ((string) $this->guildID),
             'track' => $track->track,
-            'startTime' => ($startTime > 0 ? $startTime : $this->position),
-            'pause' => $this->paused,
             'volume' => $this->volume
         );
+        
+        if($startTime > 0) {
+            $packet['startTime'] = $startTime;
+        }
+        
+        if($endTime > 0) {
+            $packet['endTime'] = $endTime;
+        }
         
         $this->node->link->send($packet);
         
@@ -107,7 +144,7 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
         if($this->track) {
             $packet = array(
                 'op' => 'stop',
-                'guildId' => $this->guildID
+                'guildId' => ((string) $this->guildID)
             );
             
             $this->node->link->send($packet);
@@ -127,7 +164,7 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
     function destroy() {
         $packet = array(
             'op' => 'destroy',
-            'guildId' => $this->guildID
+            'guildId' => ((string) $this->guildID)
         );
         
         try {
@@ -170,7 +207,7 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
             if($pos !== $this->position) {
                 $packet = array(
                     'op' => 'seek',
-                    'guildId' => $this->guildID,
+                    'guildId' => ((string) $this->guildID),
                     'position' => $pos
                 );
                 
@@ -189,7 +226,7 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
         if($this->track && $paused !== $this->paused) {
             $packet = array(
                 'op' => 'pause',
-                'guildId' => $this->guildID,
+                'guildId' => ((string) $this->guildID),
                 'pause' => $paused
             );
             
@@ -212,7 +249,7 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
         if($this->track && $volume !== $this->volume) {
             $packet = array(
                 'op' => 'volume',
-                'guildId' => $this->guildID,
+                'guildId' => ((string) $this->guildID),
                 'volume' => $volume
             );
             
@@ -236,7 +273,7 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
      * @internal
      */
     function updateState(array $state) {
-        $this->updateTime = (int) ($state['updateTime'] / 1000);
+        $this->updateTime = (int) ($state['time'] / 1000);
         $this->position  = (int) $state['position'];
     }
 }

@@ -70,6 +70,10 @@ class YasminClient extends Client {
             throw new \BadMethodCallException('Client is not ready yet');
         }
         
+        if($this->connections->has($channel->guild->id)) {
+            return \React\Promise\resolve($this->connections->get($channel->guild->id));
+        }
+        
         $perms = $channel->permissionsFor($channel->guild->me);
         
         if(!$perms->has('CONNECT') && !$perms->has('MOVE_MEMBERS')) {
@@ -89,7 +93,7 @@ class YasminClient extends Client {
         }
         
         $vstf = function (\CharlotteDunois\Yasmin\Models\GuildMember $new, ?\CharlotteDunois\Yasmin\Models\GuildMember $old) use (&$channel) {
-            return ($new->id === $this->client->id && $new->voiceChannelID === $channel->id && $new->voiceSessionID !== null);
+            return ($new->id === $this->client->user->id && $new->voiceChannelID === $channel->id && $new->voiceSessionID !== null);
         };
         
         $vsef = function (array $data) use (&$channel) {
@@ -111,20 +115,23 @@ class YasminClient extends Client {
         
         $this->client->wsmanager()->send(array(
             'op' => \CharlotteDunois\Yasmin\WebSocket\WSManager::OPCODES['VOICE_STATE_UPDATE'],
-            'guild_id' => $channel->guild->id,
-            'channel_id' => $channel->id,
-            'self_deaf' => $channel->guild->me->selfDeaf,
-            'self_mute' => $channel->guild->me->selfMute
+            'd' => array(
+                'guild_id' => $channel->guild->id,
+                'channel_id' => $channel->id,
+                'self_deaf' => $channel->guild->me->selfDeaf,
+                'self_mute' => $channel->guild->me->selfMute
+            )
         ));
         
         return \React\Promise\all(array($voiceState, $voiceServer))->then(function ($events) use (&$channel, &$node) {
-            return $node->sendVoiceUpdate(((int) $channel->guild->id), $events[0]->voiceSessionID, $events[1])->then(function (\CharlotteDunois\Luna\Player $player) {
-                $player->on('destroy', function () use (&$player) {
-                    $this->connections->delete($player->guildID);
-                });
-                
-                $this->connections->set($player->guildID, $player);
+            $player = $node->sendVoiceUpdate(((int) $channel->guild->id), $events[0][0]->voiceSessionID, $events[1][0]);
+            
+            $player->on('destroy', function () use (&$player) {
+                $this->connections->delete($player->guildID);
             });
+            
+            $this->connections->set($player->guildID, $player);
+            return $player;
         });
     }
     
@@ -148,10 +155,12 @@ class YasminClient extends Client {
         
         return $this->client->wsmanager()->send(array(
             'op' => \CharlotteDunois\Yasmin\WebSocket\WSManager::OPCODES['VOICE_STATE_UPDATE'],
-            'guild_id' => $channel->guild->id,
-            'channel_id' => null,
-            'self_deaf' => $channel->guild->me->selfDeaf,
-            'self_mute' => $channel->guild->me->selfMute
+            'd' => array(
+                'guild_id' => $channel->guild->id,
+                'channel_id' => null,
+                'self_deaf' => $channel->guild->me->selfDeaf,
+                'self_mute' => $channel->guild->me->selfMute
+            )
         ));
     }
     

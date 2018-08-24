@@ -29,6 +29,36 @@ class LoadBalancer {
     }
     
     /**
+     * @return bool
+     * @throws \RuntimeException
+     * @internal
+     */
+    function __isset($name) {
+        try {
+            return ($this->$name !== null);
+        } catch (\RuntimeException $e) {
+            if($e->getTrace()[0]['function'] === '__get') {
+                return false;
+            }
+            
+            throw $e;
+        }
+    }
+    
+    /**
+     * @return mixed
+     * @throws \RuntimeException
+     * @internal
+     */
+    function __get($name) {
+        if(\property_exists($this, $name)) {
+            return $this->$name;
+        }
+        
+        throw new \RuntimeException('Undefined property: '.\get_class($this).'::$'.$name);
+    }
+    
+    /**
      * Get an ideal node for the region. If there is no ideal node, this will return the first node in the list.
      * @param string  $region
      * @param bool    $autoConnect  Automatically make the node connect if it is disconnected (idling).

@@ -122,6 +122,36 @@ class RemoteStats {
     }
     
     /**
+     * @return bool
+     * @throws \RuntimeException
+     * @internal
+     */
+    function __isset($name) {
+        try {
+            return ($this->$name !== null);
+        } catch (\RuntimeException $e) {
+            if($e->getTrace()[0]['function'] === '__get') {
+                return false;
+            }
+            
+            throw $e;
+        }
+    }
+    
+    /**
+     * @return mixed
+     * @throws \RuntimeException
+     * @internal
+     */
+    function __get($name) {
+        if(\property_exists($this, $name)) {
+            return $this->$name;
+        }
+        
+        throw new \RuntimeException('Undefined property: '.\get_class($this).'::$'.$name);
+    }
+    
+    /**
      * Updates the stats.
      * @param array  $stats
      * @return void

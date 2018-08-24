@@ -260,6 +260,10 @@ class Link {
             return;
         }
         
+        if(isset($data['guildId'])) {
+            $data['guildId'] = (int) $data['guildId'];
+        }
+        
         switch(($data['op'] ?? null)) {
             case 'playerUpdate':
                 $player = $this->node->players->get($data['guildId']);
@@ -296,7 +300,7 @@ class Link {
         
         $track = $data['track'];
         if($player->track && $player->track->track === $track) {
-            $track = $player['track'];
+            $track = $player->track;
         }
         
         switch(($data['type'] ?? null)) {
