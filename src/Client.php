@@ -14,8 +14,8 @@ namespace CharlotteDunois\Luna;
  * The lavalink Client implements automatic failover. That means, if a lavalink node unexpectedly disconnects,
  * the client will automatically look for a new node and starts playing the track on it.
  * @property \CharlotteDunois\Collect\Collection  $nodes      A collection of nodes, mapped by name.
- * @property int                                  $userID     The Discord User ID.
  * @property int                                  $numShards  The amount of shards the bot has.
+ * @property int                                  $userID     The Discord User ID.
  */
 class Client implements \CharlotteDunois\Events\EventEmitterInterface {
     use \CharlotteDunois\Events\EventEmitterTrait;
@@ -76,7 +76,7 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
      * ```
      * array(
      *     'connector' => \React\Socket\Connector, (a specific connector instance to use for both the websocket and the HTTP client)
-     *     'failover.loadbalancer' => \CharlotteDunois\Luna\LoadBalancer, (a loadbalancer to use when failing over players)
+     *     'loadbalancer' => \CharlotteDunois\Luna\LoadBalancer, (a loadbalancer to use)
      * )
      * ```
      *
@@ -102,7 +102,7 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
             if(!$expectedClose && $node->players->count() > 0) {
                 $node->emit('debug', 'Failing over '.$node->players->count().' players to new nodes');
                 
-                $loadbalancer = $this->getOption('failover.loadbalancer');
+                $loadbalancer = $this->getOption('loadbalancer');
                 
                 foreach($node->players as $player) {
                     $track = $player->track;

@@ -57,7 +57,7 @@ class YasminClient extends Client {
     }
     
     /**
-     * Joins a voice channel. Resolves with an instance of Player.
+     * Joins a voice channel. The guild region will be stripped down to `eu`, `us`, etc. Resolves with an instance of Player.
      * @param \CharlotteDunois\Yasmin\Models\VoiceChannel  $channel
      * @param \CharlotteDunois\Luna\Node|null              $node     The node to use, or automatically determine one.
      * @return \React\Promise\ExtendedPromiseInterface
@@ -65,7 +65,7 @@ class YasminClient extends Client {
      * @throws \LogicException          Thrown when we have insufficient permissions.
      * @see \CharlotteDunois\Luna\Player
      */
-    function joinVoiceChannel(\CharlotteDunois\Yasmin\Models\VoiceChannel $channel, ?\CharlotteDunois\Luna\Node $node = null) {
+    function joinChannel(\CharlotteDunois\Yasmin\Models\VoiceChannel $channel, ?\CharlotteDunois\Luna\Node $node = null) {
         if($this->client->readyTimestamp === null) {
             throw new \BadMethodCallException('Client is not ready yet');
         }
@@ -89,7 +89,16 @@ class YasminClient extends Client {
         }
         
         if(!$node) {
-            $node = $this->getIdealNode($channel->guild->region);
+            $loadbalancer = $this->getOption('loadbalancer');
+            
+            $region = \str_replace('vip-', '', $channel->guild->region);
+            $region = \substr($region, 0, (\strpos($region, '-') ?: \strlen($region)));
+            
+            if($loadbalancer instanceof \CharlotteDunois\Luna\LoadBalancer) {
+                $node = $loadbalancer->getIdealNode($region);
+            } else {
+                $node = $this->getIdealNode($region);
+            }
         }
         
         $vstf = function (\CharlotteDunois\Yasmin\Models\GuildMember $new, ?\CharlotteDunois\Yasmin\Models\GuildMember $old) use (&$channel) {
@@ -104,7 +113,7 @@ class YasminClient extends Client {
             'time' => 30
         );
         
-        if(\version_compare(\CharlotteDunois\Yasmin\Client::VERSION, '0.4.2-dev') >= 0) {
+        if(\CharlotteDunois\Yasmin\Client::VERSION === '0.4.2-dev' || \version_compare(\CharlotteDunois\Yasmin\Client::VERSION, '0.4.2') > 0) {
             $name = 'voiceServerUpdate';
         } else {
             $name = 'self.voiceServerUpdate';
@@ -132,6 +141,9 @@ class YasminClient extends Client {
             
             $this->connections->set($player->guildID, $player);
             return $player;
+        }, function (\Throwable $error) use (&$channel) {
+            $this->leaveChannel($channel)->done();
+            throw $error;
         });
     }
     
@@ -141,7 +153,7 @@ class YasminClient extends Client {
      * @return \React\Promise\ExtendedPromiseInterface
      * @throws \BadMethodCallException  Thrown when the client is not ready.
      */
-    function leaveVoiceChannel(\CharlotteDunois\Yasmin\Models\VoiceChannel $channel) {
+    function leaveChannel(\CharlotteDunois\Yasmin\Models\VoiceChannel $channel) {
         if($this->client->readyTimestamp === null) {
             throw new \BadMethodCallException('Client is not ready yet');
         }
@@ -158,6 +170,52 @@ class YasminClient extends Client {
             'd' => array(
                 'guild_id' => $channel->guild->id,
                 'channel_id' => null,
+                'self_deaf' => $channel->guild->me->selfDeaf,
+                'self_mute' => $channel->guild->me->selfMute
+            )
+        ));
+    }
+    
+    /**
+     * Moves to a different voice channel in the same guild.
+     * @param \CharlotteDunois\Yasmin\Models\VoiceChannel  $channel
+     * @return \React\Promise\ExtendedPromiseInterface
+     * @throws \BadMethodCallException    Thrown when the client is not ready.
+     * @throws \InvalidArgumentException  Thrown when there is connection for the guild.
+     * @throws \LogicException            Thrown when we have insufficient permissions.
+     */
+    function moveToChannel(\CharlotteDunois\Yasmin\Models\VoiceChannel $channel) {
+        if($this->client->readyTimestamp === null) {
+            throw new \BadMethodCallException('Client is not ready yet');
+        }
+        
+        if(!$this->connections->has($channel->guild->id)) {
+            throw new \InvalidArgumentException('No open voice connection to that guild');
+        }
+        
+        if($channel->id === $channel->guild->me->voiceChannelID) {
+            return \React\Promise\resolve();
+        }
+        
+        $perms = $channel->permissionsFor($channel->guild->me);
+        
+        if(!$perms->has('CONNECT') && !$perms->has('MOVE_MEMBERS')) {
+            throw new \LogicException('Insufficient permissions to join the voice channel');
+        }
+        
+        if($channel->members->count() >= $channel->userLimit && !$perms->has('MOVE_MEMBERS')) {
+            throw new \LogicException('Voice channel user limit reached, unable to join the voice channel');
+        }
+        
+        if(!$perms->has('SPEAK')) {
+            throw new \LogicException('We can not speak in the voice channel, joining makes no sense');
+        }
+        
+        return $this->client->wsmanager()->send(array(
+            'op' => \CharlotteDunois\Yasmin\WebSocket\WSManager::OPCODES['VOICE_STATE_UPDATE'],
+            'd' => array(
+                'guild_id' => $channel->guild->id,
+                'channel_id' => $channel->id,
                 'self_deaf' => $channel->guild->me->selfDeaf,
                 'self_mute' => $channel->guild->me->selfMute
             )

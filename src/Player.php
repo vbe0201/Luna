@@ -107,7 +107,7 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
      * Plays a track.
      * @param \CharlotteDunois\Luna\AudioTrack  $track
      * @param int                               $startTime  The start time in milliseconds to seek to.
-     * @param int                               $endtTime   The end time when to stop playing in milliseconds.
+     * @param int                               $endTime    The end time when to stop playing in milliseconds.
      * @return void
      * @throws \RuntimeException
      */
@@ -254,6 +254,7 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
             );
             
             $this->node->link->send($packet);
+            $this->volume = $volume;
         }
     }
     
