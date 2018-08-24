@@ -22,12 +22,25 @@ This is a fairly trivial example of using Luna. You should put all your listener
 // Include composer autoloader
 
 $loop = \React\EventLoop\Factory::create();
-$client = new \CharlotteDunois\Luna\Client($loop);
+$client = new \CharlotteDunois\Luna\Client($loop, YOUR_USER_ID);
 
 $node = new \CharlotteDunois\Luna\Node('vps-eu', 'password', 'http://http-api-url', 'ws://ws-api-url', 'eu');
 $client->addNode($node);
 
+$client->start()->done();
+
 $loop->run();
+```
+
+# Example - Part Two
+When you have sent a voice state update event and Discord responded with the two events, you have to provide the VOICE_SERVER_UPDATE event as-is, unmodified.
+
+```php
+$player = $node->sendVoiceUpdate($guildID, $sessionID, $voiceServerUpdateEvent);
+
+$node->resolveTrack('DT61L8hbbJ4')->done(function ($audioTrack) use ($player) {
+    $player->play($audioTrack);
+});
 ```
 
 # Yasmin Example - Part One
@@ -48,17 +61,6 @@ $luna->addNode($node);
 
 $client->login('YOUR_TOKEN');
 $loop->run();
-```
-
-# Example - Part Two
-When you have sent a voice state update event and Discord responded with the two events, you have to provide the VOICE_SERVER_UPDATE event as-is, unmodified.
-
-```php
-$player = $node->sendVoiceUpdate($guildID, $sessionID, $voiceServerUpdateEvent);
-
-$node->resolveTrack('DT61L8hbbJ4')->done(function ($audioTrack) use ($player) {
-    $player->play($audioTrack);
-});
 ```
 
 # Yasmin Example - Part Two
