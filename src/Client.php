@@ -208,6 +208,7 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
         $this->nodes->set($node->name, $node);
         $this->nodeListeners->set($node->name, $listeners);
         
+        $node->setClient($this);
         return $this;
     }
     
@@ -301,7 +302,7 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
         
         foreach($nodes as $node) {
             list('name' => $name, 'password' => $password, 'httpHost' => $httpHost, 'wsHost' => $wsHost, 'region' => $region) = $node;
-            $node = new \CharlotteDunois\Luna\Node($this, $name, $password, $httpHost, $wsHost, $region);
+            $node = new \CharlotteDunois\Luna\Node($name, $password, $httpHost, $wsHost, $region);
             
             $factory[$name] = $node;
             $this->addNode($node);

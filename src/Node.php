@@ -11,9 +11,9 @@ namespace CharlotteDunois\Luna;
 
 /**
  * This class represents a node. Each node connects to the representing lavalink node.
- * @property \CharlotteDunois\Luna\Client            $client           The Luna client.
+ * @property \CharlotteDunois\Luna\Client|null       $client           The Luna client.
  * @property \CharlotteDunois\Collect\Collection     $players          All players of the node, mapped by guild ID.
- * @property \CharlotteDunois\Luna\Link              $link             The websocket connection to the lavalink node.
+ * @property \CharlotteDunois\Luna\Link|null         $link             The websocket connection to the lavalink node.
  * @property \CharlotteDunois\Luna\RemoteStats|null  $stats            The lavalink node's stats, or null.
  * @property string                                  $name             The name of the node.
  * @property string                                  $password         The password of th enode.
@@ -26,8 +26,8 @@ class Node implements \CharlotteDunois\Events\EventEmitterInterface, \JsonSerial
     use \CharlotteDunois\Events\EventEmitterTrait;
     
     /**
-     * The client.
-     * @var \CharlotteDunois\Luna\Client
+     * The Luna client.
+     * @var \CharlotteDunois\Luna\Client|null
      */
     protected $client;
     
@@ -39,7 +39,7 @@ class Node implements \CharlotteDunois\Events\EventEmitterInterface, \JsonSerial
     
     /**
      * The link to the lavalink node.
-     * @var \CharlotteDunois\Luna\Link
+     * @var \CharlotteDunois\Luna\Link|null
      */
     protected $link;
     
@@ -87,16 +87,13 @@ class Node implements \CharlotteDunois\Events\EventEmitterInterface, \JsonSerial
     
     /**
      * Constructor.
-     * @param \CharlotteDunois\Luna\Client  $client    Needed to get User ID, Num Shards and the event loop.
-     * @param string                        $name      The name for the node.
-     * @param string                        $password  The password.
-     * @param string                        $httpHost  The complete URI to the node's HTTP API.
-     * @param string                        $wsHost    The complete URI to the node's Websocket server.
-     * @param string                        $region    A region identifier. Used to decide which is the best node to switch to when a node fails.
+     * @param string  $name      The name for the node.
+     * @param string  $password  The password.
+     * @param string  $httpHost  The complete URI to the node's HTTP API.
+     * @param string  $wsHost    The complete URI to the node's Websocket server.
+     * @param string  $region    A region identifier. Used to decide which is the best node to switch to when a node fails.
      */
-    function __construct(\CharlotteDunois\Luna\Client $client, string $name, string $password, string $httpHost, string $wsHost, string $region) {
-        $this->client = $client;
-        $this->link = new \CharlotteDunois\Luna\Link($client, $this);
+    function __construct(string $name, string $password, string $httpHost, string $wsHost, string $region) {
         $this->players = new \CharlotteDunois\Collect\Collection();
         
         $this->name = $name;
@@ -151,13 +148,28 @@ class Node implements \CharlotteDunois\Events\EventEmitterInterface, \JsonSerial
     }
     
     /**
+     * Sets the client and creates a Link. Invoked in `Client::addNode`.
+     * @param \CharlotteDunois\Luna\Client  $client
+     * @return void
+     */
+    function setClient(\CharlotteDunois\Luna\Client $client) {
+        $this->client = $client;
+        $this->link = new \CharlotteDunois\Luna\Link($client, $this);
+    }
+    
+    /**
      * Send a voice update event to the node, creates a new player and adds it to the collection.
      * @param int     $guildID
      * @param string  $sessionID
      * @param array   $event
      * @return \CharlotteDunois\Luna\Player
+     * @throws \BadMethodCallException
      */
     function sendVoiceUpdate(int $guildID, string $sessionID, array $event) {
+        if(!$this->client) {
+            throw new \BadMethodCallException('Node has no client');
+        }
+        
         $packet = array(
             'op' => 'voiceUpdate',
             'guildId' => ((string) $guildID),
