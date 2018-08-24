@@ -15,7 +15,7 @@ composer require charlottedunois/luna
 
 **Important Information**: All properties on class instances, which are implemented using a magic method (which means pretty much all properties), are **throwing** if the property doesn't exist.
 
-# Example
+# Example - Part One
 This is a fairly trivial example of using Luna. You should put all your listener code into try-catch blocks and handle exceptions accordingly.
 
 ```php
@@ -30,7 +30,7 @@ $client->addNode($node);
 $loop->run();
 ```
 
-# Yasmin Example
+# Yasmin Example - Part One
 
 ```php
 // Include composer autoloader
@@ -50,5 +50,25 @@ $client->login('YOUR_TOKEN');
 $loop->run();
 ```
 
+# Example - Part Two
+When you have sent a voice state update event and Discord responded with the two events, you have to provide the VOICE_SERVER_UPDATE event as-is, unmodified.
+
+```php
+$player = $node->sendVoiceUpdate($guildID, $sessionID, $voiceServerUpdateEvent);
+
+$node->resolveTrack('DT61L8hbbJ4')->done(function ($audioTrack) use ($player) {
+    $player->play($audioTrack);
+});
+```
+
+# Yasmin Example - Part Two
+The `YasminClient` has a method called `joinChannel` which sends the voice state update to discord, waits for the two events and sends them to the lavalink node.
+
+```php
+$luna->joinChannel($voiceChannel)->done(function ($player) {
+    // The code
+});
+```
+
 # Documentation
-None yet.
+https://luna.neko.run/
