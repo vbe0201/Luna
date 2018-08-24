@@ -129,8 +129,8 @@ class Link {
             return \React\Promise\resolve();
         }
         
-        if($this->wsStatus < self::STATUS_CONNECTING || $this->wsStatus > self::STATUS_RECONNECTING) {
-            $this->wsStatus = self::STATUS_CONNECTING;
+        if($this->status < self::STATUS_CONNECTING || $this->status > self::STATUS_RECONNECTING) {
+            $this->status = self::STATUS_CONNECTING;
         }
         
         $this->node->emit('debug', 'Connecting to node');
@@ -142,7 +142,7 @@ class Link {
             'User-Id' => $this->client->userID
         ))->done(function (\Ratchet\Client\WebSocket $conn) {
             $this->ws = &$conn;
-            $this->wsStatus = self::STATUS_CONNECTED;
+            $this->status = self::STATUS_CONNECTED;
             
             $this->ws->on('message', function (\Ratchet\RFC6455\Messaging\Message $message) {
                 $message = $message->getPayload();
@@ -160,19 +160,19 @@ class Link {
             $this->ws->on('close', function (int $code, string $reason) {
                 $this->ws = null;
                 
-                if($this->wsStatus <= self::STATUS_CONNECTED) {
-                    $this->wsStatus = self::STATUS_DISCONNECTED;
+                if($this->status <= self::STATUS_CONNECTED) {
+                    $this->status = self::STATUS_DISCONNECTED;
                 }
                 
                 $this->node->emit('debug', 'Disconnected from node');
                 $this->node->emit('disconnect', $code, $reason, $this->expectedClose);
                 
                 if($code === 1000 && $this->expectedClose) {
-                    $this->wsStatus = self::STATUS_IDLE;
+                    $this->status = self::STATUS_IDLE;
                     return;
                 }
                 
-                $this->wsStatus = self::STATUS_RECONNECTING;
+                $this->status = self::STATUS_RECONNECTING;
                 $this->renewConnection(true);
             });
             
@@ -184,7 +184,7 @@ class Link {
                 $this->ws->close(1006);
             }
             
-            $this->wsStatus = self::STATUS_DISCONNECTED;
+            $this->status = self::STATUS_DISCONNECTED;
             return $this->renewConnection(false);
         });
     }
@@ -225,7 +225,7 @@ class Link {
      */
     protected function scheduleConnect() {
         return (new \React\Promise\Promise(function (callable $resolve, callable $reject) {
-            $this->client->addTimer(30, function () use ($resolve, $reject) {
+            $this->client->getLoop()->addTimer(30, function () use ($resolve, $reject) {
                 $this->renewConnection()->done($resolve, $reject);
             });
         }));
@@ -238,7 +238,7 @@ class Link {
      * @throws \RuntimeException
      */
     function send(array $packet) {
-        if($this->wsStatus !== self::STATUS_NEARLY && $this->wsStatus !== self::STATUS_CONNECTED) {
+        if($this->status !== self::STATUS_CONNECTED) {
             throw new \RuntimeException('Unable to send WS message before a WS connection is established');
         }
         

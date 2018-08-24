@@ -16,6 +16,8 @@ namespace CharlotteDunois\Luna;
 interface ClientEvents {
     /**
      * Emitted when an error happens. You should always listen on this event.
+     * @param \CharlotteDunois\Luna\Node|null  $node
+     * @param \Throwable                       $error
      * @return void
      */
     function error(?\CharlotteDunois\Luna\Node $node, \Throwable $error);
@@ -30,18 +32,26 @@ interface ClientEvents {
     
     /**
      * Emitted when the node gets disconnected.
+     * @param \CharlotteDunois\Luna\Node|null  $node
+     * @param int                              $code
+     * @param string                           $reason
+     * @param bool                             $expectedClose
      * @return void
      */
     function disconnect(\CharlotteDunois\Luna\Node $node, int $code, string $reason, bool $expectedClose);
     
     /**
      * Emitted when a failover happens. Only emitted on the client.
+     * @param \CharlotteDunois\Luna\Node|null  $node
+     * @param \CharlotteDunois\Luna\Player     $newPlayer
      * @return void
      */
     function failover(\CharlotteDunois\Luna\Node $node, \CharlotteDunois\Luna\Player $newPlayer);
     
     /**
      * Emitted when the node gets stats from the lavalink node.
+     * @param \CharlotteDunois\Luna\Node|null    $node
+     * @param \CharlotteDunois\Luna\RemoteStats  $stats
      * @return void
      */
     function stats(\CharlotteDunois\Luna\Node $node, \CharlotteDunois\Luna\RemoteStats $stats);

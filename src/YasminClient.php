@@ -61,12 +61,27 @@ class YasminClient extends Client {
      * @param \CharlotteDunois\Yasmin\Models\VoiceChannel  $channel
      * @param \CharlotteDunois\Luna\Node|null              $node     The node to use, or automatically determine one.
      * @return \React\Promise\ExtendedPromiseInterface
-     * @throws \BadMethodCallException
+     * @throws \BadMethodCallException  Thrown when the client is not ready.
+     * @throws \LogicException          Thrown when we have insufficient permissions.
      * @see \CharlotteDunois\Luna\Player
      */
     function joinVoiceChannel(\CharlotteDunois\Yasmin\Models\VoiceChannel $channel, ?\CharlotteDunois\Luna\Node $node = null) {
         if($this->client->readyTimestamp === null) {
             throw new \BadMethodCallException('Client is not ready yet');
+        }
+        
+        $perms = $channel->permissionsFor($channel->guild->me);
+        
+        if(!$perms->has('CONNECT') && !$perms->has('MOVE_MEMBERS')) {
+            throw new \LogicException('Insufficient permissions to join the voice channel');
+        }
+        
+        if($channel->members->count() >= $channel->userLimit && !$perms->has('MOVE_MEMBERS')) {
+            throw new \LogicException('Voice channel user limit reached, unable to join the voice channel');
+        }
+        
+        if(!$perms->has('SPEAK')) {
+            throw new \LogicException('We can not speak in the voice channel, joining makes no sense');
         }
         
         if(!$node) {
@@ -117,7 +132,7 @@ class YasminClient extends Client {
      * Leaves a voice channel and destroys any existing player.
      * @param \CharlotteDunois\Yasmin\Models\VoiceChannel  $channel
      * @return \React\Promise\ExtendedPromiseInterface
-     * @throws \BadMethodCallException
+     * @throws \BadMethodCallException  Thrown when the client is not ready.
      */
     function leaveVoiceChannel(\CharlotteDunois\Yasmin\Models\VoiceChannel $channel) {
         if($this->client->readyTimestamp === null) {
@@ -146,7 +161,7 @@ class YasminClient extends Client {
      * @internal
      */
     function createHTTPRequest(string $method, string $url, array $headers, string $body = null) {
-        $request = new \GuzzleHttp\Psr7\Request($method, $url, $headers, $body, '1.1');
+        $request = new \GuzzleHttp\Psr7\Request($method, $url, $headers, $body);
         return \CharlotteDunois\Yasmin\Utils\URLHelpers::makeRequest($request);
     }
 }

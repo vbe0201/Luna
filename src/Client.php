@@ -13,7 +13,9 @@ namespace CharlotteDunois\Luna;
  * The generic Lavalink Client. It does absolutely nothing for you on the Discord side.
  * The lavalink Client implements automatic failover. That means, if a lavalink node unexpectedly disconnects,
  * the client will automatically look for a new node and starts playing the track on it.
- * @property \CharlotteDunois\Collect\Collection  $nodes  A collection of nodes, mapped by name.
+ * @property \CharlotteDunois\Collect\Collection  $nodes      A collection of nodes, mapped by name.
+ * @property int                                  $userID     The Discord User ID.
+ * @property int                                  $numShards  The amount of shards the bot has.
  */
 class Client implements \CharlotteDunois\Events\EventEmitterInterface {
     use \CharlotteDunois\Events\EventEmitterTrait;
@@ -82,7 +84,7 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
      * @param int                             $numShards  The amount of shards the bot has.
      * @param array                           $options    Optional options.
      */
-    function __construct(\React\EventLoop\LoopInterface $loop, int $userID, int $numShards, array $options = array()) {
+    function __construct(\React\EventLoop\LoopInterface $loop, int $userID, int $numShards = 1, array $options = array()) {
         $this->loop = $loop;
         $this->userID = $userID;
         $this->numShards = $numShards;
@@ -281,10 +283,9 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
     /**
      * Creates nodes as part of a factory. This is useful to import node configurations from a file.
      * @param array                         $nodes
-     * @param bool                          $autoConnect  Whether we automatically open an connection to the node.
      * @return \CharlotteDunois\Luna\Node[]
      */
-    function createNodes(array $nodes, bool $autoConnect = true) {
+    function createNodes(array $nodes) {
         $factory = array();
         
         foreach($nodes as $node) {
@@ -292,7 +293,7 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
             $node = new \CharlotteDunois\Luna\Node($this, $name, $password, $httpHost, $wsHost, $region);
             
             $factory[$name] = $node;
-            $this->addNode($node, $autoConnect);
+            $this->addNode($node);
         }
         
         return $factory;
