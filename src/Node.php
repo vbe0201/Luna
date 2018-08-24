@@ -192,12 +192,17 @@ class Node implements \CharlotteDunois\Events\EventEmitterInterface, \JsonSerial
      * Resolves a track using Lavalink's REST API. Resolves with an instance of AudioTrack, an instance of AudioPlaylist or a Collection of AudioTrack instances (for search results), mapped by the track identifier.
      * @param string  $search  The search query.
      * @return \React\Promise\ExtendedPromiseInterface
-     * @throws \RangeException    The exception the promise gets rejected with, when there are no matches.
-     * @throws \RangeException    The exception the promise gets rejected with, when loading the track failed.
+     * @throws \BadMethodCallException
+     * @throws \RangeException              The exception the promise gets rejected with, when there are no matches.
+     * @throws \UnexpectedValueException    The exception the promise gets rejected with, when loading the track failed.
      * @see \CharlotteDunois\Luna\AudioTrack
      * @see \CharlotteDunois\Luna\AudioPlaylist
      */
     function resolveTrack(string $search) {
+        if(!$this->client) {
+            throw new \BadMethodCallException('Node has no client');
+        }
+        
         $this->emit('debug', 'Resolving track "'.$search.'"');
         
         return $this->client->createHTTPRequest('GET', $this->httpHost.'/loadtracks?identifier='.\rawurlencode($search), array(
