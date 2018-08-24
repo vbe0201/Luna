@@ -11,6 +11,8 @@ namespace CharlotteDunois\Luna;
 
 /**
  * The Lavalink Client for Yasmin. This class interacts with Yasmin to do all the updates for you.
+ * @property \CharlotteDunois\Yasmin\Client            $client       The yasmin client.
+ * @property \CharlotteDunois\Yasmin\Utils\Collection  $connections  The open connections, mapped by guild ID (as int) to players.
  */
 class YasminClient extends Client {
     /**
@@ -106,7 +108,7 @@ class YasminClient extends Client {
                     $this->connections->delete($player->guildID);
                 });
                 
-                $this->channels->set($player->guildID);
+                $this->connections->set($player->guildID, $player);
             });
         });
     }
@@ -118,6 +120,10 @@ class YasminClient extends Client {
      * @throws \BadMethodCallException
      */
     function leaveVoiceChannel(\CharlotteDunois\Yasmin\Models\VoiceChannel $channel) {
+        if($this->client->readyTimestamp === null) {
+            throw new \BadMethodCallException('Client is not ready yet');
+        }
+        
         if($this->connections->has($channel->guild->id)) {
             $player = $this->connections->get($channel->guild->id);
             $this->connections->delete($channel->guild->id);

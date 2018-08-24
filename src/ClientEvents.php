@@ -32,7 +32,7 @@ interface ClientEvents {
      * Emitted when the node gets disconnected.
      * @return void
      */
-    function disconnect(\CharlotteDunois\Luna\Node $node, int $code, string $reason);
+    function disconnect(\CharlotteDunois\Luna\Node $node, int $code, string $reason, bool $expectedClose);
     
     /**
      * Emitted when a failover happens. Only emitted on the client.

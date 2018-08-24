@@ -11,6 +11,16 @@ namespace CharlotteDunois\Luna;
 
 /**
  * This class represents a node. Each node connects to the representing lavalink node.
+ * @property \CharlotteDunois\Luna\Client            $client           The Luna client.
+ * @property \CharlotteDunois\Collect\Collection     $players          All players of the node, mapped by guild ID.
+ * @property \CharlotteDunois\Luna\Link              $link             The websocket connection to the lavalink node.
+ * @property \CharlotteDunois\Luna\RemoteStats|null  $stats            The lavalink node's stats, or null.
+ * @property string                                  $name             The name of the node.
+ * @property string                                  $password         The password of th enode.
+ * @property string                                  $httpHost         The HTTP host address.
+ * @property string                                  $wsHost           The WS host address.
+ * @property string                                  $region           The region of the node.
+ * @property array|null                              $lastVoiceUpdate  The last sent voice update event.
  */
 class Node implements \CharlotteDunois\Events\EventEmitterInterface, \JsonSerializable {
     use \CharlotteDunois\Events\EventEmitterTrait;
@@ -22,7 +32,7 @@ class Node implements \CharlotteDunois\Events\EventEmitterInterface, \JsonSerial
     protected $client;
     
     /**
-     * All players of the node.
+     * All players of the node, mapped by guild ID.
      * @var \CharlotteDunois\Collect\Collection
      */
     protected $players;
@@ -71,7 +81,7 @@ class Node implements \CharlotteDunois\Events\EventEmitterInterface, \JsonSerial
     
     /**
      * The last sent voice update event.
-     * @var array|int
+     * @var array|null
      */
     protected $lastVoiceUpdate;
     

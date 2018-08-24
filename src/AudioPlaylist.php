@@ -11,6 +11,9 @@ namespace CharlotteDunois\Luna;
 
 /**
  * Represents an Audio Playlist.
+ * @property string                               $name           The playlist's name.
+ * @property int                                  $selectedTrack  Which track is selected.
+ * @property \CharlotteDunois\Collect\Collection  $tracks         The playlist's tracks.
  */
 class AudioPlaylist {
     /**

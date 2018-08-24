@@ -11,6 +11,20 @@ namespace CharlotteDunois\Luna;
 
 /**
  * Represents a node's stats. The lavalink node sends every minute stats, which updates any existing instances.
+ * @property \CharlotteDunois\Luna\Node  $node              The node these stats are for.
+ * @property int                         $players           How many players the node is running.
+ * @property int                         $playingPlayers    How many players are currently playing.
+ * @property int                         $uptime            The uptime of the node in seconds.
+ * @property int                         $memoryFree        Free memory in bytes.
+ * @property int                         $memoryUsed        Used memory in bytes.
+ * @property int                         $memoryAllocated   Allocated memory in bytes.
+ * @property int                         $memoryReservable  Reservable memory in bytes.
+ * @property int                         $cpuCores          The number of cpu cores.
+ * @property float                       $systemload        The system load.
+ * @property float                       $lavalinkLoad      The lavalink load.
+ * @property int|null                    $framesSent        Average frames sent per minute.
+ * @property int|null                    $framesNulled      Average frames nulled per minute.
+ * @property int|null                    $framesDeficit     Average frames deficit per minute.
  */
 class RemoteStats {
     /**
@@ -32,7 +46,7 @@ class RemoteStats {
     protected $playingPlayers;
     
     /**
-     * The uptime of the node in milliseconds.
+     * The uptime of the node in seconds.
      * @var int
      */
     protected $uptime;
@@ -115,7 +129,7 @@ class RemoteStats {
     function update(array $stats) {
         $this->players = (int) $stats['players'];
         $this->playingPlayers = (int) $stats['playingPlayers'];
-        $this->uptime = (int) $stats['uptime'];
+        $this->uptime = (int) ($stats['uptime'] / 1000);
         
         $this->memoryFree = (int) $stats['memory']['free'];
         $this->memoryUsed = (int) $stats['memory']['used'];

@@ -11,6 +11,12 @@ namespace CharlotteDunois\Luna;
 
 /**
  * Represents a player of a guild on a node.
+ * @property \CharlotteDunois\Luna\Node             $node     The node this player is on.
+ * @property int                                    $guildID  The guild ID this player is serving.
+ * @property \CharlotteDunois\Luna\AudioTrack|null  $track    The currently playing audio track.
+ * @property bool                                   $paused   Whether the track is currently paused.
+ * @property int                                    $position The position of the track in milliseconds.
+ * @property int                                    $volume   The volume of the player from 0 to 100.
  */
 class Player implements \CharlotteDunois\Events\EventEmitterInterface {
     use \CharlotteDunois\Events\EventEmitterTrait;
@@ -29,7 +35,7 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
     
     /**
      * The currently playing audio track.
-     * @var \CharlotteDunois\Luna\AudioTrack
+     * @var \CharlotteDunois\Luna\AudioTrack|null
      */
     protected $track;
     
@@ -38,6 +44,12 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
      * @var bool
      */
     protected $paused = false;
+    
+    /**
+     * The current position of the track in milliseconds.
+     * @var int
+     */
+    protected $position = 0;
     
     /**
      * The volume of the player from 0 to 100.
@@ -50,12 +62,6 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
      * @var int
      */
     protected $updateTime = -1;
-    
-    /**
-     * The current position of the track, in milliseconds.
-     * @var int
-     */
-    protected $position = 0;
     
     /**
      * Constructor.
@@ -159,13 +165,17 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
                 throw new \BadMethodCallException('Track is not seekable');
             }
             
-            $packet = array(
-                'op' => 'seek',
-                'guildId' => $this->guildID,
-                'position' => $position
-            );
+            $pos = \min($position, $this->track->duration);
             
-            $this->node->link->send($packet);
+            if($pos !== $this->position) {
+                $packet = array(
+                    'op' => 'seek',
+                    'guildId' => $this->guildID,
+                    'position' => $pos
+                );
+                
+                $this->node->link->send($packet);
+            }
         }
     }
     
@@ -226,8 +236,7 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
      * @internal
      */
     function updateState(array $state) {
-        $time = (int) $state['updateTime'];
-        $this->updateTime = (int) ($time / 1000);
+        $this->updateTime = (int) ($state['updateTime'] / 1000);
         $this->position  = (int) $state['position'];
     }
 }

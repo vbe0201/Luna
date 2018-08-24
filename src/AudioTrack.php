@@ -11,6 +11,14 @@ namespace CharlotteDunois\Luna;
 
 /**
  * Represents an Audio Track.
+ * @property string       $track       The base64 encoded string from Lavalink.
+ * @property string       $title       The track title.
+ * @property string       $author      The track author.
+ * @property int          $duration    The duration of the track in milliseconds.
+ * @property string       $identifier  The identifier of the track.
+ * @property bool         $stream      Whether the track gets streamed.
+ * @property string|null  $url         The URL to the track.
+ * @property bool         $seekable    Whether the track can be seeked.
  */
 class AudioTrack {
     /**

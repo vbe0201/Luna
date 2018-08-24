@@ -13,6 +13,7 @@ namespace CharlotteDunois\Luna;
  * The generic Lavalink Client. It does absolutely nothing for you on the Discord side.
  * The lavalink Client implements automatic failover. That means, if a lavalink node unexpectedly disconnects,
  * the client will automatically look for a new node and starts playing the track on it.
+ * @property \CharlotteDunois\Collect\Collection  $nodes  A collection of nodes, mapped by name.
  */
 class Client implements \CharlotteDunois\Events\EventEmitterInterface {
     use \CharlotteDunois\Events\EventEmitterTrait;
@@ -31,7 +32,7 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
     
     /**
      * The HTTP client.
-     * @var \Clue\React\Buzz\Browser
+     * @var \Clue\React\Buzz\Browser|null
      */
     protected $browser;
     
@@ -94,7 +95,7 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
         $this->nodes = new \CharlotteDunois\Collect\Collection();
         $this->nodeListeners = new \CharlotteDunois\Collect\Collection();
         
-        $this->on('disconnect', function (\CharlotteDunois\Luna\Node $node, int $code, string $reason) {
+        $this->on('disconnect', function (\CharlotteDunois\Luna\Node $node, int $code, string $reason, bool $expectedClose) {
             $playing = 0;
             
             if($node->players->count() > 0) {
@@ -103,7 +104,7 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
                 })->count();
             }
             
-            if($code > 1000 && $playing > 0) {
+            if(!$expectedClose && $playing > 0) {
                 foreach($node->players as $player) {
                     $track = $player->track;
                     $position = $player->getLastPosition();
@@ -304,9 +305,14 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
      * @param string[]     $headers
      * @param string|null  $body
      * @return \React\Promise\ExtendedPromiseInterface
+     * @throws \BadMethodCallException
      * @internal
      */
     function createHTTPRequest(string $method, string $url, array $headers, string $body = null) {
+        if(!$this->browser) {
+            throw new \BadMethodCallException('Invoked createHTTPRequest method, but the browser is not available');
+        }
+        
         $method = \strtolower($method);
         return $this->browser->$method($url, $headers, $body);
     }
@@ -339,8 +345,8 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
      * @return \Closure
      */
     protected function createDisconnectListener(\CharlotteDunois\Luna\Node $node) {
-        return (function (int $code, string $reason) use (&$node) {
-            $this->emit('disconnect', $node, $code, $reason);
+        return (function (int $code, string $reason, bool $expectedClose) use (&$node) {
+            $this->emit('disconnect', $node, $code, $reason, $expectedClose);
         });
     }
     

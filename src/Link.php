@@ -165,7 +165,7 @@ class Link {
                 }
                 
                 $this->node->emit('debug', 'Disconnected from node');
-                $this->node->emit('disconnect', $code, $reason);
+                $this->node->emit('disconnect', $code, $reason, $this->expectedClose);
                 
                 if($code === 1000 && $this->expectedClose) {
                     $this->wsStatus = self::STATUS_IDLE;
