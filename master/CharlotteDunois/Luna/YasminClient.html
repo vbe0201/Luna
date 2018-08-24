@@ -274,8 +274,8 @@
                 <div class="col-md-8 type">
                     <a href="#method_start">start</a>()
         
-                                            <p>Starts all connections to the nodes.</p>                </div>
-                <div class="col-md-2"><small>from&nbsp;<a href="../../CharlotteDunois/Luna/Client.html#method_start"><abbr title="CharlotteDunois\Luna\Client">Client</abbr></a></small></div>
+                                            <p>Starts all connections to the nodes. Can only be called <strong>after</strong> Yasmin turned ready.</p>                </div>
+                <div class="col-md-2"></div>
             </div>
                     <div class="row">
                 <div class="col-md-2 type">
@@ -568,7 +568,7 @@
             </div>
                     <div class="method-item">
                     <h3 id="method_joinChannel">
-        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/YasminClient.php#L118">line 118</a></div>
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/YasminClient.php#L131">line 131</a></div>
         <code>                    <abbr title="React\Promise\ExtendedPromiseInterface">ExtendedPromiseInterface</abbr>
     <strong>joinChannel</strong>(<abbr title="CharlotteDunois\Yasmin\Models\VoiceChannel">VoiceChannel</abbr> $channel, <a href="../../CharlotteDunois/Luna/Node.html"><abbr title="CharlotteDunois\Luna\Node">Node</abbr></a>|null $node = null)
         </code>
@@ -639,7 +639,7 @@
             </div>
                     <div class="method-item">
                     <h3 id="method_leaveChannel">
-        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/YasminClient.php#L206">line 206</a></div>
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/YasminClient.php#L219">line 219</a></div>
         <code>                    <abbr title="React\Promise\ExtendedPromiseInterface">ExtendedPromiseInterface</abbr>
     <strong>leaveChannel</strong>(<abbr title="CharlotteDunois\Yasmin\Models\VoiceChannel">VoiceChannel</abbr> $channel)
         </code>
@@ -690,7 +690,7 @@
             </div>
                     <div class="method-item">
                     <h3 id="method_moveToChannel">
-        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/YasminClient.php#L237">line 237</a></div>
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/YasminClient.php#L250">line 250</a></div>
         <code>                    <abbr title="React\Promise\ExtendedPromiseInterface">ExtendedPromiseInterface</abbr>
     <strong>moveToChannel</strong>(<abbr title="CharlotteDunois\Yasmin\Models\VoiceChannel">VoiceChannel</abbr> $channel)
         </code>
@@ -796,7 +796,7 @@
             </div>
                     <div class="method-item">
                     <h3 id="method_start">
-        <div class="location">in <a href="../../CharlotteDunois/Luna/Client.html#method_start"><abbr title="CharlotteDunois\Luna\Client">Client</abbr></a> at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Client.php#L278">line 278</a></div>
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/YasminClient.php#L114">line 114</a></div>
         <code>                    <abbr title="React\Promise\ExtendedPromiseInterface">ExtendedPromiseInterface</abbr>
     <strong>start</strong>()
         </code>
@@ -806,7 +806,7 @@
     
 
                     <div class="method-description">
-                                    <p>Starts all connections to the nodes.</p>                                                </div>
+                                    <p>Starts all connections to the nodes. Can only be called <strong>after</strong> Yasmin turned ready.</p>                                                </div>
                 <div class="tags">
             
                             <h4>Return Value</h4>
@@ -819,6 +819,15 @@
     </table>
 
             
+                            <h4>Exceptions</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="https://secure.php.net/BadMethodCallException" target="_blank">BadMethodCallException</a></td>
+                <td></td>
+            </tr>
+            </table>
+
             
                         
                         
