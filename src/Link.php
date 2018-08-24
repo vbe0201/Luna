@@ -150,6 +150,10 @@ class Link {
             'Num-Shards' => $this->client->numShards,
             'User-Id' => $this->client->userID
         ))->then(function (\Ratchet\Client\WebSocket $conn) {
+            if(!$conn->response->hasHeader('Lavalink-Major-Version') || $conn->response->getHeader('Lavalink-Major-Version')[0] < 3) {
+                throw new \RuntimeException('The Lavalink Server major version is below v3.0');
+            }
+            
             $this->ws = &$conn;
             $this->status = self::STATUS_CONNECTED;
             
