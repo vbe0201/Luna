@@ -107,6 +107,19 @@ class YasminClient extends Client {
     }
     
     /**
+     * Starts all connections to the nodes. Can only be called **after** Yasmin turned ready.
+     * @return \React\Promise\ExtendedPromiseInterface
+     * @throws \BadMethodCallException
+     */
+    function start() {
+        if($this->userID === 0) {
+            throw new \BadMethodCallException('Can not start nodes before Yasmin turned ready');
+        }
+        
+        return parent::start();
+    }
+    
+    /**
      * Joins a voice channel. The guild region will be stripped down to `eu`, `us`, etc. Resolves with an instance of Player.
      * @param \CharlotteDunois\Yasmin\Models\VoiceChannel  $channel
      * @param \CharlotteDunois\Luna\Node|null              $node     The node to use, or automatically determine one.
