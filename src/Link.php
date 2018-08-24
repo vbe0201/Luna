@@ -140,7 +140,7 @@ class Link {
             'Authorization' => $this->node->password,
             'Num-Shards' => $this->client->numShards,
             'User-Id' => $this->client->userID
-        ))->done(function (\Ratchet\Client\WebSocket $conn) {
+        ))->then(function (\Ratchet\Client\WebSocket $conn) {
             $this->ws = &$conn;
             $this->status = self::STATUS_CONNECTED;
             

@@ -100,7 +100,7 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
         
         $this->on('disconnect', function (\CharlotteDunois\Luna\Node $node, int $code, string $reason, bool $expectedClose) {
             if(!$expectedClose && $node->players->count() > 0) {
-                $node->emit('debug', 'Failing over '.$node->players->count().' players to new nodes');
+                $node->emit('debug', 'Failing over '.$node->players->count().' player(s) to new nodes');
                 
                 $loadbalancer = $this->getOption('loadbalancer');
                 
@@ -243,7 +243,7 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
      * @param string  $region
      * @param bool    $autoConnect  Automatically make the node connect if it is disconnected (idling).
      * @return \CharlotteDunois\Luna\Node
-     * @throws \UnderflowException
+     * @throws \UnderflowException  Thrown when no nodes are available
      */
     function getIdealNode(string $region, bool $autoConnect = true) {
         if($this->nodes->count() === 0) {
@@ -251,11 +251,17 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
         }
         
         $node = $this->nodes->first(function (\CharlotteDunois\Luna\Node $node) use ($region) {
-            return ($node->region === $region);
+            return ($node->region === $region && $node->link->status >= \CharlotteDunois\Luna\Link::STATUS_CONNECTED);
         });
         
         if(!$node) {
-            $node = $this->nodes->first();
+            $node = $this->nodes->first(function (\CharlotteDunois\Luna\Node $node) use ($region) {
+                return ($node->link->status >= \CharlotteDunois\Luna\Link::STATUS_CONNECTED);
+            });
+            
+            if(!$node) {
+                throw new \UnderflowException('No node available');
+            }
         }
         
         if($node->link->status === \CharlotteDunois\Luna\Link::STATUS_IDLE) {

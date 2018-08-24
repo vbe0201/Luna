@@ -63,7 +63,7 @@ class LoadBalancer {
      * @param string  $region
      * @param bool    $autoConnect  Automatically make the node connect if it is disconnected (idling).
      * @return \CharlotteDunois\Luna\Node
-     * @throws \UnderflowException
+     * @throws \UnderflowException  Thrown when no nodes are available
      */
     function getIdealNode(string $region, bool $autoConnect = true) {
         if($this->client->nodes->count() === 0) {
@@ -75,6 +75,10 @@ class LoadBalancer {
         foreach($this->client->nodes as $node) {
             if(!isset($nodeStats[$node->region])) {
                 $nodeStats[$node->region] = array();
+            }
+            
+            if($node->link->status < \CharlotteDunois\Luna\Link::STATUS_CONNECTED) {
+                continue;
             }
             
             if(!$node->stats) {
@@ -121,7 +125,13 @@ class LoadBalancer {
         }
         
         if(!$node) {
-            $node = $this->client->nodes->first();
+            $node = $this->nodes->first(function (\CharlotteDunois\Luna\Node $node) use ($region) {
+                return ($node->link->status >= \CharlotteDunois\Luna\Link::STATUS_CONNECTED);
+            });
+            
+            if(!$node) {
+                throw new \UnderflowException('No node available');
+            }
         }
         
         if($autoConnect && $node->link->status === \CharlotteDunois\Luna\Link::STATUS_IDLE) {

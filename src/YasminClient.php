@@ -113,7 +113,7 @@ class YasminClient extends Client {
             'time' => 30
         );
         
-        if(\CharlotteDunois\Yasmin\Client::VERSION === '0.4.2-dev' || \version_compare(\CharlotteDunois\Yasmin\Client::VERSION, '0.4.2') > 0) {
+        if(\version_compare(\CharlotteDunois\Yasmin\Client::VERSION, '0.4.3-dev') >= 0) {
             $name = 'voiceServerUpdate';
         } else {
             $name = 'self.voiceServerUpdate';
