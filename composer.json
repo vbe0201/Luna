@@ -23,6 +23,9 @@
         "psr/http-message": "^1.0",
         "charlottedunois/yasmin": "^0.4.2|dev-master"
     },
+    "suggest": {
+        "charlottedunois/yasmin": "The Discord API library for PHP."
+    },
     "autoload": {
         "psr-4": {
             "CharlotteDunois\\Luna\\": "src"
