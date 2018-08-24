@@ -10,8 +10,8 @@
 namespace CharlotteDunois\Luna;
 
 /**
- * The generic Lavalink Client. It does absolutely nothing for you on the Discord side.
- * The lavalink Client implements automatic failover. That means, if a lavalink node unexpectedly disconnects,
+ * The generic Lavalink client. It does absolutely nothing for you on the Discord side.
+ * The lavalink client implements automatic failover. That means, if a lavalink node unexpectedly disconnects,
  * the client will automatically look for a new node and starts playing the track on it.
  * @property \CharlotteDunois\Collect\Collection  $nodes      A collection of nodes, mapped by name.
  * @property int                                  $numShards  The amount of shards the bot has.
