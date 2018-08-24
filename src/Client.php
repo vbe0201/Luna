@@ -255,7 +255,7 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
         });
         
         if(!$node) {
-            $node = $this->nodes->first(function (\CharlotteDunois\Luna\Node $node) use ($region) {
+            $node = $this->nodes->first(function (\CharlotteDunois\Luna\Node $node) {
                 return ($node->link->status >= \CharlotteDunois\Luna\Link::STATUS_CONNECTED);
             });
             

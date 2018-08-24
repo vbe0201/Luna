@@ -125,7 +125,7 @@ class LoadBalancer {
         }
         
         if(!$node) {
-            $node = $this->nodes->first(function (\CharlotteDunois\Luna\Node $node) use ($region) {
+            $node = $this->client->nodes->first(function (\CharlotteDunois\Luna\Node $node) {
                 return ($node->link->status >= \CharlotteDunois\Luna\Link::STATUS_CONNECTED);
             });
             

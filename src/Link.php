@@ -11,6 +11,9 @@ namespace CharlotteDunois\Luna;
 
 /**
  * A link connects to the lavalink node and listens for events and sends packets.
+ * @property \CharlotteDunois\Luna\Client  $client  The Luna client.
+ * @property \CharlotteDunois\Luna\Node    $node    The node this link is for.
+ * @property int                           $status  The connection status.
  */
 class Link {
     /**
@@ -78,6 +81,12 @@ class Link {
     protected $status = self::STATUS_IDLE;
     
     /**
+     * The promise of the connector.
+     * @var \React\Promise\ExtendedPromiseInterface|null
+     */
+    protected $connectPromise;
+    
+    /**
      * Constructor.
      * @param \CharlotteDunois\Luna\Client  $client  Needed to get User ID, Num Shards and the event loop.
      * @param \CharlotteDunois\Luna\Node    $node    The node this link is for.
@@ -136,7 +145,7 @@ class Link {
         $this->node->emit('debug', 'Connecting to node');
         
         $connector = $this->connector;
-        return $connector($this->node->wsHost, array(), array(
+        $this->connectPromise = $connector($this->node->wsHost, array(), array(
             'Authorization' => $this->node->password,
             'Num-Shards' => $this->client->numShards,
             'User-Id' => $this->client->userID
@@ -159,6 +168,7 @@ class Link {
             
             $this->ws->on('close', function (int $code, string $reason) {
                 $this->ws = null;
+                $this->connectPromise = null;
                 
                 if($this->status <= self::STATUS_CONNECTED) {
                     $this->status = self::STATUS_DISCONNECTED;
@@ -191,6 +201,8 @@ class Link {
             $this->status = self::STATUS_DISCONNECTED;
             return $this->renewConnection(false);
         });
+        
+        return $this->connectPromise;
     }
     
     /**
@@ -240,11 +252,18 @@ class Link {
     /**
      * Sends a packet.
      * @param array $packet
-     * @return \React\Promise\ExtendedPromiseInterface
+     * @return void
      * @throws \RuntimeException
      */
     function send(array $packet) {
         if($this->status !== self::STATUS_CONNECTED) {
+            if($this->connectPromise !== null) {
+                $this->connectPromise->done(function () use ($packet) {
+                    $this->send($packet);
+                });
+                return;
+            }
+            
             throw new \RuntimeException('Unable to send WS message before a WS connection is established');
         }
         
