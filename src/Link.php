@@ -79,8 +79,8 @@ class Link {
     
     /**
      * Constructor.
-     * @param \CharlotteDunois\Luna\Client  $client
-     * @param \CharlotteDunois\Luna\Node    $node
+     * @param \CharlotteDunois\Luna\Client  $client  Needed to get User ID, Num Shards and the event loop.
+     * @param \CharlotteDunois\Luna\Node    $node    The node this link is for.
      */
     function __construct(\CharlotteDunois\Luna\Client $client, \CharlotteDunois\Luna\Node $node) {
         $this->client = $client;
@@ -254,7 +254,7 @@ class Link {
      * @return void
      */
     protected function handleMessage(string $payload) {
-        $data = \json_decode($payload);
+        $data = \json_decode($payload, true);
         if($data === false && \json_last_error() !== \JSON_ERROR_NONE) {
             $this->node->emit('debug', 'Invalid message received');
             return;

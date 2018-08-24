@@ -87,7 +87,7 @@ class Node implements \CharlotteDunois\Events\EventEmitterInterface, \JsonSerial
     
     /**
      * Constructor.
-     * @param \CharlotteDunois\Luna\Client  $client
+     * @param \CharlotteDunois\Luna\Client  $client    Needed to get User ID, Num Shards and the event loop.
      * @param string                        $name      The name for the node.
      * @param string                        $password  The password.
      * @param string                        $httpHost  The complete URI to the node's HTTP API.
