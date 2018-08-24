@@ -191,6 +191,8 @@ class Link {
     
     /**
      * Closes the connection to the node websocket.
+     * @param int     $code
+     * @param string  $reason
      * @return void
      */
     function disconnect(int $code = 1000, string $reason = '') {

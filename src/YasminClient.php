@@ -34,7 +34,7 @@ class YasminClient extends Client {
      * @param array                           $options    Optional options.
      * @see \CharlotteDunois\Luna\Client
      */
-    function __construct(\CharlotteDunois\Yasmin\Client $client, int $numShards, array $options = array()) {
+    function __construct(\CharlotteDunois\Yasmin\Client $client, int $numShards = 1, array $options = array()) {
         $this->client = $client;
         $this->connections = new \CharlotteDunois\Yasmin\Utils\Collection();
         
@@ -42,10 +42,10 @@ class YasminClient extends Client {
         $userID = 0;
         
         if($this->client->readyTimestamp !== null) {
-            $userID = $this->client->user->id;
+            $userID = (int) $this->client->user->id;
         } else {
             $this->client->once('ready', function () {
-                $this->userID = $this->client->user->id;
+                $this->userID = (int) $this->client->user->id;
             });
         }
         

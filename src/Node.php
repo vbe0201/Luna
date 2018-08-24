@@ -98,6 +98,12 @@ class Node implements \CharlotteDunois\Events\EventEmitterInterface, \JsonSerial
         $this->client = $client;
         $this->link = new \CharlotteDunois\Luna\Link($client, $this);
         $this->players = new \CharlotteDunois\Collect\Collection();
+        
+        $this->name = $name;
+        $this->password = $password;
+        $this->httpHost = $httpHost;
+        $this->wsHost = $wsHost;
+        $this->region = $region;
     }
     
     /**
@@ -223,7 +229,7 @@ class Node implements \CharlotteDunois\Events\EventEmitterInterface, \JsonSerial
      */
     function updateStats(array $stats) {
         if($this->stats) {
-            $this->stats->patch($stats);
+            $this->stats->update($stats);
         } else {
             $this->stats = new \CharlotteDunois\Luna\RemoteStats($this, $stats);
         }

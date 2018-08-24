@@ -76,6 +76,7 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
      * ```
      * array(
      *     'connector' => \React\Socket\Connector, (a specific connector instance to use for both the websocket and the HTTP client)
+     *     'failover.loadbalancer' => \CharlotteDunois\Luna\LoadBalancer, (a loadbalancer to use when failing over players)
      * )
      * ```
      *
@@ -98,24 +99,28 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
         $this->nodeListeners = new \CharlotteDunois\Collect\Collection();
         
         $this->on('disconnect', function (\CharlotteDunois\Luna\Node $node, int $code, string $reason, bool $expectedClose) {
-            $playing = 0;
-            
-            if($node->players->count() > 0) {
-                $playing = $node->players->filter(function (\CharlotteDunois\Luna\Player $player) {
-                    return ($player->track !== null);
-                })->count();
-            }
-            
-            if(!$expectedClose && $playing > 0) {
+            if(!$expectedClose && $node->players->count() > 0) {
+                $node->emit('debug', 'Failing over '.$node->players->count().' players to new nodes');
+                
+                $loadbalancer = $this->getOption('failover.loadbalancer');
+                
                 foreach($node->players as $player) {
                     $track = $player->track;
                     $position = $player->getLastPosition();
                     
                     $player->destroy();
-                    $newNode = $this->getIdealNode($node->region);
+                    
+                    if($loadbalancer instanceof \CharlotteDunois\Luna\LoadBalancer) {
+                        $newNode = $loadbalancer->getIdealNode($node->region);
+                    } else {
+                        $newNode = $this->getIdealNode($node->region);
+                    }
                     
                     $newPlayer = $newNode->sendVoiceUpdate($node->lastVoiceUpdate['guildId'], $node->lastVoiceUpdate['sessionId'], $node->lastVoiceUpdate['event']);
-                    $newPlayer->play($track, $position);
+                    
+                    if($track) {
+                        $newPlayer->play($track, $position);
+                    }
                     
                     $this->emit('failover', $node, $newPlayer);
                 }

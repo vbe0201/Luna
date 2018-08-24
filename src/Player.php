@@ -181,7 +181,7 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
     
     /**
      * Sets the paused state of the track.
-     * @param bool $paused
+     * @param bool  $paused
      * @return void
      * @throws \RuntimeException
      */
@@ -202,7 +202,7 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
     
     /**
      * Sets the volume of the player.
-     * @param bool $paused
+     * @param int  $volume
      * @return void
      * @throws \RuntimeException
      */
