@@ -43,10 +43,10 @@ interface ClientEvents {
     /**
      * Emitted when a failover happens. Only emitted on the client.
      * @param \CharlotteDunois\Luna\Node|null  $node
-     * @param \CharlotteDunois\Luna\Player     $newPlayer
+     * @param \CharlotteDunois\Luna\Player     $player
      * @return void
      */
-    function failover(\CharlotteDunois\Luna\Node $node, \CharlotteDunois\Luna\Player $newPlayer);
+    function failover(\CharlotteDunois\Luna\Node $node, \CharlotteDunois\Luna\Player $player);
     
     /**
      * Emitted when the node gets stats from the lavalink node.

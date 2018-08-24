@@ -108,21 +108,20 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
                     $track = $player->track;
                     $position = $player->getLastPosition();
                     
-                    $player->destroy();
-                    
                     if($loadbalancer instanceof \CharlotteDunois\Luna\LoadBalancer) {
                         $newNode = $loadbalancer->getIdealNode($node->region);
                     } else {
                         $newNode = $this->getIdealNode($node->region);
                     }
                     
-                    $newPlayer = $newNode->sendVoiceUpdate($node->lastVoiceUpdate['guildId'], $node->lastVoiceUpdate['sessionId'], $node->lastVoiceUpdate['event']);
+                    $newNode->_sendVoiceUpdate($node->lastVoiceUpdate['guildId'], $node->lastVoiceUpdate['sessionId'], $node->lastVoiceUpdate['event']);
+                    $player->_setNode($newNode);
                     
                     if($track) {
-                        $newPlayer->play($track, $position);
+                        $player->play($track, $position);
                     }
                     
-                    $this->emit('failover', $node, $newPlayer);
+                    $this->emit('failover', $node, $player);
                 }
             } else {
                 foreach($node->players as $player) {

@@ -279,12 +279,25 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
     }
     
     /**
+     * Sets the node. Used for failover.
+     * @param \CharlotteDunois\Luna\Node  $node
+     * @return void
+     * @internal
+     */
+    function _setNode(\CharlotteDunois\Luna\Node $node) {
+        $this->node->players->delete($this->guildID);
+        
+        $this->node = $node;
+        $this->node->players->set($this->guildID, $this);
+    }
+    
+    /**
      * Updates the state.
      * @param array  $state
      * @return void
      * @internal
      */
-    function updateState(array $state) {
+    function _updateState(array $state) {
         $this->updateTime = (int) ($state['time'] / 1000);
         $this->position  = (int) $state['position'];
     }

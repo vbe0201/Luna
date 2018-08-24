@@ -99,8 +99,8 @@ class YasminClient extends Client {
             }
         });
         
-        $this->on('failover', function (\CharlotteDunois\Luna\Node $node, \CharlotteDunois\Luna\Player $newPlayer) {
-            $this->connections->set($newPlayer->guildID, $newPlayer);
+        $this->on('failover', function (\CharlotteDunois\Luna\Node $node, \CharlotteDunois\Luna\Player $player) {
+            $this->connections->set($player->guildID, $player);
         });
         
         parent::__construct($client->getLoop(), $userID, $numShards, $options);

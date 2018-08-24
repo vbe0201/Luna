@@ -166,21 +166,7 @@ class Node implements \CharlotteDunois\Events\EventEmitterInterface, \JsonSerial
      * @throws \BadMethodCallException
      */
     function sendVoiceUpdate(int $guildID, string $sessionID, array $event) {
-        if(!$this->client) {
-            throw new \BadMethodCallException('Node has no client');
-        }
-        
-        $packet = array(
-            'op' => 'voiceUpdate',
-            'guildId' => ((string) $guildID),
-            'sessionId' => $sessionID,
-            'event' => $event
-        );
-        
-        $this->emit('debug', 'Sending voice update for guild '.$guildID);
-        
-        $this->link->send($packet);
-        $this->lastVoiceUpdate = $packet;
+        $this->_sendVoiceUpdate($guildID, $sessionID, $event);
         
         $player = new \CharlotteDunois\Luna\Player($this, $guildID);
         $this->players->set($guildID, $player);
@@ -248,7 +234,7 @@ class Node implements \CharlotteDunois\Events\EventEmitterInterface, \JsonSerial
      * @return \CharlotteDunois\Luna\RemoteStats
      * @internal
      */
-    function updateStats(array $stats) {
+    function _updateStats(array $stats) {
         if($this->stats) {
             $this->stats->update($stats);
         } else {
@@ -256,5 +242,32 @@ class Node implements \CharlotteDunois\Events\EventEmitterInterface, \JsonSerial
         }
         
         return $this->stats;
+    }
+    
+    /**
+     * Send a voice update event to the node.
+     * @param int     $guildID
+     * @param string  $sessionID
+     * @param array   $event
+     * @return void
+     * @throws \BadMethodCallException
+     * @internal
+     */
+    function _sendVoiceUpdate(int $guildID, string $sessionID, array $event) {
+        if(!$this->client) {
+            throw new \BadMethodCallException('Node has no client');
+        }
+        
+        $packet = array(
+            'op' => 'voiceUpdate',
+            'guildId' => ((string) $guildID),
+            'sessionId' => $sessionID,
+            'event' => $event
+        );
+        
+        $this->emit('debug', 'Sending voice update for guild '.$guildID);
+        
+        $this->link->send($packet);
+        $this->lastVoiceUpdate = $packet;
     }
 }

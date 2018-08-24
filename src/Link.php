@@ -299,10 +299,10 @@ class Link {
                     return;
                 }
                 
-                $player->updateState($data['state']);
+                $player->_updateState($data['state']);
             break;
             case 'stats':
-                $this->node->emit('stats', $this->node->updateStats($data));
+                $this->node->emit('stats', $this->node->_updateStats($data));
             break;
             case 'event':
                 $this->handleEvent($data);
