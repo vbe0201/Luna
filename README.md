@@ -1,6 +1,8 @@
 # Luna [![Build Status](https://scrutinizer-ci.com/g/CharlotteDunois/Luna/badges/build.png?b=master)](https://scrutinizer-ci.com/g/CharlotteDunois/Luna/build-status/master)
 
-Luna is a Lavalink client for PHP. For use with [Yasmin](https://github.com/CharlotteDunois/Yasmin), there is a `YasminClient` included, which does the heavy liftings.
+Luna is a Lavalink client for PHP.
+
+For use with [Yasmin](https://github.com/CharlotteDunois/Yasmin), there is a `YasminClient` included, which does the heavy liftings.
 
 This library is **only** for PHP 7.1 (and later).
 
