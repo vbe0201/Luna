@@ -287,7 +287,7 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
      * @return void
      * @internal
      */
-    function _setNode(\CharlotteDunois\Luna\Node $node) {
+    function setNode(\CharlotteDunois\Luna\Node $node) {
         $this->node->players->delete($this->guildID);
         
         $this->node = $node;
@@ -300,7 +300,7 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
      * @return void
      * @internal
      */
-    function _updateState(array $state) {
+    function updateState(array $state) {
         $this->updateTime = (float) ($state['time'] / 1000);
         $this->position  = (int) $state['position'];
     }

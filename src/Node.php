@@ -234,7 +234,7 @@ class Node implements \CharlotteDunois\Events\EventEmitterInterface, \JsonSerial
      * @return \CharlotteDunois\Luna\RemoteStats
      * @internal
      */
-    function _updateStats(array $stats) {
+    function updateStats(array $stats) {
         if($this->stats) {
             $this->stats->update($stats);
         } else {

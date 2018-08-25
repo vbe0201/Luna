@@ -105,35 +105,49 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
         $this->nodes = new \CharlotteDunois\Collect\Collection();
         $this->nodeListeners = new \CharlotteDunois\Collect\Collection();
         
-        $this->on('disconnect', function (\CharlotteDunois\Luna\Node $node, int $code, string $reason, bool $expectedClose) {
-            if(!$expectedClose && $node->players->count() > 0) {
+        $failover = function (\CharlotteDunois\Luna\Node $node, int $code, string $reason, bool $expectedClose, ?\CharlotteDunois\Collect\Collection $players = null) use (&$failover) {
+            $players = ($players ?: $node->players);
+            
+            if(!$expectedClose && $players->count() > 0) {
                 $node->emit('debug', 'Failing over '.$node->players->count().' player(s) to new nodes');
                 
-                foreach($node->players as $player) {
-                    $track = $player->track;
-                    $position = $player->getLastPosition();
+                try {
+                    foreach($node->players as $player) {
+                        $track = $player->track;
+                        $position = $player->getLastPosition();
+                        
+                        if($this->loadBalancer) {
+                            $newNode = $this->loadBalancer->getIdealNode($node->region);
+                        } else {
+                            $newNode = $this->getIdealNode($node->region);
+                        }
+                        
+                        $newNode->_sendVoiceUpdate($node->lastVoiceUpdate['guildId'], $node->lastVoiceUpdate['sessionId'], $node->lastVoiceUpdate['event']);
+                        $player->setNode($newNode);
+                        
+                        if($track) {
+                            $player->play($track, $position);
+                        }
+                        
+                        $this->emit('failover', $node, $player);
+                    }
+                } catch (\UnderflowException $e) {
+                    $node->emit('debug', 'Delaying failover by 10 seconds due to no nodes available');
                     
-                    if($this->loadBalancer) {
-                        $newNode = $this->loadBalancer->getIdealNode($node->region);
-                    } else {
-                        $newNode = $this->getIdealNode($node->region);
+                    $players = new \CharlotteDunois\Collect\Collection();
+                    
+                    foreach($node->players as $key => $player) {
+                        $players->set($key, (clone $player));
                     }
                     
-                    $newNode->_sendVoiceUpdate($node->lastVoiceUpdate['guildId'], $node->lastVoiceUpdate['sessionId'], $node->lastVoiceUpdate['event']);
-                    $player->_setNode($newNode);
-                    
-                    if($track) {
-                        $player->play($track, $position);
-                    }
-                    
-                    $this->emit('failover', $node, $player);
-                }
-            } else {
-                foreach($node->players as $player) {
-                    $player->destroy();
+                    $this->loop->addTimer(10, function () use ($node, $code, $reason, $expectedClose, $players) {
+                        $failover($node, $code, $reason, $expectedClose, $players);
+                    });
                 }
             }
-        });
+        };
+        
+        $this->on('disconnect', $failover);
     }
     
     /**
@@ -271,7 +285,7 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
         
         if(!$node) {
             $node = $this->nodes->first(function (\CharlotteDunois\Luna\Node $node) {
-                return ($node->link->status >= \CharlotteDunois\Luna\Link::STATUS_CONNECTED);
+                return ($node->link->status >= \CharlotteDunois\Luna\Link::STATUS_CONNECTING);
             });
             
             if(!$node) {

@@ -148,6 +148,8 @@ class Link {
         
         if($this->ws) {
             return \React\Promise\resolve();
+        } elseif($this->connectPromise !== null) {
+            return $this->connectPromise;
         }
         
         if($this->status < self::STATUS_CONNECTING || $this->status > self::STATUS_RECONNECTING) {
@@ -333,10 +335,10 @@ class Link {
                     return;
                 }
                 
-                $player->_updateState($data['state']);
+                $player->updateState($data['state']);
             break;
             case 'stats':
-                $this->node->emit('stats', $this->node->_updateStats($data));
+                $this->node->emit('stats', $this->node->updateStats($data));
             break;
             case 'event':
                 $this->handleEvent($data);
