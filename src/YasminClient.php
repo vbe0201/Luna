@@ -114,6 +114,24 @@ class YasminClient extends Client {
         $this->yasminListeners['guildDelete'] = $guildDelete;
         $this->client->on('guildDelete', $guildDelete);
         
+        if(\version_compare(\CharlotteDunois\Yasmin\Client::VERSION, '0.4.3-dev') >= 0) {
+            $vsuName = 'voiceServerUpdate';
+        } else {
+            $vsuName = 'self.voiceServerUpdate';
+        }
+        
+        $voiceServerUpdate = function (array $data) {
+            $guild = $this->client->guilds->get(($data['guild_id'] ?? null));
+            
+            if($guild instanceof \CharlotteDunois\Yasmin\Models\Guild && $this->connections->has($guild->id)) {
+                $node = $this->connections->get($guild->id)->node;
+                $node->_sendVoiceUpdate(((int) $node->lastVoiceUpdate['guildId']), $node->lastVoiceUpdate['sessionId'], $data);
+            }
+        };
+        
+        $this->yasminListeners[$vsuName] = $voiceServerUpdate;
+        $this->client->on($vsuName, $voiceServerUpdate);
+        
         $this->on('failover', function (\CharlotteDunois\Luna\Node $node, \CharlotteDunois\Luna\Player $player) {
             $this->connections->set($player->guildID, $player);
         });
