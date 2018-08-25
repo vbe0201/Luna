@@ -127,11 +127,11 @@ class YasminClient extends Client {
                 $node = $this->connections->get($guild->id)->node;
                 
                 foreach($node->players as $guildID => $player) {
-                    $node->_sendVoiceUpdate($guildID, $player->voiceServerUpdate['sessionID'], $player->voiceServerUpdate['event']);
+                    $node->_sendVoiceUpdate($guildID, $player->voiceServerUpdate['sessionID'], $data);
                     
                     $player->setVoiceServerUpdate(array(
-                        'sessionID' => $sessionID,
-                        'event' => $event
+                        'sessionID' => $player->voiceServerUpdate['sessionID'],
+                        'event' => $data
                     ));
                 }
             }
