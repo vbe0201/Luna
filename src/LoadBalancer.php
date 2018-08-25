@@ -74,6 +74,16 @@ class LoadBalancer {
         $nodeStats = $this->calculateStats($this->client->nodes);
         $node = $this->selectNode($this->client->nodes, $nodeStats, $region);
         
+        if(!$node) {
+            $node = $nodes->first(function (\CharlotteDunois\Luna\Node $node) {
+                return ($node->link->status >= \CharlotteDunois\Luna\Link::STATUS_CONNECTED);
+            });
+            
+            if(!$node) {
+                throw new \UnderflowException('No node available');
+            }
+        }
+        
         if($autoConnect && $node->link->status === \CharlotteDunois\Luna\Link::STATUS_IDLE) {
             $node->link->connect();
         }
@@ -126,7 +136,7 @@ class LoadBalancer {
      * @param \CharlotteDunois\Collect\Collection  $nodes
      * @param array                                $nodeStats
      * @param string                               $region
-     * @return \CharlotteDunois\Luna\Node
+     * @return \CharlotteDunois\Luna\Node|null
      * @throws \UnderflowException
      */
     protected function selectNode(\CharlotteDunois\Collect\Collection $nodes, array $nodeStats, string $region) {
@@ -151,16 +161,6 @@ class LoadBalancer {
         
         if($low !== null) {
             $node = $low['node'];
-        }
-        
-        if(!$node) {
-            $node = $nodes->first(function (\CharlotteDunois\Luna\Node $node) {
-                return ($node->link->status >= \CharlotteDunois\Luna\Link::STATUS_CONNECTED);
-            });
-            
-            if(!$node) {
-                throw new \UnderflowException('No node available');
-            }
         }
         
         return $node;
