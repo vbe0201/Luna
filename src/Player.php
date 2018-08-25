@@ -137,8 +137,10 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
         $this->node->link->send($packet);
         $this->emit('debug', 'Started playing track "'.($track->author ? $track->author.' - ' : '').$track->title.'"');
         
-        $this->updateTime = \microtime(true);
+        $this->paused = false;
+        $this->position = $startTime;
         $this->track = $track;
+        $this->updateTime = \microtime(true);
         
         $this->emit('start', $track);
     }
@@ -158,6 +160,8 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
             $this->node->link->send($packet);
             $this->emit('debug', 'Stopped music playback');
             
+            $this->paused = false;
+            $this->position = 0;
             $this->track = null;
             $this->updateTime = \microtime(true);
             
