@@ -62,87 +62,7 @@ class YasminClient extends Client {
             });
         }
         
-        $disconnect = function () {
-            $this->emit('debug', null, 'Yasmin got disconnected from Discord, destroying all players...');
-            
-            foreach($this->nodes as $node) {
-                foreach($node->players as $guildID => $player) {
-                    $this->scheduledVoiceStates[] = $guildID;
-                    $player->destroy();
-                }
-            }
-            
-            $this->connections->clear();
-        };
-        
-        $this->yasminListeners['disconnect'] = $disconnect;
-        $this->client->on('disconnect', $disconnect);
-        
-        $reconnect = function () {
-            while($guildID = \array_shift($this->scheduledVoiceStates)) {
-                $guildID = (string) $guildID;
-                
-                if(!$this->client->guilds->has($guildID)) {
-                    continue;
-                }
-                
-                $this->emit('debug', null, 'Yasmin reconnected to Discord, sending voice state update to disconnect for guild '.$guildID);
-                $member = $this->client->guilds->get($guildID)->me;
-                
-                $this->client->wsmanager()->send(array(
-                    'op' => \CharlotteDunois\Yasmin\WebSocket\WSManager::OPCODES['VOICE_STATE_UPDATE'],
-                    'd' => array(
-                        'guild_id' => $guildID,
-                        'channel_id' => null,
-                        'self_deaf' => $member->selfDeaf,
-                        'self_mute' => $member->selfMute
-                    )
-                ));
-            }
-        };
-        
-        $this->yasminListeners['reconnect'] = $reconnect;
-        $this->client->on('reconnect', $reconnect);
-        
-        $guildDelete = function (\CharlotteDunois\Yasmin\Models\Guild $guild) {
-            if($this->connections->has($guild->id)) {
-                $this->connections->get($guild->id)->destroy();
-                $this->connections->delete($guild->id);
-            }
-        };
-        
-        $this->yasminListeners['guildDelete'] = $guildDelete;
-        $this->client->on('guildDelete', $guildDelete);
-        
-        if(\version_compare(\CharlotteDunois\Yasmin\Client::VERSION, '0.4.3-dev') >= 0) {
-            $vsuName = 'voiceServerUpdate';
-        } else {
-            $vsuName = 'self.voiceServerUpdate';
-        }
-        
-        $voiceServerUpdate = function (array $data) {
-            $guild = $this->client->guilds->get(($data['guild_id'] ?? null));
-            
-            if($guild instanceof \CharlotteDunois\Yasmin\Models\Guild && $this->connections->has($guild->id)) {
-                $node = $this->connections->get($guild->id)->node;
-                
-                foreach($node->players as $guildID => $player) {
-                    $node->_sendVoiceUpdate($guildID, $player->voiceServerUpdate['sessionID'], $data);
-                    
-                    $player->setVoiceServerUpdate(array(
-                        'sessionID' => $player->voiceServerUpdate['sessionID'],
-                        'event' => $data
-                    ));
-                }
-            }
-        };
-        
-        $this->yasminListeners[$vsuName] = $voiceServerUpdate;
-        $this->client->on($vsuName, $voiceServerUpdate);
-        
-        $this->on('failover', function (\CharlotteDunois\Luna\Node $node, \CharlotteDunois\Luna\Player $player) {
-            $this->connections->set($player->guildID, $player);
-        });
+        $this->addListeners();
         
         parent::__construct($client->getLoop(), $userID, $numShards, $options);
     }
@@ -188,19 +108,7 @@ class YasminClient extends Client {
             return \React\Promise\resolve($this->connections->get($channel->guild->id));
         }
         
-        $perms = $channel->permissionsFor($channel->guild->me);
-        
-        if(!$perms->has('CONNECT') && !$perms->has('MOVE_MEMBERS')) {
-            throw new \LogicException('Insufficient permissions to join the voice channel');
-        }
-        
-        if($channel->members->count() >= $channel->userLimit && !$perms->has('MOVE_MEMBERS')) {
-            throw new \LogicException('Voice channel user limit reached, unable to join the voice channel');
-        }
-        
-        if(!$perms->has('SPEAK')) {
-            throw new \LogicException('We can not speak in the voice channel, joining makes no sense');
-        }
+        $this->checkPermissions($channel);
         
         if(!$node) {
             $region = \str_replace('vip-', '', $channel->guild->region);
@@ -342,5 +250,114 @@ class YasminClient extends Client {
     function createHTTPRequest(string $method, string $url, array $headers, string $body = null) {
         $request = new \GuzzleHttp\Psr7\Request($method, $url, $headers, $body);
         return \CharlotteDunois\Yasmin\Utils\URLHelpers::makeRequest($request);
+    }
+    
+    /**
+     * Checks the necessary permissions for the channel.
+     * @param \CharlotteDunois\Yasmin\Models\VoiceChannel  $channel
+     * @return void
+     */
+    protected function checkPermissions(\CharlotteDunois\Yasmin\Models\VoiceChannel $channel) {
+        $perms = $channel->permissionsFor($channel->guild->me);
+        
+        if(!$perms->has('CONNECT') && !$perms->has('MOVE_MEMBERS')) {
+            throw new \LogicException('Insufficient permissions to join the voice channel');
+        }
+        
+        if($channel->members->count() >= $channel->userLimit && !$perms->has('MOVE_MEMBERS')) {
+            throw new \LogicException('Voice channel user limit reached, unable to join the voice channel');
+        }
+        
+        if(!$perms->has('SPEAK')) {
+            throw new \LogicException('We can not speak in the voice channel, joining makes no sense');
+        }
+    }
+    
+    /**
+     * Adds listeners.
+     * @return void
+     */
+    protected function addListeners() {
+        $disconnect = function () {
+            $this->emit('debug', null, 'Yasmin got disconnected from Discord, destroying all players...');
+            
+            foreach($this->nodes as $node) {
+                foreach($node->players as $guildID => $player) {
+                    $this->scheduledVoiceStates[] = $guildID;
+                    $player->destroy();
+                }
+            }
+            
+            $this->connections->clear();
+        };
+        
+        $this->yasminListeners['disconnect'] = $disconnect;
+        $this->client->on('disconnect', $disconnect);
+        
+        $reconnect = function () {
+            while($guildID = \array_shift($this->scheduledVoiceStates)) {
+                $guildID = (string) $guildID;
+                
+                if(!$this->client->guilds->has($guildID)) {
+                    continue;
+                }
+                
+                $this->emit('debug', null, 'Yasmin reconnected to Discord, sending voice state update to disconnect for guild '.$guildID);
+                $member = $this->client->guilds->get($guildID)->me;
+                
+                $this->client->wsmanager()->send(array(
+                    'op' => \CharlotteDunois\Yasmin\WebSocket\WSManager::OPCODES['VOICE_STATE_UPDATE'],
+                    'd' => array(
+                        'guild_id' => $guildID,
+                        'channel_id' => null,
+                        'self_deaf' => $member->selfDeaf,
+                        'self_mute' => $member->selfMute
+                    )
+                ));
+            }
+        };
+        
+        $this->yasminListeners['reconnect'] = $reconnect;
+        $this->client->on('reconnect', $reconnect);
+        
+        $guildDelete = function (\CharlotteDunois\Yasmin\Models\Guild $guild) {
+            if($this->connections->has($guild->id)) {
+                $this->connections->get($guild->id)->destroy();
+                $this->connections->delete($guild->id);
+            }
+        };
+        
+        $this->yasminListeners['guildDelete'] = $guildDelete;
+        $this->client->on('guildDelete', $guildDelete);
+        
+        if(\version_compare(\CharlotteDunois\Yasmin\Client::VERSION, '0.4.3-dev') >= 0) {
+            $vsuName = 'voiceServerUpdate';
+        } else {
+            $vsuName = 'self.voiceServerUpdate';
+        }
+        
+        $voiceServerUpdate = function (array $data) {
+            $guild = $this->client->guilds->get(($data['guild_id'] ?? null));
+            
+            if($guild instanceof \CharlotteDunois\Yasmin\Models\Guild && $this->connections->has($guild->id)) {
+                $node = $this->connections->get($guild->id)->node;
+                
+                foreach($node->players as $guildID => $player) {
+                    $node->_sendVoiceUpdate($guildID, $player->voiceServerUpdate['sessionID'], $data);
+                    
+                    $player->setVoiceServerUpdate(array(
+                        'sessionID' => $player->voiceServerUpdate['sessionID'],
+                        'event' => $data
+                    ));
+                }
+            }
+        };
+        
+        $this->yasminListeners[$vsuName] = $voiceServerUpdate;
+        $this->client->on($vsuName, $voiceServerUpdate);
+        
+        $this->on('failover', function (\CharlotteDunois\Luna\Node $node, \CharlotteDunois\Luna\Player $player) {
+            $this->connections->set($player->guildID, $player);
+        });
     }
 }

@@ -72,39 +72,7 @@ class LoadBalancer {
         }
         
         $nodeStats = $this->calculateStats($this->client->nodes);
-        
-        $node = null;
-        $low = null;
-        
-        if(!empty($nodeStats[$region])) {
-            foreach($nodeStats[$region] as $stat) {
-                if($low === null || $stat['penalty'] < $low['penalty']) {
-                    $low = $stat;
-                }
-            }
-        } else {
-            foreach($nodeStats as $region) {
-                foreach($region as $stat) {
-                    if($low === null || $stat['penalty'] < $low['penalty']) {
-                        $low = $stat;
-                    }
-                }
-            }
-        }
-        
-        if($low !== null) {
-            $node = $low['node'];
-        }
-        
-        if(!$node) {
-            $node = $this->client->nodes->first(function (\CharlotteDunois\Luna\Node $node) {
-                return ($node->link->status >= \CharlotteDunois\Luna\Link::STATUS_CONNECTED);
-            });
-            
-            if(!$node) {
-                throw new \UnderflowException('No node available');
-            }
-        }
+        $node = $this->selectNode($this->client->nodes, $nodeStats);
         
         if($autoConnect && $node->link->status === \CharlotteDunois\Luna\Link::STATUS_IDLE) {
             $node->link->connect();
@@ -151,5 +119,49 @@ class LoadBalancer {
         }
         
         return $nodeStats;
+    }
+    
+    /**
+     * Selects a node based on the stats.
+     * @param \CharlotteDunois\Collect\Collection  $nodes
+     * @param array                                $nodeStats
+     * @return \CharlotteDunois\Luna\Node
+     * @throws \UnderflowException
+     */
+    protected function selectNode(\CharlotteDunois\Collect\Collection $nodes, array $nodeStats) {
+        $node = null;
+        $low = null;
+        
+        if(!empty($nodeStats[$region])) {
+            foreach($nodeStats[$region] as $stat) {
+                if($low === null || $stat['penalty'] < $low['penalty']) {
+                    $low = $stat;
+                }
+            }
+        } else {
+            foreach($nodeStats as $region) {
+                foreach($region as $stat) {
+                    if($low === null || $stat['penalty'] < $low['penalty']) {
+                        $low = $stat;
+                    }
+                }
+            }
+        }
+        
+        if($low !== null) {
+            $node = $low['node'];
+        }
+        
+        if(!$node) {
+            $node = $nodes->first(function (\CharlotteDunois\Luna\Node $node) {
+                return ($node->link->status >= \CharlotteDunois\Luna\Link::STATUS_CONNECTED);
+            });
+            
+            if(!$node) {
+                throw new \UnderflowException('No node available');
+            }
+        }
+        
+        return $node;
     }
 }
