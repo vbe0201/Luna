@@ -200,6 +200,16 @@
             </div>
                     <div class="row">
                 <div class="col-md-2 type">
+                    <a href="../../CharlotteDunois/Luna/Player.html"><abbr title="CharlotteDunois\Luna\Player">Player</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_createPlayer">createPlayer</a>(int $guildID, string $sessionID, array $event)
+        
+                                            <p>Send a voice update event to the node, creates a new player and adds it to the collection.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
                     <abbr title="React\Promise\ExtendedPromiseInterface">ExtendedPromiseInterface</abbr>
                 </div>
                 <div class="col-md-8 type">
@@ -210,12 +220,12 @@
             </div>
                     <div class="row">
                 <div class="col-md-2 type">
-                    <a href="../../CharlotteDunois/Luna/Player.html"><abbr title="CharlotteDunois\Luna\Player">Player</abbr></a>
+                    void
                 </div>
                 <div class="col-md-8 type">
                     <a href="#method_sendVoiceUpdate">sendVoiceUpdate</a>(int $guildID, string $sessionID, array $event)
         
-                                            <p>Send a voice update event to the node, creates a new player and adds it to the collection.</p>                </div>
+                                            <p>Send a voice update event to the node.</p>                </div>
                 <div class="col-md-2"></div>
             </div>
                     <div class="row">
@@ -288,8 +298,69 @@
 
             </div>
                     <div class="method-item">
+                    <h3 id="method_createPlayer">
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Node.php#L161">line 161</a></div>
+        <code>                    <a href="../../CharlotteDunois/Luna/Player.html"><abbr title="CharlotteDunois\Luna\Player">Player</abbr></a>
+    <strong>createPlayer</strong>(int $guildID, string $sessionID, array $event)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Send a voice update event to the node, creates a new player and adds it to the collection.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>int</td>
+                <td>$guildID</td>
+                <td>The guild ID.</td>
+            </tr>
+                    <tr>
+                <td>string</td>
+                <td>$sessionID</td>
+                <td>The voice session ID.</td>
+            </tr>
+                    <tr>
+                <td>array</td>
+                <td>$event</td>
+                <td>The voice server update event from Discord.</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../CharlotteDunois/Luna/Player.html"><abbr title="CharlotteDunois\Luna\Player">Player</abbr></a></td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+                            <h4>Exceptions</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="https://secure.php.net/BadMethodCallException" target="_blank">BadMethodCallException</a></td>
+                <td></td>
+            </tr>
+            </table>
+
+            
+                        
+                        
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
                     <h3 id="method_resolveTrack">
-        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Node.php#L184">line 184</a></div>
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Node.php#L216">line 216</a></div>
         <code>                    <abbr title="React\Promise\ExtendedPromiseInterface">ExtendedPromiseInterface</abbr>
     <strong>resolveTrack</strong>(string $search)
         </code>
@@ -365,8 +436,8 @@
             </div>
                     <div class="method-item">
                     <h3 id="method_sendVoiceUpdate">
-        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Node.php#L161">line 161</a></div>
-        <code>                    <a href="../../CharlotteDunois/Luna/Player.html"><abbr title="CharlotteDunois\Luna\Player">Player</abbr></a>
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Node.php#L182">line 182</a></div>
+        <code>                    void
     <strong>sendVoiceUpdate</strong>(int $guildID, string $sessionID, array $event)
         </code>
     </h3>
@@ -375,7 +446,7 @@
     
 
                     <div class="method-description">
-                                    <p>Send a voice update event to the node, creates a new player and adds it to the collection.</p>                                                </div>
+                                    <p>Send a voice update event to the node.</p>                                                </div>
                 <div class="tags">
                             <h4>Parameters</h4>
 
@@ -383,17 +454,17 @@
                     <tr>
                 <td>int</td>
                 <td>$guildID</td>
-                <td></td>
+                <td>The guild ID.</td>
             </tr>
                     <tr>
                 <td>string</td>
                 <td>$sessionID</td>
-                <td></td>
+                <td>The voice session ID.</td>
             </tr>
                     <tr>
                 <td>array</td>
                 <td>$event</td>
-                <td></td>
+                <td>The voice server update event from Discord.</td>
             </tr>
             </table>
 
@@ -402,7 +473,7 @@
 
                     <table class="table table-condensed">
         <tr>
-            <td><a href="../../CharlotteDunois/Luna/Player.html"><abbr title="CharlotteDunois\Luna\Player">Player</abbr></a></td>
+            <td>void</td>
             <td></td>
         </tr>
     </table>
