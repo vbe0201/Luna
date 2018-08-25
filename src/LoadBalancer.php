@@ -21,14 +21,6 @@ class LoadBalancer {
     protected $client;
     
     /**
-     * Constructor.
-     * @param \CharlotteDunois\Luna\Client  $client
-     */
-    function __construct(\CharlotteDunois\Luna\Client $client) {
-        $this->client = $client;
-    }
-    
-    /**
      * @return bool
      * @throws \RuntimeException
      * @internal
@@ -56,6 +48,15 @@ class LoadBalancer {
         }
         
         throw new \RuntimeException('Undefined property: '.\get_class($this).'::$'.$name);
+    }
+    
+    /**
+     * Sets the client. Invoked by `Client::setLoadBalancer`.
+     * @param \CharlotteDunois\Luna\Client  $client
+     * @return void
+     */
+    function setClient(\CharlotteDunois\Luna\Client $client) {
+        $this->client = $client;
     }
     
     /**

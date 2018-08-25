@@ -13,9 +13,10 @@ namespace CharlotteDunois\Luna;
  * The generic Lavalink client. It does absolutely nothing for you on the Discord side.
  * The lavalink client implements automatic failover. That means, if a lavalink node unexpectedly disconnects,
  * the client will automatically look for a new node and starts playing the track on it.
- * @property \CharlotteDunois\Collect\Collection  $nodes      A collection of nodes, mapped by name.
- * @property int                                  $numShards  The amount of shards the bot has.
- * @property int                                  $userID     The Discord User ID.
+ * @property \CharlotteDunois\Luna\LoadBalancer|null  $loadBalancer The Load Balancer.
+ * @property \CharlotteDunois\Collect\Collection      $nodes        A collection of nodes, mapped by name.
+ * @property int                                      $numShards    The amount of shards the bot has.
+ * @property int                                      $userID       The Discord User ID.
  */
 class Client implements \CharlotteDunois\Events\EventEmitterInterface {
     use \CharlotteDunois\Events\EventEmitterTrait;
@@ -37,6 +38,12 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
      * @var \Clue\React\Buzz\Browser|null
      */
     protected $browser;
+    
+    /**
+     * The Load Balancer.
+     * @var \CharlotteDunois\Luna\LoadBalancer|null
+     */
+    protected $loadBalancer;
     
     /**
      * The Discord User ID.
@@ -76,7 +83,7 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
      * ```
      * array(
      *     'connector' => \React\Socket\Connector, (a specific connector instance to use for both the websocket and the HTTP client)
-     *     'loadbalancer' => \CharlotteDunois\Luna\LoadBalancer, (a loadbalancer to use)
+     *     'node.maxConnectAttempts' => int, (maximum attempts at (re)connecting to a node, defaults to 0 (unlimited))
      * )
      * ```
      *
@@ -102,14 +109,12 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
             if(!$expectedClose && $node->players->count() > 0) {
                 $node->emit('debug', 'Failing over '.$node->players->count().' player(s) to new nodes');
                 
-                $loadbalancer = $this->getOption('loadbalancer');
-                
                 foreach($node->players as $player) {
                     $track = $player->track;
                     $position = $player->getLastPosition();
                     
-                    if($loadbalancer instanceof \CharlotteDunois\Luna\LoadBalancer) {
-                        $newNode = $loadbalancer->getIdealNode($node->region);
+                    if($this->loadBalancer) {
+                        $newNode = $this->loadBalancer->getIdealNode($node->region);
                     } else {
                         $newNode = $this->getIdealNode($node->region);
                     }
@@ -184,6 +189,16 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
     }
     
     /**
+     * Sets a loadbalancer to use.
+     * @param \CharlotteDunois\Luna\LoadBalancer  $loadBalancer
+     * @return void
+     */
+    function setLoadBalancer(\CharlotteDunois\Luna\LoadBalancer $loadBalancer) {
+        $this->loadbalancer = $loadBalancer;
+        $this->loadbalancer->setClient($this);
+    }
+    
+    /**
      * Adds a node.
      * @param \CharlotteDunois\Luna\Node  $node
      * @return $this
@@ -239,7 +254,7 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
     }
     
     /**
-     * Get an ideal node for the region. If there is no ideal node, this will return the first node in the list.
+     * Get an ideal node for the region solely based on region. If there is no ideal node, this will return the first connected node in the list.
      * @param string  $region
      * @param bool    $autoConnect  Automatically make the node connect if it is disconnected (idling).
      * @return \CharlotteDunois\Luna\Node

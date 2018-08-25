@@ -58,8 +58,8 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
     protected $volume = 100;
     
     /**
-     * The timestamp of the last update.
-     * @var int
+     * The timestamp of the last update in milliseconds.
+     * @var float
      */
     protected $updateTime = -1;
     
@@ -130,7 +130,7 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
         $this->node->link->send($packet);
         $this->emit('debug', 'Started playing track "'.($track->author ? $track->author.' - ' : '').$track->title.'"');
         
-        $this->updateTime = \time();
+        $this->updateTime = \microtime(true);
         $this->track = $track;
         
         $this->emit('start', $track);
@@ -151,8 +151,8 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
             $this->node->link->send($packet);
             $this->emit('debug', 'Stopped music playback');
             
-            $this->updateTime = \time();
             $this->track = null;
+            $this->updateTime = \microtime(true);
             
             $this->emit('stop');
         }
@@ -191,7 +191,7 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
      * @return int
      */
     function getLastPosition() {
-        $timeDiff = (\time() - $this->updateTime) * 1000;
+        $timeDiff = (int) ((\microtime(true) - $this->updateTime) * 1000);
         return \min(($this->position + $timeDiff), $this->track->duration);
     }
     
@@ -219,6 +219,9 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
                 
                 $this->node->link->send($packet);
                 $this->emit('debug', 'Seeked to position '.$pos.'ms');
+                
+                $this->position = $pos;
+                $this->updateTime = \microtime(true);
             }
         }
     }
@@ -298,7 +301,7 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
      * @internal
      */
     function _updateState(array $state) {
-        $this->updateTime = (int) ($state['time'] / 1000);
+        $this->updateTime = (float) ($state['time'] / 1000);
         $this->position  = (int) $state['position'];
     }
 }

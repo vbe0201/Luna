@@ -152,13 +152,11 @@ class YasminClient extends Client {
         }
         
         if(!$node) {
-            $loadbalancer = $this->getOption('loadbalancer');
-            
             $region = \str_replace('vip-', '', $channel->guild->region);
             $region = \substr($region, 0, (\strpos($region, '-') ?: \strlen($region)));
             
-            if($loadbalancer instanceof \CharlotteDunois\Luna\LoadBalancer) {
-                $node = $loadbalancer->getIdealNode($region);
+            if($this->loadBalancer) {
+                $node = $this->loadBalancer->getIdealNode($region);
             } else {
                 $node = $this->getIdealNode($region);
             }

@@ -69,6 +69,24 @@ class Link {
     protected $ws;
     
     /**
+     * Attempts at connecting.
+     * @var int
+     */
+    protected $connectAttempts = 0;
+    
+    /**
+     * The timer to acknowledge a connect as successful.
+     * @var \React\EventLoop\TimerInterface|\React\EventLoop\Timer\TimerInterface|null
+     */
+    protected $connectTimer;
+    
+    /**
+     * The promise of the connector.
+     * @var \React\Promise\ExtendedPromiseInterface|null
+     */
+    protected $connectPromise;
+    
+    /**
      * Whether we expected the ws to close.
      * @var bool
      */
@@ -79,12 +97,6 @@ class Link {
      * @var int
      */
     protected $status = self::STATUS_IDLE;
-    
-    /**
-     * The promise of the connector.
-     * @var \React\Promise\ExtendedPromiseInterface|null
-     */
-    protected $connectPromise;
     
     /**
      * Constructor.
@@ -143,6 +155,7 @@ class Link {
         }
         
         $this->node->emit('debug', 'Connecting to node');
+        $this->connectAttempts++;
         
         $connector = $this->connector;
         $this->connectPromise = $connector($this->node->wsHost, array(), array(
@@ -156,6 +169,14 @@ class Link {
             
             $this->ws = &$conn;
             $this->status = self::STATUS_CONNECTED;
+            
+            $this->connectTimer = $this->client->getLoop()->addTimer(10, function () {
+                if($this->status === self::STATUS_CONNECTED) {
+                    $this->connectAttempts = 0;
+                }
+                
+                $this->connectTimer = null;
+            });
             
             $this->ws->on('message', function (\Ratchet\RFC6455\Messaging\Message $message) {
                 $message = $message->getPayload();
@@ -173,6 +194,11 @@ class Link {
             $this->ws->on('close', function (int $code, string $reason) {
                 $this->ws = null;
                 $this->connectPromise = null;
+                
+                if($this->connectTimer) {
+                    $this->client->getLoop()->cancelTimer($this->connectTimer);
+                    $this->connectTimer = null;
+                }
                 
                 if($this->status <= self::STATUS_CONNECTED) {
                     $this->status = self::STATUS_DISCONNECTED;
@@ -200,6 +226,14 @@ class Link {
             
             if($this->ws) {
                 $this->ws->close(1006);
+            }
+            
+            $maxAttempts = $this->client->getOption('node.maxConnectAttempts');
+            if($maxAttempts > 0 && $maxAttempts <= $this->connectAttempts) {
+                $this->status = self::STATUS_IDLE;
+                
+                $this->node->emit('debug', 'Reached maximum connect attempts');
+                return;
             }
             
             $this->status = self::STATUS_DISCONNECTED;
