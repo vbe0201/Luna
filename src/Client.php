@@ -105,14 +105,14 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
         $this->nodes = new \CharlotteDunois\Collect\Collection();
         $this->nodeListeners = new \CharlotteDunois\Collect\Collection();
         
-        $failover = function (\CharlotteDunois\Luna\Node $node, int $code, string $reason, bool $expectedClose, ?\CharlotteDunois\Collect\Collection $players = null) use (&$failover) {
-            $players = ($players ?: $node->players);
+        $failover = function (\CharlotteDunois\Luna\Node $node, int $code, string $reason, bool $expectedClose, ?\CharlotteDunois\Collect\Collection $nplayers = null) use (&$failover) {
+            $players = ($nplayers ?: $node->players);
             
             if(!$expectedClose && $players->count() > 0) {
-                $node->emit('debug', 'Failing over '.$node->players->count().' player(s) to new nodes');
+                $node->emit('debug', 'Failing over '.$players->count().' player(s) to new nodes');
                 
                 try {
-                    foreach($node->players as $player) {
+                    foreach($players as $player) {
                         $track = $player->track;
                         $position = $player->getLastPosition();
                         
@@ -134,14 +134,16 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
                 } catch (\UnderflowException $e) {
                     $node->emit('debug', 'Delaying failover by 10 seconds due to no nodes available');
                     
-                    $players = new \CharlotteDunois\Collect\Collection();
-                    
-                    foreach($node->players as $key => $player) {
-                        $players->set($key, (clone $player));
+                    if($nplayers === null) {
+                        $nplayers = new \CharlotteDunois\Collect\Collection();
+                        
+                        foreach($players as $key => $player) {
+                            $nplayers->set($key, (clone $player));
+                        }
                     }
                     
-                    $this->loop->addTimer(10, function () use ($node, $code, $reason, $expectedClose, $players) {
-                        $failover($node, $code, $reason, $expectedClose, $players);
+                    $this->loop->addTimer(10, function () use ($node, $code, $reason, $expectedClose, $nplayers) {
+                        $failover($node, $code, $reason, $expectedClose, $nplayers);
                     });
                 }
             }
