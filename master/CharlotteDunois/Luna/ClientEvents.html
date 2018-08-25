@@ -88,7 +88,7 @@
     
 
             <div class="description">
-            <p>This interface documents all events emitted on the client. Events emitted on the nodes (and added to the client) are re-emitted on the client (as such documented here).</p>            <p>Player events are however <strong>not</strong> emitted on the client.</p>                    </div>
+            <p>This interface documents all events emitted on the client. Events emitted on the nodes (and added to the client) are re-emitted on the client, with the additional argument <code>$node</code>, (as such documented here).</p>            <p>Player events are however <strong>not</strong> emitted on the client.</p>                    </div>
     
     
     
@@ -134,6 +134,16 @@
                     <a href="#method_failover">failover</a>(<a href="../../CharlotteDunois/Luna/Node.html"><abbr title="CharlotteDunois\Luna\Node">Node</abbr></a> $node, <a href="../../CharlotteDunois/Luna/Player.html"><abbr title="CharlotteDunois\Luna\Player">Player</abbr></a> $player)
         
                                             <p>Emitted when a failover happens. Only emitted on the client.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    void
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_newPlayer">newPlayer</a>(<a href="../../CharlotteDunois/Luna/Node.html"><abbr title="CharlotteDunois\Luna\Node">Node</abbr></a> $node, <a href="../../CharlotteDunois/Luna/Player.html"><abbr title="CharlotteDunois\Luna\Player">Player</abbr></a> $player)
+        
+                                            <p>Emitted when a new player gets created.</p>                </div>
                 <div class="col-md-2"></div>
             </div>
                     <div class="row">
@@ -351,8 +361,55 @@
 
             </div>
                     <div class="method-item">
-                    <h3 id="method_stats">
+                    <h3 id="method_newPlayer">
         <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/ClientEvents.php#L57">line 57</a></div>
+        <code>                    void
+    <strong>newPlayer</strong>(<a href="../../CharlotteDunois/Luna/Node.html"><abbr title="CharlotteDunois\Luna\Node">Node</abbr></a> $node, <a href="../../CharlotteDunois/Luna/Player.html"><abbr title="CharlotteDunois\Luna\Player">Player</abbr></a> $player)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Emitted when a new player gets created.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="../../CharlotteDunois/Luna/Node.html"><abbr title="CharlotteDunois\Luna\Node">Node</abbr></a></td>
+                <td>$node</td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td><a href="../../CharlotteDunois/Luna/Player.html"><abbr title="CharlotteDunois\Luna\Player">Player</abbr></a></td>
+                <td>$player</td>
+                <td></td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>void</td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+            
+                        
+                        
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_stats">
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/ClientEvents.php#L65">line 65</a></div>
         <code>                    void
     <strong>stats</strong>(<a href="../../CharlotteDunois/Luna/Node.html"><abbr title="CharlotteDunois\Luna\Node">Node</abbr></a> $node, <a href="../../CharlotteDunois/Luna/RemoteStats.html"><abbr title="CharlotteDunois\Luna\RemoteStats">RemoteStats</abbr></a> $stats)
         </code>

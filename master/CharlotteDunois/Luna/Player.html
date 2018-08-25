@@ -227,6 +227,16 @@
                     void
                 </div>
                 <div class="col-md-8 type">
+                    <a href="#method_sendVoiceUpdate">sendVoiceUpdate</a>(string $sessionID, array $event)
+        
+                                            <p>Send a voice update event for the player.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    void
+                </div>
+                <div class="col-md-8 type">
                     <a href="#method_setPaused">setPaused</a>(bool $paused)
         
                                             <p>Sets the paused state of the track.</p>                </div>
@@ -472,6 +482,62 @@
                 <td><a href="https://secure.php.net/RuntimeException" target="_blank">RuntimeException</a></td>
                 <td></td>
             </tr>
+                    <tr>
+                <td><a href="https://secure.php.net/BadMethodCallException" target="_blank">BadMethodCallException</a></td>
+                <td></td>
+            </tr>
+            </table>
+
+            
+                        
+                        
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_sendVoiceUpdate">
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Player.php#L292">line 292</a></div>
+        <code>                    void
+    <strong>sendVoiceUpdate</strong>(string $sessionID, array $event)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Send a voice update event for the player.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>string</td>
+                <td>$sessionID</td>
+                <td>The voice session ID.</td>
+            </tr>
+                    <tr>
+                <td>array</td>
+                <td>$event</td>
+                <td>The voice server update event from Discord.</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>void</td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+                            <h4>Exceptions</h4>
+
+                    <table class="table table-condensed">
                     <tr>
                 <td><a href="https://secure.php.net/BadMethodCallException" target="_blank">BadMethodCallException</a></td>
                 <td></td>
