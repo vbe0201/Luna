@@ -283,6 +283,30 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
     }
     
     /**
+     * Send a voice update event for the player.
+     * @param string  $sessionID  The voice session ID.
+     * @param array   $event      The voice server update event from Discord.
+     * @return void
+     * @throws \BadMethodCallException
+     */
+    function sendVoiceUpdate(string $sessionID, array $event) {
+        $packet = array(
+            'op' => 'voiceUpdate',
+            'guildId' => ((string) $this->guildID),
+            'sessionId' => $sessionID,
+            'event' => $event
+        );
+        
+        $this->node->emit('debug', 'Sending voice update for guild '.$this->guildID);
+        
+        $this->node->link->send($packet);
+        $this->setVoiceServerUpdate(array(
+            'sessionID' => $sessionID,
+            'event' => $event
+        ));
+    }
+    
+    /**
      * Clears the internal track.
      * @return void
      * @internal

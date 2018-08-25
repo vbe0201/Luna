@@ -10,7 +10,7 @@
 namespace CharlotteDunois\Luna;
 
 /**
- * This interface documents all events emitted on the client. Events emitted on the nodes (and added to the client) are re-emitted on the client (as such documented here).
+ * This interface documents all events emitted on the client. Events emitted on the nodes (and added to the client) are re-emitted on the client, with the additional argument `$node`, (as such documented here).
  * Player events are however **not** emitted on the client.
  */
 interface ClientEvents {
@@ -47,6 +47,14 @@ interface ClientEvents {
      * @return void
      */
     function failover(\CharlotteDunois\Luna\Node $node, \CharlotteDunois\Luna\Player $player);
+    
+    /**
+     * Emitted when a new player gets created.
+     * @param \CharlotteDunois\Luna\Node|null  $node
+     * @param \CharlotteDunois\Luna\Player     $player
+     * @return void
+     */
+    function newPlayer(\CharlotteDunois\Luna\Node $node, \CharlotteDunois\Luna\Player $player);
     
     /**
      * Emitted when the node gets stats from the lavalink node.

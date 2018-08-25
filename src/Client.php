@@ -122,8 +122,8 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
                             $newNode = $this->getIdealNode($node->region);
                         }
                         
-                        $newNode->sendVoiceUpdate($player->guildID, $player->voiceServerUpdate['sessionID'], $player->voiceServerUpdate['event']);
                         $player->setNode($newNode);
+                        $player->sendVoiceUpdate($player->voiceServerUpdate['sessionID'], $player->voiceServerUpdate['event']);
                         
                         if($track) {
                             $player->play($track, $position);
@@ -228,7 +228,8 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
             'debug' => $this->createDebugListener($node),
             'error' => $this->createErrorListener($node),
             'disconnect' => $this->createDisconnectListener($node),
-            'stats' => $this->createStatsListener($node)
+            'stats' => $this->createStatsListener($node),
+            'newPlayer' => $this->createNewPlayerListener($node)
         );
         
         foreach($listeners as $event => $listener) {
@@ -399,8 +400,19 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
      * @return \Closure
      */
     protected function createStatsListener(\CharlotteDunois\Luna\Node $node) {
-        return (function ($stats) use (&$node) {
+        return (function (\CharlotteDunois\Luna\RemoteStats $stats) use (&$node) {
             $this->emit('stats', $node, $stats);
+        });
+    }
+    
+    /**
+     * Creates a node-specific newPlayer listener.
+     * @param \CharlotteDunois\Luna\Node  $node
+     * @return \Closure
+     */
+    protected function createNewPlayerListener(\CharlotteDunois\Luna\Node $node) {
+        return (function (\CharlotteDunois\Luna\Player $player) use (&$node) {
+            $this->emit('newPlayer', $node, $player);
         });
     }
 }

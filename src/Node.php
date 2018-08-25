@@ -159,48 +159,13 @@ class Node implements \CharlotteDunois\Events\EventEmitterInterface, \JsonSerial
      * @throws \BadMethodCallException
      */
     function createPlayer(int $guildID, string $sessionID, array $event) {
-        $this->sendVoiceUpdate($guildID, $sessionID, $event);
-        
         $player = new \CharlotteDunois\Luna\Player($this, $guildID);
-        $player->setVoiceServerUpdate(array(
-            'sessionID' => $sessionID,
-            'event' => $event
-        ));
+        $player->sendVoiceUpdate($sessionID, $event);
         
         $this->players->set($guildID, $player);
+        $this->emit('newPlayer', $player);
+        
         return $player;
-    }
-    
-    /**
-     * Send a voice update event to the node.
-     * @param int     $guildID    The guild ID.
-     * @param string  $sessionID  The voice session ID.
-     * @param array   $event      The voice server update event from Discord.
-     * @return void
-     * @throws \BadMethodCallException
-     */
-    function sendVoiceUpdate(int $guildID, string $sessionID, array $event) {
-        if(!$this->client) {
-            throw new \BadMethodCallException('Node has no client');
-        }
-        
-        $packet = array(
-            'op' => 'voiceUpdate',
-            'guildId' => ((string) $guildID),
-            'sessionId' => $sessionID,
-            'event' => $event
-        );
-        
-        $this->emit('debug', 'Sending voice update for guild '.$guildID);
-        
-        $this->link->send($packet);
-        
-        if($this->players->has($guildID)) {
-            $this->players->get($guildID)->setVoiceServerUpdate(array(
-                'sessionID' => $sessionID,
-                'event' => $event
-            ));
-        }
     }
     
     /**

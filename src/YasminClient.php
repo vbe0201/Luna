@@ -342,8 +342,8 @@ class YasminClient extends Client {
             if($guild instanceof \CharlotteDunois\Yasmin\Models\Guild && $this->connections->has($guild->id)) {
                 $node = $this->connections->get($guild->id)->node;
                 
-                foreach($node->players as $guildID => $player) {
-                    $node->sendVoiceUpdate($guildID, $player->voiceServerUpdate['sessionID'], $data);
+                foreach($node->players as $player) {
+                    $player->sendVoiceUpdate($player->voiceServerUpdate['sessionID'], $data);
                 }
             }
         };
