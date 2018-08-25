@@ -194,8 +194,8 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
      * @return void
      */
     function setLoadBalancer(\CharlotteDunois\Luna\LoadBalancer $loadBalancer) {
-        $this->loadbalancer = $loadBalancer;
-        $this->loadbalancer->setClient($this);
+        $this->loadBalancer = $loadBalancer;
+        $this->loadBalancer->setClient($this);
     }
     
     /**
