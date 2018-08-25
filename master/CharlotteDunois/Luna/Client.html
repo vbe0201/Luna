@@ -124,6 +124,14 @@ the client will automatically look for a new node and starts playing the track o
 
             <table class="table table-condensed">
                     <tr>
+                <td class="type" id="property_loadBalancer">
+                                                                                <a href="../../CharlotteDunois/Luna/LoadBalancer.html"><abbr title="CharlotteDunois\Luna\LoadBalancer">LoadBalancer</abbr></a>|null
+                </td>
+                <td><a name="property_loadBalancer" href="#property_loadBalancer">$loadBalancer</a></td>
+                <td class="last">The Load Balancer.</td>
+                <td></td>
+            </tr>
+                    <tr>
                 <td class="type" id="property_nodes">
                                                                                 <abbr title="CharlotteDunois\Collect\Collection">Collection</abbr>
                 </td>
@@ -190,7 +198,7 @@ the client will automatically look for a new node and starts playing the track o
                 <div class="col-md-8 type">
                     <a href="#method_getIdealNode">getIdealNode</a>(string $region, bool $autoConnect = true)
         
-                                            <p>Get an ideal node for the region. If there is no ideal node, this will return the first node in the list.</p>                </div>
+                                            <p>Get an ideal node for the region solely based on region. If there is no ideal node, this will return the first connected node in the list.</p>                </div>
                 <div class="col-md-2"></div>
             </div>
                     <div class="row">
@@ -225,6 +233,16 @@ the client will automatically look for a new node and starts playing the track o
             </div>
                     <div class="row">
                 <div class="col-md-2 type">
+                    void
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_setLoadBalancer">setLoadBalancer</a>(<a href="../../CharlotteDunois/Luna/LoadBalancer.html"><abbr title="CharlotteDunois\Luna\LoadBalancer">LoadBalancer</abbr></a> $loadBalancer)
+        
+                                            <p>Sets a loadbalancer to use.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
                     <abbr title="React\Promise\ExtendedPromiseInterface">ExtendedPromiseInterface</abbr>
                 </div>
                 <div class="col-md-8 type">
@@ -251,7 +269,7 @@ the client will automatically look for a new node and starts playing the track o
             <div id="method-details">
                     <div class="method-item">
                     <h3 id="method___construct">
-        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Client.php#L88">line 88</a></div>
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Client.php#L95">line 95</a></div>
         <code>                    
     <strong>__construct</strong>(<abbr title="React\EventLoop\LoopInterface">LoopInterface</abbr> $loop, int $userID, int $numShards = 1, array $options = array())
         </code>
@@ -265,7 +283,7 @@ the client will automatically look for a new node and starts playing the track o
 
 <pre><code>array(
     'connector' =&gt; \React\Socket\Connector, (a specific connector instance to use for both the websocket and the HTTP client)
-    'loadbalancer' =&gt; \CharlotteDunois\Luna\LoadBalancer, (a loadbalancer to use)
+    'node.maxConnectAttempts' =&gt; int, (maximum attempts at (re)connecting to a node, defaults to 0 (unlimited))
 )
 </code></pre>
 </p>                            </div>
@@ -306,7 +324,7 @@ the client will automatically look for a new node and starts playing the track o
             </div>
                     <div class="method-item">
                     <h3 id="method_addNode">
-        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Client.php#L191">line 191</a></div>
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Client.php#L206">line 206</a></div>
         <code>                    $this
     <strong>addNode</strong>(<a href="../../CharlotteDunois/Luna/Node.html"><abbr title="CharlotteDunois\Luna\Node">Node</abbr></a> $node)
         </code>
@@ -348,7 +366,7 @@ the client will automatically look for a new node and starts playing the track o
             </div>
                     <div class="method-item">
                     <h3 id="method_createNodes">
-        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Client.php#L299">line 299</a></div>
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Client.php#L314">line 314</a></div>
         <code>                    <a href="../../CharlotteDunois/Luna/Node.html"><abbr title="CharlotteDunois\Luna\Node">Node</abbr></a>[]
     <strong>createNodes</strong>(array $nodes)
         </code>
@@ -390,7 +408,7 @@ the client will automatically look for a new node and starts playing the track o
             </div>
                     <div class="method-item">
                     <h3 id="method_getIdealNode">
-        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Client.php#L248">line 248</a></div>
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Client.php#L263">line 263</a></div>
         <code>                    <a href="../../CharlotteDunois/Luna/Node.html"><abbr title="CharlotteDunois\Luna\Node">Node</abbr></a>
     <strong>getIdealNode</strong>(string $region, bool $autoConnect = true)
         </code>
@@ -400,7 +418,7 @@ the client will automatically look for a new node and starts playing the track o
     
 
                     <div class="method-description">
-                                    <p>Get an ideal node for the region. If there is no ideal node, this will return the first node in the list.</p>                                                </div>
+                                    <p>Get an ideal node for the region solely based on region. If there is no ideal node, this will return the first connected node in the list.</p>                                                </div>
                 <div class="tags">
                             <h4>Parameters</h4>
 
@@ -446,7 +464,7 @@ the client will automatically look for a new node and starts playing the track o
             </div>
                     <div class="method-item">
                     <h3 id="method_getLoop">
-        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Client.php#L168">line 168</a></div>
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Client.php#L173">line 173</a></div>
         <code>                    <abbr title="React\EventLoop\LoopInterface">LoopInterface</abbr>
     <strong>getLoop</strong>()
         </code>
@@ -478,7 +496,7 @@ the client will automatically look for a new node and starts playing the track o
             </div>
                     <div class="method-item">
                     <h3 id="method_getOption">
-        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Client.php#L178">line 178</a></div>
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Client.php#L183">line 183</a></div>
         <code>                    mixed
     <strong>getOption</strong>(string $name, mixed $default = null)
         </code>
@@ -525,7 +543,7 @@ the client will automatically look for a new node and starts playing the track o
             </div>
                     <div class="method-item">
                     <h3 id="method_removeNode">
-        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Client.php#L220">line 220</a></div>
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Client.php#L235">line 235</a></div>
         <code>                    $this
     <strong>removeNode</strong>(<a href="../../CharlotteDunois/Luna/Node.html"><abbr title="CharlotteDunois\Luna\Node">Node</abbr></a> $node, bool $autoDisconnect = true)
         </code>
@@ -571,8 +589,50 @@ the client will automatically look for a new node and starts playing the track o
 
             </div>
                     <div class="method-item">
+                    <h3 id="method_setLoadBalancer">
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Client.php#L196">line 196</a></div>
+        <code>                    void
+    <strong>setLoadBalancer</strong>(<a href="../../CharlotteDunois/Luna/LoadBalancer.html"><abbr title="CharlotteDunois\Luna\LoadBalancer">LoadBalancer</abbr></a> $loadBalancer)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Sets a loadbalancer to use.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="../../CharlotteDunois/Luna/LoadBalancer.html"><abbr title="CharlotteDunois\Luna\LoadBalancer">LoadBalancer</abbr></a></td>
+                <td>$loadBalancer</td>
+                <td></td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>void</td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+            
+                        
+                        
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
                     <h3 id="method_start">
-        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Client.php#L278">line 278</a></div>
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Client.php#L293">line 293</a></div>
         <code>                    <abbr title="React\Promise\ExtendedPromiseInterface">ExtendedPromiseInterface</abbr>
     <strong>start</strong>()
         </code>
@@ -604,7 +664,7 @@ the client will automatically look for a new node and starts playing the track o
             </div>
                     <div class="method-item">
                     <h3 id="method_stop">
-        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Client.php#L288">line 288</a></div>
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Client.php#L303">line 303</a></div>
         <code>                    void
     <strong>stop</strong>()
         </code>
