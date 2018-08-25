@@ -72,7 +72,7 @@ class LoadBalancer {
         }
         
         $nodeStats = $this->calculateStats($this->client->nodes);
-        $node = $this->selectNode($this->client->nodes, $nodeStats);
+        $node = $this->selectNode($this->client->nodes, $nodeStats, $region);
         
         if($autoConnect && $node->link->status === \CharlotteDunois\Luna\Link::STATUS_IDLE) {
             $node->link->connect();
@@ -125,10 +125,11 @@ class LoadBalancer {
      * Selects a node based on the stats.
      * @param \CharlotteDunois\Collect\Collection  $nodes
      * @param array                                $nodeStats
+     * @param string                               $region
      * @return \CharlotteDunois\Luna\Node
      * @throws \UnderflowException
      */
-    protected function selectNode(\CharlotteDunois\Collect\Collection $nodes, array $nodeStats) {
+    protected function selectNode(\CharlotteDunois\Collect\Collection $nodes, array $nodeStats, string $region) {
         $node = null;
         $low = null;
         
