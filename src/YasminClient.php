@@ -29,6 +29,12 @@ class YasminClient extends Client {
     protected $connections;
     
     /**
+     * Yasmin listeners.
+     * @var \Closure[]
+     */
+    protected $yasminListeners = array();
+    
+    /**
      * Scheduled voice state updates.
      * @var array
      */
@@ -56,7 +62,7 @@ class YasminClient extends Client {
             });
         }
         
-        $this->client->on('disconnect', function () {
+        $disconnect = function () {
             $this->emit('debug', null, 'Yasmin got disconnected from Discord, destroying all players...');
             
             foreach($this->nodes as $node) {
@@ -67,9 +73,12 @@ class YasminClient extends Client {
             }
             
             $this->connections->clear();
-        });
+        };
         
-        $this->client->on('reconnect', function () {
+        $this->yasminListeners['disconnect'] = $disconnect;
+        $this->client->on('disconnect', $disconnect);
+        
+        $reconnect = function () {
             while($guildID = \array_shift($this->scheduledVoiceStates)) {
                 $guildID = (string) $guildID;
                 
@@ -90,20 +99,36 @@ class YasminClient extends Client {
                     )
                 ));
             }
-        });
+        };
         
-        $this->client->on('guildDelete', function (\CharlotteDunois\Yasmin\Models\Guild $guild) {
+        $this->yasminListeners['reconnect'] = $reconnect;
+        $this->client->on('reconnect', $reconnect);
+        
+        $guildDelete = function (\CharlotteDunois\Yasmin\Models\Guild $guild) {
             if($this->connections->has($guild->id)) {
                 $this->connections->get($guild->id)->destroy();
                 $this->connections->delete($guild->id);
             }
-        });
+        };
+        
+        $this->yasminListeners['guildDelete'] = $guildDelete;
+        $this->client->on('guildDelete', $guildDelete);
         
         $this->on('failover', function (\CharlotteDunois\Luna\Node $node, \CharlotteDunois\Luna\Player $player) {
             $this->connections->set($player->guildID, $player);
         });
         
         parent::__construct($client->getLoop(), $userID, $numShards, $options);
+    }
+    
+    /**
+     * Removes all listeners from Yasmin.
+     * @return void
+     */
+    function destroy() {
+        foreach($this->yasminListeners as $name => $cl) {
+            $this->client->removeListener($name, $cl);
+        }
     }
     
     /**
