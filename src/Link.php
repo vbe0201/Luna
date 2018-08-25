@@ -258,10 +258,11 @@ class Link {
      * Sets up the websocket. Resolver for the connector.
      * @param \Ratchet\Client\WebSocket  $conn
      * @return void
+     * @throws \UnexpectedValueException
      */
     protected function setupWebsocket(\Ratchet\Client\WebSocket $conn) {
         if(!$conn->response->hasHeader('Lavalink-Major-Version') || $conn->response->getHeader('Lavalink-Major-Version')[0] < 3) {
-            throw new \RuntimeException('The Lavalink Server major version is below v3.0');
+            throw new \UnexpectedValueException('The Lavalink Server major version is below v3.0');
         }
         
         $this->ws = $conn;
