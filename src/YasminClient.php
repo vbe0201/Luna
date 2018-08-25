@@ -153,7 +153,7 @@ class YasminClient extends Client {
         ));
         
         return \React\Promise\all(array($voiceState, $voiceServer))->then(function ($events) use (&$channel, &$node) {
-            $player = $node->sendVoiceUpdate(((int) $channel->guild->id), $events[0][0]->voiceSessionID, $events[1][0]);
+            $player = $node->createPlayer(((int) $channel->guild->id), $events[0][0]->voiceSessionID, $events[1][0]);
             
             $player->on('destroy', function () use (&$player) {
                 $this->connections->delete($player->guildID);
@@ -343,12 +343,7 @@ class YasminClient extends Client {
                 $node = $this->connections->get($guild->id)->node;
                 
                 foreach($node->players as $guildID => $player) {
-                    $node->_sendVoiceUpdate($guildID, $player->voiceServerUpdate['sessionID'], $data);
-                    
-                    $player->setVoiceServerUpdate(array(
-                        'sessionID' => $player->voiceServerUpdate['sessionID'],
-                        'event' => $data
-                    ));
+                    $node->sendVoiceUpdate($guildID, $player->voiceServerUpdate['sessionID'], $data);
                 }
             }
         };

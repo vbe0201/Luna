@@ -122,7 +122,7 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
                             $newNode = $this->getIdealNode($node->region);
                         }
                         
-                        $newNode->_sendVoiceUpdate($player->guildID, $player->voiceServerUpdate['sessionID'], $player->voiceServerUpdate['event']);
+                        $newNode->sendVoiceUpdate($player->guildID, $player->voiceServerUpdate['sessionID'], $player->voiceServerUpdate['event']);
                         $player->setNode($newNode);
                         
                         if($track) {
