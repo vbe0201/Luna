@@ -20,7 +20,6 @@ namespace CharlotteDunois\Luna;
  * @property string                                  $httpHost         The HTTP host address.
  * @property string                                  $wsHost           The WS host address.
  * @property string                                  $region           The region of the node.
- * @property array|null                              $lastVoiceUpdate  The last sent voice update event.
  */
 class Node implements \CharlotteDunois\Events\EventEmitterInterface, \JsonSerializable {
     use \CharlotteDunois\Events\EventEmitterTrait;
@@ -78,12 +77,6 @@ class Node implements \CharlotteDunois\Events\EventEmitterInterface, \JsonSerial
      * @var string
      */
     protected $region;
-    
-    /**
-     * The last sent voice update event.
-     * @var array|null
-     */
-    protected $lastVoiceUpdate;
     
     /**
      * Constructor.
@@ -169,8 +162,12 @@ class Node implements \CharlotteDunois\Events\EventEmitterInterface, \JsonSerial
         $this->_sendVoiceUpdate($guildID, $sessionID, $event);
         
         $player = new \CharlotteDunois\Luna\Player($this, $guildID);
-        $this->players->set($guildID, $player);
+        $player->setVoiceServerUpdate(array(
+            'sessionID' => $sessionID,
+            'event' => $event
+        ));
         
+        $this->players->set($guildID, $player);
         return $player;
     }
     
@@ -268,6 +265,5 @@ class Node implements \CharlotteDunois\Events\EventEmitterInterface, \JsonSerial
         $this->emit('debug', 'Sending voice update for guild '.$guildID);
         
         $this->link->send($packet);
-        $this->lastVoiceUpdate = $packet;
     }
 }

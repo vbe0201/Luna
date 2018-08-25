@@ -96,7 +96,7 @@ class Link {
      * The connection status.
      * @var int
      */
-    protected $status = self::STATUS_IDLE;
+    protected $status = self::STATUS_DISCONNECTED;
     
     /**
      * Constructor.

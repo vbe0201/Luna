@@ -11,12 +11,13 @@ namespace CharlotteDunois\Luna;
 
 /**
  * Represents a player of a guild on a node.
- * @property \CharlotteDunois\Luna\Node             $node     The node this player is on.
- * @property int                                    $guildID  The guild ID this player is serving.
- * @property \CharlotteDunois\Luna\AudioTrack|null  $track    The currently playing audio track.
- * @property bool                                   $paused   Whether the track is currently paused.
- * @property int                                    $position The position of the track in milliseconds.
- * @property int                                    $volume   The volume of the player from 0 to 100.
+ * @property \CharlotteDunois\Luna\Node             $node               The node this player is on.
+ * @property int                                    $guildID            The guild ID this player is serving.
+ * @property \CharlotteDunois\Luna\AudioTrack|null  $track              The currently playing audio track.
+ * @property bool                                   $paused             Whether the track is currently paused.
+ * @property int                                    $position           The position of the track in milliseconds.
+ * @property int                                    $volume             The volume of the player from 0 to 100.
+ * @property array                                  $voiceServerUpdate  The sent voice update event.
  */
 class Player implements \CharlotteDunois\Events\EventEmitterInterface {
     use \CharlotteDunois\Events\EventEmitterTrait;
@@ -62,6 +63,12 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
      * @var float
      */
     protected $updateTime = -1;
+    
+    /**
+     * The sent voice update event.
+     * @var array|null
+     */
+    protected $voiceServerUpdate;
     
     /**
      * Constructor.
@@ -292,6 +299,16 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
         
         $this->node = $node;
         $this->node->players->set($this->guildID, $this);
+    }
+    
+    /**
+     * Sets the Voice Server Update array.
+     * @param array $voiceServerUpdate
+     * @return void
+     * @internal
+     */
+    function setVoiceServerUpdate(array $voiceServerUpdate) {
+        $this->voiceServerUpdate = $voiceServerUpdate;
     }
     
     /**
