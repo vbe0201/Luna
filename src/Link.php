@@ -165,64 +165,7 @@ class Link {
             'Num-Shards' => $this->client->numShards,
             'User-Id' => $this->client->userID
         ))->then(function (\Ratchet\Client\WebSocket $conn) {
-            if(!$conn->response->hasHeader('Lavalink-Major-Version') || $conn->response->getHeader('Lavalink-Major-Version')[0] < 3) {
-                throw new \RuntimeException('The Lavalink Server major version is below v3.0');
-            }
-            
-            $this->ws = &$conn;
-            $this->status = self::STATUS_CONNECTED;
-            
-            $this->connectTimer = $this->client->getLoop()->addTimer(10, function () {
-                if($this->status === self::STATUS_CONNECTED) {
-                    $this->connectAttempts = 0;
-                }
-                
-                $this->connectTimer = null;
-            });
-            
-            $this->ws->on('message', function (\Ratchet\RFC6455\Messaging\Message $message) {
-                $message = $message->getPayload();
-                if(!$message) {
-                    return;
-                }
-                
-                $this->handleMessage($message);
-            });
-            
-            $this->ws->on('error', function (\Throwable $error) {
-                $this->node->emit('error', $error);
-            });
-            
-            $this->ws->on('close', function (int $code, string $reason) {
-                $this->ws = null;
-                $this->connectPromise = null;
-                
-                if($this->connectTimer) {
-                    $this->client->getLoop()->cancelTimer($this->connectTimer);
-                    $this->connectTimer = null;
-                }
-                
-                if($this->status <= self::STATUS_CONNECTED) {
-                    $this->status = self::STATUS_DISCONNECTED;
-                }
-                
-                $this->node->emit('debug', 'Disconnected from node');
-                $this->node->emit('disconnect', $code, $reason, $this->expectedClose);
-                
-                foreach($this->node->players as $player) {
-                    $player->destroy();
-                }
-                
-                if($code === 1000 && $this->expectedClose) {
-                    $this->status = self::STATUS_IDLE;
-                    return;
-                }
-                
-                $this->status = self::STATUS_RECONNECTING;
-                $this->renewConnection(true);
-            });
-            
-            $this->node->emit('debug', 'Connected to node');
+            $this->setupWebsocket($conn);
         }, function (\Throwable $error) {
             $this->node->emit('error', $error);
             
@@ -309,6 +252,72 @@ class Link {
         
         $this->node->emit('debug', 'Sending WS packet');
         $this->ws->send(\json_encode($packet));
+    }
+    
+    /**
+     * Sets up the websocket. Resolver for the connector.
+     * @param \Ratchet\Client\WebSocket  $conn
+     * @return void
+     */
+    protected function setupWebsocket(\Ratchet\Client\WebSocket $conn) {
+        if(!$conn->response->hasHeader('Lavalink-Major-Version') || $conn->response->getHeader('Lavalink-Major-Version')[0] < 3) {
+            throw new \RuntimeException('The Lavalink Server major version is below v3.0');
+        }
+        
+        $this->ws = $conn;
+        $this->status = self::STATUS_CONNECTED;
+        
+        $this->connectTimer = $this->client->getLoop()->addTimer(10, function () {
+            if($this->status === self::STATUS_CONNECTED) {
+                $this->connectAttempts = 0;
+            }
+            
+            $this->connectTimer = null;
+        });
+        
+        $this->ws->on('message', function (\Ratchet\RFC6455\Messaging\Message $message) {
+            $message = $message->getPayload();
+            if(!$message) {
+                return;
+            }
+            
+            $this->handleMessage($message);
+        });
+        
+        $this->ws->on('error', function (\Throwable $error) {
+            $this->node->emit('error', $error);
+        });
+        
+        $this->ws->on('close', function (int $code, string $reason) {
+            $this->ws = null;
+            $this->connectPromise = null;
+            
+            if($this->connectTimer) {
+                $this->client->getLoop()->cancelTimer($this->connectTimer);
+                $this->connectTimer = null;
+            }
+            
+            if($this->status <= self::STATUS_CONNECTED) {
+                $this->status = self::STATUS_DISCONNECTED;
+            }
+            
+            $this->node->emit('debug', 'Disconnected from node');
+            $this->node->emit('disconnect', $code, $reason, $this->expectedClose);
+            
+            foreach($this->node->players as $player) {
+                $player->destroy();
+            }
+            
+            if($code === 1000 && $this->expectedClose) {
+                $this->status = self::STATUS_IDLE;
+                return;
+            }
+            
+            $this->status = self::STATUS_RECONNECTING;
+            $this->renewConnection(true);
+        });
+        
+        $this->node->emit('debug', 'Connected to node');
     }
     
     /**
