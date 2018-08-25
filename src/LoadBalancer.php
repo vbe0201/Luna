@@ -72,10 +72,10 @@ class LoadBalancer {
         }
         
         $nodeStats = $this->calculateStats($this->client->nodes);
-        $node = $this->selectNode($this->client->nodes, $nodeStats, $region);
+        $node = $this->selectNode($nodeStats, $region);
         
         if(!$node) {
-            $node = $nodes->first(function (\CharlotteDunois\Luna\Node $node) {
+            $node = $this->client->nodes->first(function (\CharlotteDunois\Luna\Node $node) {
                 return ($node->link->status >= \CharlotteDunois\Luna\Link::STATUS_CONNECTED);
             });
             
@@ -133,13 +133,11 @@ class LoadBalancer {
     
     /**
      * Selects a node based on the stats.
-     * @param \CharlotteDunois\Collect\Collection  $nodes
      * @param array                                $nodeStats
      * @param string                               $region
      * @return \CharlotteDunois\Luna\Node|null
-     * @throws \UnderflowException
      */
-    protected function selectNode(\CharlotteDunois\Collect\Collection $nodes, array $nodeStats, string $region) {
+    protected function selectNode(array $nodeStats, string $region) {
         $node = null;
         $low = null;
         
