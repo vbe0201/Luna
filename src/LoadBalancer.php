@@ -10,7 +10,7 @@
 namespace CharlotteDunois\Luna;
 
 /**
- * A load balacer chooses the node based on the node's health.
+ * A load balacer chooses the node based on the node's stats.
  * @property \CharlotteDunois\Luna\Client  $client  The Luna client.
  */
 class LoadBalancer {
@@ -71,36 +71,7 @@ class LoadBalancer {
             throw new \UnderflowException('No nodes added');
         }
         
-        $nodeStats = array();
-        
-        foreach($this->client->nodes as $node) {
-            if(!isset($nodeStats[$node->region])) {
-                $nodeStats[$node->region] = array();
-            }
-            
-            if($node->link->status < \CharlotteDunois\Luna\Link::STATUS_CONNECTED) {
-                continue;
-            }
-            
-            if(!$node->stats) {
-                $nodeStats[$node->region][] = array('node' => $node, 'penalty' => \INF);
-                continue;
-            }
-            
-            $playerPenalty = $node->stats->playingPlayers;
-            $cpuPenalty = (int) ((\pow(1.05, (100 * $node->stats->systemLoad)) * 10) - 10);
-            
-            if($node->stats->framesDeficit !== null) {
-                $deficitPenalty = (int) ((\pow(1.03, (500 * ($node->stats->framesDeficit / 3000))) * 600) - 600);
-                $nullPenalty = (int) (((\pow(1.03, (500 * ($node->stats->framesNulled / 3000))) * 300) - 6300) * 2);
-            } else {
-                $deficitPenalty = 0;
-                $nullPenalty = 0;
-            }
-            
-            $total = $playerPenalty + $cpuPenalty + $deficitPenalty + $nullPenalty;
-            $nodeStats[$node->region][] = array('node' => $node, 'penalty' => $total);
-        }
+        $nodeStats = $this->calculateStats($this->client->nodes);
         
         $node = null;
         $low = null;
@@ -140,5 +111,45 @@ class LoadBalancer {
         }
         
         return $node;
+    }
+    
+    /**
+     * Calculates each node's stats.
+     * @param \CharlotteDunois\Collect\Collection  $nodes
+     * @return array
+     */
+    protected function calculateStats(\CharlotteDunois\Collect\Collection $nodes) {
+        $nodeStats = array();
+        
+        foreach($nodes as $node) {
+            if(!isset($nodeStats[$node->region])) {
+                $nodeStats[$node->region] = array();
+            }
+            
+            if($node->link->status < \CharlotteDunois\Luna\Link::STATUS_CONNECTED) {
+                continue;
+            }
+            
+            if(!$node->stats) {
+                $nodeStats[$node->region][] = array('node' => $node, 'penalty' => \INF);
+                continue;
+            }
+            
+            $playerPenalty = $node->stats->playingPlayers;
+            $cpuPenalty = (int) ((\pow(1.05, (100 * $node->stats->systemLoad)) * 10) - 10);
+            
+            if($node->stats->framesDeficit !== null) {
+                $deficitPenalty = (int) ((\pow(1.03, (500 * ($node->stats->framesDeficit / 3000))) * 600) - 600);
+                $nullPenalty = (int) (((\pow(1.03, (500 * ($node->stats->framesNulled / 3000))) * 300) - 6300) * 2);
+            } else {
+                $deficitPenalty = 0;
+                $nullPenalty = 0;
+            }
+            
+            $total = $playerPenalty + $cpuPenalty + $deficitPenalty + $nullPenalty;
+            $nodeStats[$node->region][] = array('node' => $node, 'penalty' => $total);
+        }
+        
+        return $nodeStats;
     }
 }
