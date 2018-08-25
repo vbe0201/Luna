@@ -142,7 +142,7 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
                         }
                     }
                     
-                    $this->loop->addTimer(10, function () use ($node, $code, $reason, $expectedClose, $nplayers) {
+                    $this->loop->addTimer(10, function () use ($node, $code, $reason, $expectedClose, $nplayers, &$failover) {
                         $failover($node, $code, $reason, $expectedClose, $nplayers);
                     });
                 }
