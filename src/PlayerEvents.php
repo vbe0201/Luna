@@ -17,9 +17,11 @@ interface PlayerEvents {
      * Emitted when the track ends.
      * @param \CharlotteDunois\Luna\AudioTrack|string  $track
      * @param string                                   $reason
+     * @param bool                                     $mayStartNext  See the `see` section.
      * @return void
+     * @see \CharlotteDunois\Luna\AudioTrack::AUDIO_END_REASON_CONTINUE
      */
-    function end($track, $reason);
+    function end($track, $reason, $mayStartNext);
     
     /**
      * Emitted when an error happens.
