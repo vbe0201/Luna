@@ -264,7 +264,7 @@ class YasminClient extends Client {
             throw new \LogicException('Insufficient permissions to join the voice channel');
         }
         
-        if($channel->members->count() >= $channel->userLimit && !$perms->has('MOVE_MEMBERS')) {
+        if($voiceChannel->userLimit > 0 && $channel->members->count() >= $channel->userLimit && !$perms->has('MOVE_MEMBERS')) {
             throw new \LogicException('Voice channel user limit reached, unable to join the voice channel');
         }
         
