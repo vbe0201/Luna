@@ -202,7 +202,7 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
      * @return int
      */
     function getLastPosition() {
-        $timeDiff = (int) ((\microtime(true) - $this->updateTime) * 1000);
+        $timeDiff = \microtime(true) - $this->updateTime;
         return \min(($this->position + $timeDiff), $this->track->duration);
     }
     
