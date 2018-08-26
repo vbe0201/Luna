@@ -101,7 +101,7 @@
                     void
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_end">end</a>(<a href="../../CharlotteDunois/Luna/AudioTrack.html"><abbr title="CharlotteDunois\Luna\AudioTrack">AudioTrack</abbr></a>|string $track, string $reason)
+                    <a href="#method_end">end</a>(<a href="../../CharlotteDunois/Luna/AudioTrack.html"><abbr title="CharlotteDunois\Luna\AudioTrack">AudioTrack</abbr></a>|string $track, string $reason, bool $mayStartNext)
         
                                             <p>Emitted when the track ends.</p>                </div>
                 <div class="col-md-2"></div>
@@ -134,9 +134,9 @@
             <div id="method-details">
                     <div class="method-item">
                     <h3 id="method_end">
-        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/PlayerEvents.php#L22">line 22</a></div>
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/PlayerEvents.php#L24">line 24</a></div>
         <code>                    void
-    <strong>end</strong>(<a href="../../CharlotteDunois/Luna/AudioTrack.html"><abbr title="CharlotteDunois\Luna\AudioTrack">AudioTrack</abbr></a>|string $track, string $reason)
+    <strong>end</strong>(<a href="../../CharlotteDunois/Luna/AudioTrack.html"><abbr title="CharlotteDunois\Luna\AudioTrack">AudioTrack</abbr></a>|string $track, string $reason, bool $mayStartNext)
         </code>
     </h3>
     <div class="details">
@@ -159,6 +159,11 @@
                 <td>$reason</td>
                 <td></td>
             </tr>
+                    <tr>
+                <td>bool</td>
+                <td>$mayStartNext</td>
+                <td>See the <code>see</code> section.</td>
+            </tr>
             </table>
 
             
@@ -173,6 +178,17 @@
 
             
             
+                            <h4>See also</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>
+                                            <abbr title="CharlotteDunois\Luna\AudioTrack::AUDIO_END_REASON_CONTINUE">AudioTrack::AUDIO_END_REASON_CONTINUE</abbr>
+                                    </td>
+                <td></td>
+            </tr>
+            </table>
+
                         
                         
                     </div>
@@ -181,7 +197,7 @@
             </div>
                     <div class="method-item">
                     <h3 id="method_error">
-        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/PlayerEvents.php#L30">line 30</a></div>
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/PlayerEvents.php#L32">line 32</a></div>
         <code>                    void
     <strong>error</strong>(<a href="../../CharlotteDunois/Luna/AudioTrack.html"><abbr title="CharlotteDunois\Luna\AudioTrack">AudioTrack</abbr></a>|string $track, <a href="../../CharlotteDunois/Luna/RemoteTrackException.html"><abbr title="CharlotteDunois\Luna\RemoteTrackException">RemoteTrackException</abbr></a> $error)
         </code>
@@ -228,7 +244,7 @@
             </div>
                     <div class="method-item">
                     <h3 id="method_stuck">
-        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/PlayerEvents.php#L38">line 38</a></div>
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/PlayerEvents.php#L40">line 40</a></div>
         <code>                    void
     <strong>stuck</strong>(<a href="../../CharlotteDunois/Luna/AudioTrack.html"><abbr title="CharlotteDunois\Luna\AudioTrack">AudioTrack</abbr></a>|string $track, int $threshold)
         </code>
