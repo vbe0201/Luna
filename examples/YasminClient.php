@@ -103,10 +103,10 @@ $client->on('message', function (\CharlotteDunois\Yasmin\Models\Message $message
         }
         
         $luna->leaveChannel($message->guild->me->voiceChannel)
-            ->done(null, 'my_log_error');
-        
-        $message->reply('There has been an error when getting the player.')
-            ->done(null, 'my_log_error');
+            ->done(function () use ($message) {
+                $message->reply('We have left the channel.')
+                    ->done(null, 'my_log_error');
+            }, 'my_log_error');
     }
 });
 
