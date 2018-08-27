@@ -60,17 +60,13 @@ $client->once('ready', function () use ($luna) {
 $node = new \CharlotteDunois\Luna\Node('vps-eu', 'password', 'http://http-api-url', 'ws://ws-api-url', 'eu');
 $luna->addNode($node);
 
-$client->login('YOUR_TOKEN');
+$client->login('YOUR_TOKEN')->done();
 $loop->run();
 ```
 
 The `YasminClient` has a method called `joinChannel` which sends the voice state update to discord, waits for the two events and sends them to the lavalink node.
 
-```php
-$luna->joinChannel($voiceChannel)->done(function ($player) {
-    // The code
-});
-```
+Please see the [Yasmin Client example](https://github.com/CharlotteDunois/Luna/blob/master/examples/YasminClient.php) for a more complete example.
 
 # Documentation
 https://luna.neko.run/
