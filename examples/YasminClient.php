@@ -35,6 +35,7 @@ $client->on('message', function (\CharlotteDunois\Yasmin\Models\Message $message
     $command = array_shift($args);
     
     if($command === 'join') {
+        // Check whether the user is not in a voice or we already are in one
         if($message->member->voiceChannelID === null) {
             return $message->reply('You need to be in a voice channel!')
                 ->done(null, 'my_log_error');
@@ -46,21 +47,25 @@ $client->on('message', function (\CharlotteDunois\Yasmin\Models\Message $message
         $channel = $message->member->voiceChannel;
         $perms = $channel->permissionsFor($channel->guild->me);
         
+        // Check whether we can connect
         if(!$perms->has('CONNECT') && !$perms->has('MOVE_MEMBERS')) {
             return $message->reply('Insufficient permissions to join the voice channel')
                 ->done(null, 'my_log_error');
         }
         
+        // Check whether the user limit has been reached
         if($channel->members->count() >= $channel->userLimit && !$perms->has('MOVE_MEMBERS')) {
             return $message->reply('Voice channel user limit reached, unable to join the voice channel')
                 ->done(null, 'my_log_error');
         }
         
+        // Check whether we can speak
         if(!$perms->has('SPEAK')) {
             return $message->reply('We can not speak in the voice channel, joining makes no sense')
                 ->done(null, 'my_log_error');
         }
         
+        // Join the channel
         $luna->joinChannel($channel)->done(function (\CharlotteDunois\Luna\Player $player) {
             $player->on('error', 'my_log_error');
         }, function ($error) use ($message) {
@@ -85,16 +90,19 @@ $client->on('message', function (\CharlotteDunois\Yasmin\Models\Message $message
                 ->done(null, 'my_log_error');
         }
         
+        // Resolve the track and then play it, if possible
         $player->node->resolveTrack(implode(' ', $args))->then(function ($result) use ($message, $player) {
+            // If it's a playlist or a search result, we just play the first one
             if($result instanceof \CharlotteDunois\Luna\AudioPlaylist) {
-                return $player->play($result->track->first());
+                return $player->play($result->tracks->first());
             } elseif($result instanceof \CharlotteDunois\Collect\Collection) {
-                return $player->play($result->track->first());
+                return $player->play($result->first());
             }
             
             // $result is an instance of \CharlotteDunois\Luna\AudioTrack
             return $player->play($result);
         }, function ($error) use ($message) {
+            // No matches or loading failed exceptions
             if($error instanceof \RangeException || $error instanceof \UnexpectedValueException) {
                 return $message->reply($error->getMessage());
             }
@@ -102,11 +110,13 @@ $client->on('message', function (\CharlotteDunois\Yasmin\Models\Message $message
             throw $error;
         })->done(null, 'my_log_error');
     } elseif($command === 'leave') {
+        // Check whether we are not in a voice channel
         if($message->guild->me->voiceChannelID === null) {
             return $message->reply('I am not in a voice channel.')
                 ->done(null, 'my_log_error');
         }
         
+        // Leave the channel
         $luna->leaveChannel($message->guild->me->voiceChannel)
             ->done(function () use ($message) {
                 $message->reply('We have left the channel.')
