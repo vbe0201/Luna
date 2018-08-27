@@ -27,7 +27,7 @@ $client->once('ready', function () use ($luna) {
 });
 
 $client->on('message', function (\CharlotteDunois\Yasmin\Models\Message $message) use ($client, $luna) {
-    if(substr($message->content, 0, 2) !== '~>' || $message->type !== 'text') {
+    if(substr($message->content, 0, 2) !== '~>' || $message->channel->type !== 'text') {
         return;
     }
     
