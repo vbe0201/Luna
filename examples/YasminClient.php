@@ -63,7 +63,11 @@ $client->on('message', function (\CharlotteDunois\Yasmin\Models\Message $message
         
         $luna->joinChannel($channel)->done(function (\CharlotteDunois\Luna\Player $player) {
             $player->on('error', 'my_log_error');
-        }, 'my_log_error');
+        }, function ($error) {
+            my_log_error($error);
+            
+            $message->reply('Unable to join channel')->done(null, 'my_log_error');
+        });
     } elseif($command === 'play') {
         if($message->guild->me->voiceChannelID === null) {
             return $message->reply('Please use `~>join` first.')
