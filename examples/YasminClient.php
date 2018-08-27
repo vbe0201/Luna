@@ -6,9 +6,11 @@
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Luna/blob/master/LICENSE
 */
+
 /*
  * This example will demonstrate the usage of the YasminClient.
  */
+
 require_once(__DIR__.'/vendor/autoload.php');
 
 function my_log_error(\Throwable $error) {
