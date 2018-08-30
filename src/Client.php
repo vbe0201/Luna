@@ -219,7 +219,7 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
     
     /**
      * Adds a node.
-     * @param $link\CharlotteDunois\Luna\Link  $link
+     * @param \CharlotteDunois\Luna\Node  $node
      * @return $this
      */
     function addNode(\CharlotteDunois\Luna\Node $node) {
@@ -249,7 +249,7 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
     
     /**
      * Removes a node.
-     * @param $link\CharlotteDunois\Luna\Link  $link
+     * @param \CharlotteDunois\Luna\Node  $node
      * @param bool                        $autoDisconnect  Whether we automatically disconnect from the node.
      * @return $this
      */
@@ -367,7 +367,7 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
     
     /**
      * Creates a node-specific debug listener.
-     * @param $link\CharlotteDunois\Luna\Link  $link
+     * @param \CharlotteDunois\Luna\Link  $link
      * @return \Closure
      */
     protected function createDebugListener(\CharlotteDunois\Luna\Link $link) {
@@ -378,7 +378,7 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
     
     /**
      * Creates a node-specific error listener.
-     * @param $link\CharlotteDunois\Luna\Link  $link
+     * @param \CharlotteDunois\Luna\Link  $link
      * @return \Closure
      */
     protected function createErrorListener(\CharlotteDunois\Luna\Link $link) {
@@ -389,7 +389,7 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
     
     /**
      * Creates a node-specific disconnect listener.
-     * @param $link\CharlotteDunois\Luna\Link  $link
+     * @param \CharlotteDunois\Luna\Link  $link
      * @return \Closure
      */
     protected function createDisconnectListener(\CharlotteDunois\Luna\Link $link) {
@@ -400,7 +400,7 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
     
     /**
      * Creates a node-specific stats listener.
-     * @param $link\CharlotteDunois\Luna\Link  $link
+     * @param \CharlotteDunois\Luna\Link  $link
      * @return \Closure
      */
     protected function createStatsListener(\CharlotteDunois\Luna\Link $link) {
@@ -411,7 +411,7 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
     
     /**
      * Creates a node-specific newPlayer listener.
-     * @param $link\CharlotteDunois\Luna\Link  $link
+     * @param \CharlotteDunois\Luna\Link  $link
      * @return \Closure
      */
     protected function createNewPlayerListener(\CharlotteDunois\Luna\Link $link) {
