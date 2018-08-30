@@ -73,8 +73,8 @@ class LoadBalancer {
             throw new \UnderflowException('No nodes added');
         }
         
-        $nodeStats = $this->calculateStats($this->client->links);
-        $link = $this->selectNode($nodeStats, $region);
+        $linkStats = $this->calculateStats($this->client->links);
+        $link = $this->selectNode($linkStats, $region);
         
         if(!$link) {
             $link = $this->client->links->first(function (\CharlotteDunois\Luna\Link $link) {
@@ -95,62 +95,62 @@ class LoadBalancer {
     
     /**
      * Calculates each node's stats.
-     * @param \CharlotteDunois\Collect\Collection  $nodes
+     * @param \CharlotteDunois\Collect\Collection  $links
      * @return array
      */
-    protected function calculateStats(\CharlotteDunois\Collect\Collection $nodes) {
-        $nodeStats = array();
+    protected function calculateStats(\CharlotteDunois\Collect\Collection $links) {
+        $linkStats = array();
         
-        foreach($nodes as $node) {
-            if(!isset($nodeStats[$node->region])) {
-                $nodeStats[$node->region] = array();
+        foreach($links as $link) {
+            if(!isset($linkStats[$link->region])) {
+                $linkStats[$link->node->region] = array();
             }
             
             if($link->status < \CharlotteDunois\Luna\Link::STATUS_CONNECTED) {
                 continue;
             }
             
-            if(!$node->stats) {
-                $nodeStats[$node->region][] = array('node' => $node, 'penalty' => \INF);
+            if(!$link->stats) {
+                $linkStats[$link->node->region][] = array('node' => $link, 'penalty' => \INF);
                 continue;
             }
             
-            $playerPenalty = $node->stats->playingPlayers;
-            $cpuPenalty = (int) ((\pow(1.05, (100 * $node->stats->systemLoad)) * 10) - 10);
+            $playerPenalty = $link->stats->playingPlayers;
+            $cpuPenalty = (int) ((\pow(1.05, (100 * $link->stats->systemLoad)) * 10) - 10);
             
-            if($node->stats->framesDeficit !== null) {
-                $deficitPenalty = (int) ((\pow(1.03, (500 * ($node->stats->framesDeficit / 3000))) * 600) - 600);
-                $nullPenalty = (int) (((\pow(1.03, (500 * ($node->stats->framesNulled / 3000))) * 300) - 6300) * 2);
+            if($link->stats->framesDeficit !== null) {
+                $deficitPenalty = (int) ((\pow(1.03, (500 * ($link->stats->framesDeficit / 3000))) * 600) - 600);
+                $nullPenalty = (int) (((\pow(1.03, (500 * ($link->stats->framesNulled / 3000))) * 300) - 6300) * 2);
             } else {
                 $deficitPenalty = 0;
                 $nullPenalty = 0;
             }
             
             $total = $playerPenalty + $cpuPenalty + $deficitPenalty + $nullPenalty;
-            $nodeStats[$node->region][] = array('node' => $node, 'penalty' => $total);
+            $linkStats[$link->node->region][] = array('node' => $link, 'penalty' => $total);
         }
         
-        return $nodeStats;
+        return $linkStats;
     }
     
     /**
      * Selects a node based on the stats.
-     * @param array                                $nodeStats
-     * @param string                               $region
+     * @param array   $linkStats
+     * @param string  $region
      * @return \CharlotteDunois\Luna\Link|null
      */
-    protected function selectNode(array $nodeStats, string $region) {
+    protected function selectNode(array $linkStats, string $region) {
         $link = null;
         $low = null;
         
-        if(!empty($nodeStats[$region])) {
-            foreach($nodeStats[$region] as $stat) {
+        if(!empty($linkStats[$region])) {
+            foreach($linkStats[$region] as $stat) {
                 if($low === null || $stat['penalty'] < $low['penalty']) {
                     $low = $stat;
                 }
             }
         } else {
-            foreach($nodeStats as $region) {
+            foreach($linkStats as $region) {
                 foreach($region as $stat) {
                     if($low === null || $stat['penalty'] < $low['penalty']) {
                         $low = $stat;
