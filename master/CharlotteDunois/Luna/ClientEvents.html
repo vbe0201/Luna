@@ -88,7 +88,7 @@
     
 
             <div class="description">
-            <p>This interface documents all events emitted on the client. Events emitted on the nodes (and added to the client) are re-emitted on the client, with the additional argument <code>$node</code>, (as such documented here).</p>            <p>Player events are however <strong>not</strong> emitted on the client.</p>                    </div>
+            <p>This interface documents all events emitted on the client. Events emitted on the links are re-emitted on the client, with the additional argument <code>$link</code>, (as such documented here).</p>            <p>Player events are however <strong>not</strong> emitted on the client.</p>                    </div>
     
     
     
@@ -101,7 +101,7 @@
                     void
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_debug">debug</a>(<a href="../../CharlotteDunois/Luna/Node.html"><abbr title="CharlotteDunois\Luna\Node">Node</abbr></a>|null $node, string|<a href="https://secure.php.net/Exception" target="_blank">Exception</a> $message)
+                    <a href="#method_debug">debug</a>(<a href="../../CharlotteDunois/Luna/Link.html"><abbr title="CharlotteDunois\Luna\Link">Link</abbr></a>|null $link, string|<a href="https://secure.php.net/Exception" target="_blank">Exception</a> $message)
         
                                             <p>Debug messages.</p>                </div>
                 <div class="col-md-2"></div>
@@ -111,7 +111,7 @@
                     void
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_disconnect">disconnect</a>(<a href="../../CharlotteDunois/Luna/Node.html"><abbr title="CharlotteDunois\Luna\Node">Node</abbr></a> $node, int $code, string $reason, bool $expectedClose)
+                    <a href="#method_disconnect">disconnect</a>(<a href="../../CharlotteDunois/Luna/Link.html"><abbr title="CharlotteDunois\Luna\Link">Link</abbr></a>|null $link, int $code, string $reason, bool $expectedClose)
         
                                             <p>Emitted when the node gets disconnected.</p>                </div>
                 <div class="col-md-2"></div>
@@ -121,7 +121,7 @@
                     void
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_error">error</a>(<a href="../../CharlotteDunois/Luna/Node.html"><abbr title="CharlotteDunois\Luna\Node">Node</abbr></a>|null $node, <a href="https://secure.php.net/Throwable" target="_blank">Throwable</a> $error)
+                    <a href="#method_error">error</a>(<a href="../../CharlotteDunois/Luna/Link.html"><abbr title="CharlotteDunois\Luna\Link">Link</abbr></a>|null $link, <a href="https://secure.php.net/Throwable" target="_blank">Throwable</a> $error)
         
                                             <p>Emitted when an error happens. You should always listen on this event.</p>                </div>
                 <div class="col-md-2"></div>
@@ -131,7 +131,7 @@
                     void
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_failover">failover</a>(<a href="../../CharlotteDunois/Luna/Node.html"><abbr title="CharlotteDunois\Luna\Node">Node</abbr></a> $node, <a href="../../CharlotteDunois/Luna/Player.html"><abbr title="CharlotteDunois\Luna\Player">Player</abbr></a> $player)
+                    <a href="#method_failover">failover</a>(<a href="../../CharlotteDunois/Luna/Link.html"><abbr title="CharlotteDunois\Luna\Link">Link</abbr></a>|null $link, <a href="../../CharlotteDunois/Luna/Player.html"><abbr title="CharlotteDunois\Luna\Player">Player</abbr></a> $player)
         
                                             <p>Emitted when a failover happens. Only emitted on the client.</p>                </div>
                 <div class="col-md-2"></div>
@@ -141,7 +141,7 @@
                     void
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_newPlayer">newPlayer</a>(<a href="../../CharlotteDunois/Luna/Node.html"><abbr title="CharlotteDunois\Luna\Node">Node</abbr></a> $node, <a href="../../CharlotteDunois/Luna/Player.html"><abbr title="CharlotteDunois\Luna\Player">Player</abbr></a> $player)
+                    <a href="#method_newPlayer">newPlayer</a>(<a href="../../CharlotteDunois/Luna/Link.html"><abbr title="CharlotteDunois\Luna\Link">Link</abbr></a>|null $link, <a href="../../CharlotteDunois/Luna/Player.html"><abbr title="CharlotteDunois\Luna\Player">Player</abbr></a> $player)
         
                                             <p>Emitted when a new player gets created.</p>                </div>
                 <div class="col-md-2"></div>
@@ -151,7 +151,7 @@
                     void
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_stats">stats</a>(<a href="../../CharlotteDunois/Luna/Node.html"><abbr title="CharlotteDunois\Luna\Node">Node</abbr></a> $node, <a href="../../CharlotteDunois/Luna/RemoteStats.html"><abbr title="CharlotteDunois\Luna\RemoteStats">RemoteStats</abbr></a> $stats)
+                    <a href="#method_stats">stats</a>(<a href="../../CharlotteDunois/Luna/Link.html"><abbr title="CharlotteDunois\Luna\Link">Link</abbr></a>|null $link, <a href="../../CharlotteDunois/Luna/RemoteStats.html"><abbr title="CharlotteDunois\Luna\RemoteStats">RemoteStats</abbr></a> $stats)
         
                                             <p>Emitted when the node gets stats from the lavalink node.</p>                </div>
                 <div class="col-md-2"></div>
@@ -164,9 +164,9 @@
             <div id="method-details">
                     <div class="method-item">
                     <h3 id="method_debug">
-        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/ClientEvents.php#L31">line 31</a></div>
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/ClientEvents.php#L23">line 23</a></div>
         <code>                    void
-    <strong>debug</strong>(<a href="../../CharlotteDunois/Luna/Node.html"><abbr title="CharlotteDunois\Luna\Node">Node</abbr></a>|null $node, string|<a href="https://secure.php.net/Exception" target="_blank">Exception</a> $message)
+    <strong>debug</strong>(<a href="../../CharlotteDunois/Luna/Link.html"><abbr title="CharlotteDunois\Luna\Link">Link</abbr></a>|null $link, string|<a href="https://secure.php.net/Exception" target="_blank">Exception</a> $message)
         </code>
     </h3>
     <div class="details">
@@ -180,8 +180,8 @@
 
                     <table class="table table-condensed">
                     <tr>
-                <td><a href="../../CharlotteDunois/Luna/Node.html"><abbr title="CharlotteDunois\Luna\Node">Node</abbr></a>|null</td>
-                <td>$node</td>
+                <td><a href="../../CharlotteDunois/Luna/Link.html"><abbr title="CharlotteDunois\Luna\Link">Link</abbr></a>|null</td>
+                <td>$link</td>
                 <td></td>
             </tr>
                     <tr>
@@ -213,7 +213,7 @@
                     <h3 id="method_disconnect">
         <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/ClientEvents.php#L41">line 41</a></div>
         <code>                    void
-    <strong>disconnect</strong>(<a href="../../CharlotteDunois/Luna/Node.html"><abbr title="CharlotteDunois\Luna\Node">Node</abbr></a> $node, int $code, string $reason, bool $expectedClose)
+    <strong>disconnect</strong>(<a href="../../CharlotteDunois/Luna/Link.html"><abbr title="CharlotteDunois\Luna\Link">Link</abbr></a>|null $link, int $code, string $reason, bool $expectedClose)
         </code>
     </h3>
     <div class="details">
@@ -227,8 +227,8 @@
 
                     <table class="table table-condensed">
                     <tr>
-                <td><a href="../../CharlotteDunois/Luna/Node.html"><abbr title="CharlotteDunois\Luna\Node">Node</abbr></a></td>
-                <td>$node</td>
+                <td><a href="../../CharlotteDunois/Luna/Link.html"><abbr title="CharlotteDunois\Luna\Link">Link</abbr></a>|null</td>
+                <td>$link</td>
                 <td></td>
             </tr>
                     <tr>
@@ -268,9 +268,9 @@
             </div>
                     <div class="method-item">
                     <h3 id="method_error">
-        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/ClientEvents.php#L23">line 23</a></div>
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/ClientEvents.php#L31">line 31</a></div>
         <code>                    void
-    <strong>error</strong>(<a href="../../CharlotteDunois/Luna/Node.html"><abbr title="CharlotteDunois\Luna\Node">Node</abbr></a>|null $node, <a href="https://secure.php.net/Throwable" target="_blank">Throwable</a> $error)
+    <strong>error</strong>(<a href="../../CharlotteDunois/Luna/Link.html"><abbr title="CharlotteDunois\Luna\Link">Link</abbr></a>|null $link, <a href="https://secure.php.net/Throwable" target="_blank">Throwable</a> $error)
         </code>
     </h3>
     <div class="details">
@@ -284,8 +284,8 @@
 
                     <table class="table table-condensed">
                     <tr>
-                <td><a href="../../CharlotteDunois/Luna/Node.html"><abbr title="CharlotteDunois\Luna\Node">Node</abbr></a>|null</td>
-                <td>$node</td>
+                <td><a href="../../CharlotteDunois/Luna/Link.html"><abbr title="CharlotteDunois\Luna\Link">Link</abbr></a>|null</td>
+                <td>$link</td>
                 <td></td>
             </tr>
                     <tr>
@@ -317,7 +317,7 @@
                     <h3 id="method_failover">
         <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/ClientEvents.php#L49">line 49</a></div>
         <code>                    void
-    <strong>failover</strong>(<a href="../../CharlotteDunois/Luna/Node.html"><abbr title="CharlotteDunois\Luna\Node">Node</abbr></a> $node, <a href="../../CharlotteDunois/Luna/Player.html"><abbr title="CharlotteDunois\Luna\Player">Player</abbr></a> $player)
+    <strong>failover</strong>(<a href="../../CharlotteDunois/Luna/Link.html"><abbr title="CharlotteDunois\Luna\Link">Link</abbr></a>|null $link, <a href="../../CharlotteDunois/Luna/Player.html"><abbr title="CharlotteDunois\Luna\Player">Player</abbr></a> $player)
         </code>
     </h3>
     <div class="details">
@@ -331,8 +331,8 @@
 
                     <table class="table table-condensed">
                     <tr>
-                <td><a href="../../CharlotteDunois/Luna/Node.html"><abbr title="CharlotteDunois\Luna\Node">Node</abbr></a></td>
-                <td>$node</td>
+                <td><a href="../../CharlotteDunois/Luna/Link.html"><abbr title="CharlotteDunois\Luna\Link">Link</abbr></a>|null</td>
+                <td>$link</td>
                 <td></td>
             </tr>
                     <tr>
@@ -364,7 +364,7 @@
                     <h3 id="method_newPlayer">
         <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/ClientEvents.php#L57">line 57</a></div>
         <code>                    void
-    <strong>newPlayer</strong>(<a href="../../CharlotteDunois/Luna/Node.html"><abbr title="CharlotteDunois\Luna\Node">Node</abbr></a> $node, <a href="../../CharlotteDunois/Luna/Player.html"><abbr title="CharlotteDunois\Luna\Player">Player</abbr></a> $player)
+    <strong>newPlayer</strong>(<a href="../../CharlotteDunois/Luna/Link.html"><abbr title="CharlotteDunois\Luna\Link">Link</abbr></a>|null $link, <a href="../../CharlotteDunois/Luna/Player.html"><abbr title="CharlotteDunois\Luna\Player">Player</abbr></a> $player)
         </code>
     </h3>
     <div class="details">
@@ -378,8 +378,8 @@
 
                     <table class="table table-condensed">
                     <tr>
-                <td><a href="../../CharlotteDunois/Luna/Node.html"><abbr title="CharlotteDunois\Luna\Node">Node</abbr></a></td>
-                <td>$node</td>
+                <td><a href="../../CharlotteDunois/Luna/Link.html"><abbr title="CharlotteDunois\Luna\Link">Link</abbr></a>|null</td>
+                <td>$link</td>
                 <td></td>
             </tr>
                     <tr>
@@ -411,7 +411,7 @@
                     <h3 id="method_stats">
         <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/ClientEvents.php#L65">line 65</a></div>
         <code>                    void
-    <strong>stats</strong>(<a href="../../CharlotteDunois/Luna/Node.html"><abbr title="CharlotteDunois\Luna\Node">Node</abbr></a> $node, <a href="../../CharlotteDunois/Luna/RemoteStats.html"><abbr title="CharlotteDunois\Luna\RemoteStats">RemoteStats</abbr></a> $stats)
+    <strong>stats</strong>(<a href="../../CharlotteDunois/Luna/Link.html"><abbr title="CharlotteDunois\Luna\Link">Link</abbr></a>|null $link, <a href="../../CharlotteDunois/Luna/RemoteStats.html"><abbr title="CharlotteDunois\Luna\RemoteStats">RemoteStats</abbr></a> $stats)
         </code>
     </h3>
     <div class="details">
@@ -425,8 +425,8 @@
 
                     <table class="table table-condensed">
                     <tr>
-                <td><a href="../../CharlotteDunois/Luna/Node.html"><abbr title="CharlotteDunois\Luna\Node">Node</abbr></a></td>
-                <td>$node</td>
+                <td><a href="../../CharlotteDunois/Luna/Link.html"><abbr title="CharlotteDunois\Luna\Link">Link</abbr></a>|null</td>
+                <td>$link</td>
                 <td></td>
             </tr>
                     <tr>

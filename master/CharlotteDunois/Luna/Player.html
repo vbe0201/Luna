@@ -119,11 +119,11 @@
                 <td></td>
             </tr>
                     <tr>
-                <td class="type" id="property_node">
-                                                                                <a href="../../CharlotteDunois/Luna/Node.html"><abbr title="CharlotteDunois\Luna\Node">Node</abbr></a>
+                <td class="type" id="property_link">
+                                                                                <a href="../../CharlotteDunois/Luna/Link.html"><abbr title="CharlotteDunois\Luna\Link">Link</abbr></a>
                 </td>
-                <td><a name="property_node" href="#property_node">$node</a></td>
-                <td class="last">The node this player is on.</td>
+                <td><a name="property_link" href="#property_link">$link</a></td>
+                <td class="last">The link this player is on.</td>
                 <td></td>
             </tr>
                     <tr>
@@ -177,9 +177,19 @@
                     
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method___construct">__construct</a>(<a href="../../CharlotteDunois/Luna/Node.html"><abbr title="CharlotteDunois\Luna\Node">Node</abbr></a> $node, int $guildID)
+                    <a href="#method___construct">__construct</a>(<a href="../../CharlotteDunois/Luna/Link.html"><abbr title="CharlotteDunois\Luna\Link">Link</abbr></a> $link, int $guildID)
         
                                             <p>Constructor.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    void
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_clearTrack">clearTrack</a>()
+        
+                                            <p>Clears the internal track.</p>                </div>
                 <div class="col-md-2"></div>
             </div>
                     <div class="row">
@@ -237,9 +247,29 @@
                     void
                 </div>
                 <div class="col-md-8 type">
+                    <a href="#method_setNode">setNode</a>(<a href="../../CharlotteDunois/Luna/Link.html"><abbr title="CharlotteDunois\Luna\Link">Link</abbr></a> $link)
+        
+                                            <p>Sets the node. Used for failover.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    void
+                </div>
+                <div class="col-md-8 type">
                     <a href="#method_setPaused">setPaused</a>(bool $paused)
         
                                             <p>Sets the paused state of the track.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    void
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_setVoiceServerUpdate">setVoiceServerUpdate</a>(array $voiceServerUpdate)
+        
+                                            <p>Sets the Voice Server Update array.</p>                </div>
                 <div class="col-md-2"></div>
             </div>
                     <div class="row">
@@ -262,6 +292,16 @@
                                             <p>Stops playing a track.</p>                </div>
                 <div class="col-md-2"></div>
             </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    void
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_updateState">updateState</a>(array $state)
+        
+                                            <p>Updates the state.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
             </div>
 
 
@@ -270,9 +310,9 @@
             <div id="method-details">
                     <div class="method-item">
                     <h3 id="method___construct">
-        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Player.php#L78">line 78</a></div>
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Player.php#L79">line 79</a></div>
         <code>                    
-    <strong>__construct</strong>(<a href="../../CharlotteDunois/Luna/Node.html"><abbr title="CharlotteDunois\Luna\Node">Node</abbr></a> $node, int $guildID)
+    <strong>__construct</strong>(<a href="../../CharlotteDunois/Luna/Link.html"><abbr title="CharlotteDunois\Luna\Link">Link</abbr></a> $link, int $guildID)
         </code>
     </h3>
     <div class="details">
@@ -286,8 +326,8 @@
 
                     <table class="table table-condensed">
                     <tr>
-                <td><a href="../../CharlotteDunois/Luna/Node.html"><abbr title="CharlotteDunois\Luna\Node">Node</abbr></a></td>
-                <td>$node</td>
+                <td><a href="../../CharlotteDunois/Luna/Link.html"><abbr title="CharlotteDunois\Luna\Link">Link</abbr></a></td>
+                <td>$link</td>
                 <td></td>
             </tr>
                     <tr>
@@ -307,8 +347,40 @@
 
             </div>
                     <div class="method-item">
+                    <h3 id="method_clearTrack">
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Player.php#L316">line 316</a></div>
+        <code>                    void
+    <strong>clearTrack</strong>()
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Clears the internal track.</p>                                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>void</td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+            
+                        
+                        
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
                     <h3 id="method_destroy">
-        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Player.php#L177">line 177</a></div>
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Player.php#L180">line 180</a></div>
         <code>                    void
     <strong>destroy</strong>()
         </code>
@@ -349,7 +421,7 @@
             </div>
                     <div class="method-item">
                     <h3 id="method_getLastPosition">
-        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Player.php#L204">line 204</a></div>
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Player.php#L207">line 207</a></div>
         <code>                    int
     <strong>getLastPosition</strong>()
         </code>
@@ -381,7 +453,7 @@
             </div>
                     <div class="method-item">
                     <h3 id="method_play">
-        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Player.php#L121">line 121</a></div>
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Player.php#L124">line 124</a></div>
         <code>                    void
     <strong>play</strong>(<a href="../../CharlotteDunois/Luna/AudioTrack.html"><abbr title="CharlotteDunois\Luna\AudioTrack">AudioTrack</abbr></a> $track, int $startTime = 0, int $endTime = 0)
         </code>
@@ -442,7 +514,7 @@
             </div>
                     <div class="method-item">
                     <h3 id="method_seekTo">
-        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Player.php#L216">line 216</a></div>
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Player.php#L219">line 219</a></div>
         <code>                    void
     <strong>seekTo</strong>(int $position)
         </code>
@@ -497,7 +569,7 @@
             </div>
                     <div class="method-item">
                     <h3 id="method_sendVoiceUpdate">
-        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Player.php#L292">line 292</a></div>
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Player.php#L295">line 295</a></div>
         <code>                    void
     <strong>sendVoiceUpdate</strong>(string $sessionID, array $event)
         </code>
@@ -552,8 +624,50 @@
 
             </div>
                     <div class="method-item">
+                    <h3 id="method_setNode">
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Player.php#L326">line 326</a></div>
+        <code>                    void
+    <strong>setNode</strong>(<a href="../../CharlotteDunois/Luna/Link.html"><abbr title="CharlotteDunois\Luna\Link">Link</abbr></a> $link)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Sets the node. Used for failover.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="../../CharlotteDunois/Luna/Link.html"><abbr title="CharlotteDunois\Luna\Link">Link</abbr></a></td>
+                <td>$link</td>
+                <td></td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>void</td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+            
+                        
+                        
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
                     <h3 id="method_setPaused">
-        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Player.php#L246">line 246</a></div>
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Player.php#L249">line 249</a></div>
         <code>                    void
     <strong>setPaused</strong>(bool $paused)
         </code>
@@ -603,8 +717,50 @@
 
             </div>
                     <div class="method-item">
+                    <h3 id="method_setVoiceServerUpdate">
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Player.php#L338">line 338</a></div>
+        <code>                    void
+    <strong>setVoiceServerUpdate</strong>(array $voiceServerUpdate)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Sets the Voice Server Update array.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>array</td>
+                <td>$voiceServerUpdate</td>
+                <td></td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>void</td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+            
+                        
+                        
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
                     <h3 id="method_setVolume">
-        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Player.php#L268">line 268</a></div>
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Player.php#L271">line 271</a></div>
         <code>                    void
     <strong>setVolume</strong>(int $volume)
         </code>
@@ -655,7 +811,7 @@
             </div>
                     <div class="method-item">
                     <h3 id="method_stop">
-        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Player.php#L153">line 153</a></div>
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Player.php#L156">line 156</a></div>
         <code>                    void
     <strong>stop</strong>()
         </code>
@@ -687,6 +843,48 @@
             </tr>
             </table>
 
+            
+                        
+                        
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_updateState">
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Player.php#L347">line 347</a></div>
+        <code>                    void
+    <strong>updateState</strong>(array $state)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Updates the state.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>array</td>
+                <td>$state</td>
+                <td></td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>void</td>
+            <td></td>
+        </tr>
+    </table>
+
+            
             
                         
                         

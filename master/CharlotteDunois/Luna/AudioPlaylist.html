@@ -100,7 +100,7 @@
                                                                                 string
                 </td>
                 <td><a name="property_name" href="#property_name">$name</a></td>
-                <td class="last">The playlist's name.</td>
+                <td class="last">The playlist's name, or null for Lavalink v2.</td>
                 <td></td>
             </tr>
                     <tr>
@@ -108,7 +108,7 @@
                                                                                 int
                 </td>
                 <td><a name="property_selectedTrack" href="#property_selectedTrack">$selectedTrack</a></td>
-                <td class="last">Which track is selected.</td>
+                <td class="last">Which track is selected, or null for Lavalink v2.</td>
                 <td></td>
             </tr>
                     <tr>
@@ -130,7 +130,7 @@
                     
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method___construct">__construct</a>(string $name, int $selectedTrack, array $tracks)
+                    <a href="#method___construct">__construct</a>(string|null $name, int|null $selectedTrack, array $tracks)
         
                                             <p>Constructor.</p>                </div>
                 <div class="col-md-2"></div>
@@ -145,7 +145,7 @@
                     <h3 id="method___construct">
         <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/AudioPlaylist.php#L43">line 43</a></div>
         <code>                    
-    <strong>__construct</strong>(string $name, int $selectedTrack, array $tracks)
+    <strong>__construct</strong>(string|null $name, int|null $selectedTrack, array $tracks)
         </code>
     </h3>
     <div class="details">
@@ -159,12 +159,12 @@
 
                     <table class="table table-condensed">
                     <tr>
-                <td>string</td>
+                <td>string|null</td>
                 <td>$name</td>
                 <td>The playlist's name.</td>
             </tr>
                     <tr>
-                <td>int</td>
+                <td>int|null</td>
                 <td>$selectedTrack</td>
                 <td>Which track is selected.</td>
             </tr>
