@@ -330,7 +330,7 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
     
     /**
      * Creates nodes as part of a factory and adds them to the client. This is useful to import node configurations from a file.
-     * @param array                         $links
+     * @param array  $nodes
      * @return \CharlotteDunois\Luna\Node[]
      */
     function createNodes(array $nodes) {
