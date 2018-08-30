@@ -65,7 +65,7 @@ class LoadBalancer {
      * Get an ideal node for the region. If there is no ideal node, this will return the first node in the list.
      * @param string  $region
      * @param bool    $autoConnect  Automatically make the node connect if it is disconnected (idling).
-     * @return \CharlotteDunois\Luna\Node
+     * @return \CharlotteDunois\Luna\Link
      * @throws \UnderflowException  Thrown when no nodes are available
      */
     function getIdealNode(string $region, bool $autoConnect = true) {
