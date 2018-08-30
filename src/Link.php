@@ -156,6 +156,7 @@ class Link implements \CharlotteDunois\Events\EventEmitterInterface {
      * @param string  $name
      * @return mixed
      * @throws \RuntimeException
+     * @internal
      */
     function __get($name) {
         if(\property_exists($this, $name)) {
