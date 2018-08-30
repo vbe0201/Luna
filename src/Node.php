@@ -11,11 +11,11 @@ namespace CharlotteDunois\Luna;
 
 /**
  * This class represents a node.
- * @property string                                  $name             The name of the node.
- * @property string                                  $password         The password of th enode.
- * @property string                                  $httpHost         The HTTP host address.
- * @property string                                  $wsHost           The WS host address.
- * @property string                                  $region           The region of the node.
+ * @property string  $name      The name of the node.
+ * @property string  $password  The password of th enode.
+ * @property string  $httpHost  The HTTP host address.
+ * @property string  $wsHost    The WS host address.
+ * @property string  $region    The region of the node.
  */
 class Node implements \JsonSerializable {
     /**
