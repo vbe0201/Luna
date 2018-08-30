@@ -93,13 +93,13 @@ class YasminClient extends Client {
     /**
      * Joins a voice channel. The guild region will be stripped down to `eu`, `us`, etc. Resolves with an instance of Player.
      * @param \CharlotteDunois\Yasmin\Models\VoiceChannel  $channel
-     * @param \CharlotteDunois\Luna\Node|null              $node     The node to use, or automatically determine one.
+     * @param \CharlotteDunois\Luna\Link|null              $node     The node to use, or automatically determine one.
      * @return \React\Promise\ExtendedPromiseInterface
      * @throws \BadMethodCallException  Thrown when the client is not ready.
      * @throws \LogicException          Thrown when we have insufficient permissions.
      * @see \CharlotteDunois\Luna\Player
      */
-    function joinChannel(\CharlotteDunois\Yasmin\Models\VoiceChannel $channel, ?\CharlotteDunois\Luna\Node $node = null) {
+    function joinChannel(\CharlotteDunois\Yasmin\Models\VoiceChannel $channel, ?\CharlotteDunois\Luna\Link $node = null) {
         if($this->client->readyTimestamp === null) {
             throw new \BadMethodCallException('Client is not ready yet');
         }
@@ -281,8 +281,8 @@ class YasminClient extends Client {
         $disconnect = function () {
             $this->emit('debug', null, 'Yasmin got disconnected from Discord, destroying all players...');
             
-            foreach($this->nodes as $node) {
-                foreach($node->players as $guildID => $player) {
+            foreach($this->links as $link) {
+                foreach($link->players as $guildID => $player) {
                     $this->scheduledVoiceStates[] = $guildID;
                     $player->destroy();
                 }
@@ -351,7 +351,7 @@ class YasminClient extends Client {
         $this->yasminListeners[$vsuName] = $voiceServerUpdate;
         $this->client->on($vsuName, $voiceServerUpdate);
         
-        $this->on('failover', function (\CharlotteDunois\Luna\Node $node, \CharlotteDunois\Luna\Player $player) {
+        $this->on('failover', function (\CharlotteDunois\Luna\Link $link, \CharlotteDunois\Luna\Player $player) {
             $this->connections->set($player->guildID, $player);
         });
     }

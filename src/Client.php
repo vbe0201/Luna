@@ -14,9 +14,10 @@ namespace CharlotteDunois\Luna;
  * The lavalink client implements automatic failover. That means, if a lavalink node unexpectedly disconnects,
  * the client will automatically look for a new node and starts playing the track on it.
  * @property \CharlotteDunois\Luna\LoadBalancer|null  $loadBalancer The Load Balancer.
- * @property \CharlotteDunois\Collect\Collection      $nodes        A collection of nodes, mapped by name.
+ * @property \CharlotteDunois\Collect\Collection      $links        A collection of links, mapped by node name.
  * @property int                                      $numShards    The amount of shards the bot has.
  * @property int                                      $userID       The Discord User ID.
+ * @see \CharlotteDunois\Luna\ClientEvents
  */
 class Client implements \CharlotteDunois\Events\EventEmitterInterface {
     use \CharlotteDunois\Events\EventEmitterTrait;
@@ -65,16 +66,16 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
     protected $options = array();
     
     /**
-     * A collection of nodes, mapped by name.
+     * A collection of links, mapped by name.
      * @param \CharlotteDunois\Collect\Collection
      */
-    protected $nodes;
+    protected $links;
     
     /**
-     * A collection of node listeners, mapped by name.
+     * A collection of link listeners, mapped by name.
      * @param \CharlotteDunois\Collect\Collection
      */
-    protected $nodeListeners;
+    protected $linkListeners;
     
     /**
      * Constructor.
@@ -102,14 +103,14 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
             $this->browser = new \Clue\React\Buzz\Browser($loop, $this->getOption('connector'));
         }
         
-        $this->nodes = new \CharlotteDunois\Collect\Collection();
-        $this->nodeListeners = new \CharlotteDunois\Collect\Collection();
+        $this->links = new \CharlotteDunois\Collect\Collection();
+        $this->linkListeners = new \CharlotteDunois\Collect\Collection();
         
-        $failover = function (\CharlotteDunois\Luna\Node $node, int $code, string $reason, bool $expectedClose, ?\CharlotteDunois\Collect\Collection $nplayers = null) use (&$failover) {
-            $players = ($nplayers ?: $node->players);
+        $failover = function (\CharlotteDunois\Luna\Link $link, int $code, string $reason, bool $expectedClose, ?\CharlotteDunois\Collect\Collection $nplayers = null) use (&$failover) {
+            $players = ($nplayers ?: $link->players);
             
             if(!$expectedClose && $players->count() > 0) {
-                $node->emit('debug', 'Failing over '.$players->count().' player(s) to new nodes');
+                $link->emit('debug', 'Failing over '.$players->count().' player(s) to other nodes');
                 
                 try {
                     foreach($players as $player) {
@@ -117,9 +118,9 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
                         $position = $player->getLastPosition();
                         
                         if($this->loadBalancer) {
-                            $newNode = $this->loadBalancer->getIdealNode($node->region);
+                            $newNode = $this->loadBalancer->getIdealNode($link->node->region);
                         } else {
-                            $newNode = $this->getIdealNode($node->region);
+                            $newNode = $this->getIdealNode($link->node->region);
                         }
                         
                         $player->setNode($newNode);
@@ -129,10 +130,10 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
                             $player->play($track, $position);
                         }
                         
-                        $this->emit('failover', $node, $player);
+                        $this->emit('failover', $link, $player);
                     }
                 } catch (\UnderflowException $e) {
-                    $node->emit('debug', 'Delaying failover by 10 seconds due to no nodes available');
+                    $link->emit('debug', 'Delaying failover by 10 seconds due to no links available');
                     
                     if($nplayers === null) {
                         $nplayers = new \CharlotteDunois\Collect\Collection();
@@ -142,8 +143,8 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
                         }
                     }
                     
-                    $this->loop->addTimer(10, function () use ($node, $code, $reason, $expectedClose, $nplayers, &$failover) {
-                        $failover($node, $code, $reason, $expectedClose, $nplayers);
+                    $this->loop->addTimer(10, function () use ($link, $code, $reason, $expectedClose, $nplayers, &$failover) {
+                        $failover($link, $code, $reason, $expectedClose, $nplayers);
                     });
                 }
             }
@@ -153,6 +154,7 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
     }
     
     /**
+     * @param string  $name
      * @return bool
      * @throws \RuntimeException
      * @internal
@@ -170,6 +172,7 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
     }
     
     /**
+     * @param string  $name
      * @return mixed
      * @throws \RuntimeException
      * @internal
@@ -216,56 +219,58 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
     
     /**
      * Adds a node.
-     * @param \CharlotteDunois\Luna\Node  $node
+     * @param $link\CharlotteDunois\Luna\Link  $link
      * @return $this
      */
     function addNode(\CharlotteDunois\Luna\Node $node) {
-        if($this->nodes->has($node->name)) {
+        if($this->links->has($node->name)) {
             return $this;
         }
         
+        $link = new \CharlotteDunois\Luna\Link($this, $node);
+        
         $listeners = array(
-            'debug' => $this->createDebugListener($node),
-            'error' => $this->createErrorListener($node),
-            'disconnect' => $this->createDisconnectListener($node),
-            'stats' => $this->createStatsListener($node),
-            'newPlayer' => $this->createNewPlayerListener($node)
+            'debug' => $this->createDebugListener($link),
+            'error' => $this->createErrorListener($link),
+            'disconnect' => $this->createDisconnectListener($link),
+            'stats' => $this->createStatsListener($link),
+            'newPlayer' => $this->createNewPlayerListener($link)
         );
         
         foreach($listeners as $event => $listener) {
-            $node->on($event, $listener);
+            $link->on($event, $listener);
         }
         
-        $this->nodes->set($node->name, $node);
-        $this->nodeListeners->set($node->name, $listeners);
+        $this->links->set($node->name, $link);
+        $this->linkListeners->set($node->name, $listeners);
         
-        $node->setClient($this);
         return $this;
     }
     
     /**
      * Removes a node.
-     * @param \CharlotteDunois\Luna\Node  $node
+     * @param $link\CharlotteDunois\Luna\Link  $link
      * @param bool                        $autoDisconnect  Whether we automatically disconnect from the node.
      * @return $this
      */
     function removeNode(\CharlotteDunois\Luna\Node $node, bool $autoDisconnect = true) {
-        if(!$this->nodes->has($node->name)) {
+        if(!$this->links->has($node->name)) {
             return $this;
         }
         
-        if($autoDisconnect) {
-            $node->link->disconnect();
-        }
+        $link = $this->links->has($node->name);
+        $listeners = $this->linkListeners->get($node->name);
         
-        $listeners = $this->nodeListeners->get($node->name);
+        if($autoDisconnect) {
+            $link->disconnect();
+        }
         
         foreach($listeners as $event => $listener) {
-            $node->removeListener($event, $listener);
+            $link->removeListener($event, $listener);
         }
         
-        $this->nodes->delete($node->name);
-        $this->nodeListeners->delete($node->name);
+        $this->links->delete($node->name);
+        $this->linkListeners->delete($node->name);
         
         return $this;
     }
@@ -274,65 +279,65 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
      * Get an ideal node for the region solely based on region. If there is no ideal node, this will return the first connected node in the list.
      * @param string  $region
      * @param bool    $autoConnect  Automatically make the node connect if it is disconnected (idling).
-     * @return \CharlotteDunois\Luna\Node
+     * @return \CharlotteDunois\Luna\Link
      * @throws \UnderflowException  Thrown when no nodes are available
      */
     function getIdealNode(string $region, bool $autoConnect = true) {
-        if($this->nodes->count() === 0) {
+        if($this->links->count() === 0) {
             throw new \UnderflowException('No nodes added');
         }
         
-        $node = $this->nodes->first(function (\CharlotteDunois\Luna\Node $node) use ($region) {
-            return ($node->region === $region && $node->link->status >= \CharlotteDunois\Luna\Link::STATUS_CONNECTED);
+        $link = $this->links->first(function (\CharlotteDunois\Luna\Link $link) use ($region) {
+            return ($link->node->region === $region && $link->status >= \CharlotteDunois\Luna\Link::STATUS_CONNECTED);
         });
         
-        if(!$node) {
-            $node = $this->nodes->first(function (\CharlotteDunois\Luna\Node $node) {
-                return ($node->link->status >= \CharlotteDunois\Luna\Link::STATUS_CONNECTING);
+        if(!$link) {
+            $link = $this->links->first(function (\CharlotteDunois\Luna\Link $link) {
+                return ($link->status >= \CharlotteDunois\Luna\Link::STATUS_CONNECTING);
             });
             
-            if(!$node) {
+            if(!$link) {
                 throw new \UnderflowException('No node available');
             }
         }
         
-        if($node->link->status === \CharlotteDunois\Luna\Link::STATUS_IDLE) {
-            $node->link->connect();
+        if($link->status === \CharlotteDunois\Luna\Link::STATUS_IDLE) {
+            $link->connect();
         }
         
-        return $node;
+        return $link;
     }
     
     /**
-     * Starts all connections to the nodes.
+     * Starts all connections to the links.
      * @return \React\Promise\ExtendedPromiseInterface
      */
     function start() {
-        return \React\Promise\all($this->nodes->map(function (\CharlotteDunois\Luna\Node $node) {
-            return $node->link->connect();
+        return \React\Promise\all($this->links->map(function (\CharlotteDunois\Luna\Link $link) {
+            return $link->connect();
         })->all());
     }
     
     /**
-     * Stops all connections to the nodes.
+     * Stops all connections to the links.
      * @return void
      */
     function stop() {
-        foreach($this->nodes as $node) {
-            $node->link->disconnect();
+        foreach($this->links as $link) {
+            $link->disconnect();
         }
     }
     
     /**
-     * Creates nodes as part of a factory. This is useful to import node configurations from a file.
-     * @param array                         $nodes
+     * Creates nodes as part of a factory and adds them to the client. This is useful to import node configurations from a file.
+     * @param array                         $links
      * @return \CharlotteDunois\Luna\Node[]
      */
     function createNodes(array $nodes) {
         $factory = array();
         
-        foreach($nodes as $node) {
-            list('name' => $name, 'password' => $password, 'httpHost' => $httpHost, 'wsHost' => $wsHost, 'region' => $region) = $node;
+        foreach($nodes as $data) {
+            list('name' => $name, 'password' => $password, 'httpHost' => $httpHost, 'wsHost' => $wsHost, 'region' => $region) = $data;
             $node = new \CharlotteDunois\Luna\Node($name, $password, $httpHost, $wsHost, $region);
             
             $factory[$name] = $node;
@@ -350,7 +355,6 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
      * @param string|null  $body
      * @return \React\Promise\ExtendedPromiseInterface
      * @throws \BadMethodCallException
-     * @internal
      */
     function createHTTPRequest(string $method, string $url, array $headers, string $body = null) {
         if(!$this->browser) {
@@ -363,56 +367,56 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
     
     /**
      * Creates a node-specific debug listener.
-     * @param \CharlotteDunois\Luna\Node  $node
+     * @param $link\CharlotteDunois\Luna\Link  $link
      * @return \Closure
      */
-    protected function createDebugListener(\CharlotteDunois\Luna\Node $node) {
-        return (function ($debug) use (&$node) {
-            $this->emit('debug', $node, $debug);
+    protected function createDebugListener(\CharlotteDunois\Luna\Link $link) {
+        return (function ($debug) use (&$link) {
+            $this->emit('debug', $link, $debug);
         });
     }
     
     /**
      * Creates a node-specific error listener.
-     * @param \CharlotteDunois\Luna\Node  $node
+     * @param $link\CharlotteDunois\Luna\Link  $link
      * @return \Closure
      */
-    protected function createErrorListener(\CharlotteDunois\Luna\Node $node) {
-        return (function (\Throwable $error) use (&$node) {
-            $this->emit('error', $node, $error);
+    protected function createErrorListener(\CharlotteDunois\Luna\Link $link) {
+        return (function (\Throwable $error) use (&$link) {
+            $this->emit('error', $link, $error);
         });
     }
     
     /**
      * Creates a node-specific disconnect listener.
-     * @param \CharlotteDunois\Luna\Node  $node
+     * @param $link\CharlotteDunois\Luna\Link  $link
      * @return \Closure
      */
-    protected function createDisconnectListener(\CharlotteDunois\Luna\Node $node) {
-        return (function (int $code, string $reason, bool $expectedClose) use (&$node) {
-            $this->emit('disconnect', $node, $code, $reason, $expectedClose);
+    protected function createDisconnectListener(\CharlotteDunois\Luna\Link $link) {
+        return (function (int $code, string $reason, bool $expectedClose) use (&$link) {
+            $this->emit('disconnect', $link, $code, $reason, $expectedClose);
         });
     }
     
     /**
      * Creates a node-specific stats listener.
-     * @param \CharlotteDunois\Luna\Node  $node
+     * @param $link\CharlotteDunois\Luna\Link  $link
      * @return \Closure
      */
-    protected function createStatsListener(\CharlotteDunois\Luna\Node $node) {
-        return (function (\CharlotteDunois\Luna\RemoteStats $stats) use (&$node) {
-            $this->emit('stats', $node, $stats);
+    protected function createStatsListener(\CharlotteDunois\Luna\Link $link) {
+        return (function (\CharlotteDunois\Luna\RemoteStats $stats) use (&$link) {
+            $this->emit('stats', $link, $stats);
         });
     }
     
     /**
      * Creates a node-specific newPlayer listener.
-     * @param \CharlotteDunois\Luna\Node  $node
+     * @param $link\CharlotteDunois\Luna\Link  $link
      * @return \Closure
      */
-    protected function createNewPlayerListener(\CharlotteDunois\Luna\Node $node) {
-        return (function (\CharlotteDunois\Luna\Player $player) use (&$node) {
-            $this->emit('newPlayer', $node, $player);
+    protected function createNewPlayerListener(\CharlotteDunois\Luna\Link $link) {
+        return (function (\CharlotteDunois\Luna\Player $player) use (&$link) {
+            $this->emit('newPlayer', $link, $player);
         });
     }
 }

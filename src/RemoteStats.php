@@ -122,6 +122,7 @@ class RemoteStats {
     }
     
     /**
+     * @param string  $name
      * @return bool
      * @throws \RuntimeException
      * @internal
@@ -139,6 +140,7 @@ class RemoteStats {
     }
     
     /**
+     * @param string  $name
      * @return mixed
      * @throws \RuntimeException
      * @internal

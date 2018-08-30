@@ -21,6 +21,7 @@ class LoadBalancer {
     protected $client;
     
     /**
+     * @param string  $name
      * @return bool
      * @throws \RuntimeException
      * @internal
@@ -38,6 +39,7 @@ class LoadBalancer {
     }
     
     /**
+     * @param string  $name
      * @return mixed
      * @throws \RuntimeException
      * @internal
@@ -67,28 +69,28 @@ class LoadBalancer {
      * @throws \UnderflowException  Thrown when no nodes are available
      */
     function getIdealNode(string $region, bool $autoConnect = true) {
-        if($this->client->nodes->count() === 0) {
+        if($this->client->links->count() === 0) {
             throw new \UnderflowException('No nodes added');
         }
         
-        $nodeStats = $this->calculateStats($this->client->nodes);
-        $node = $this->selectNode($nodeStats, $region);
+        $nodeStats = $this->calculateStats($this->client->links);
+        $link = $this->selectNode($nodeStats, $region);
         
-        if(!$node) {
-            $node = $this->client->nodes->first(function (\CharlotteDunois\Luna\Node $node) {
-                return ($node->link->status >= \CharlotteDunois\Luna\Link::STATUS_CONNECTED);
+        if(!$link) {
+            $link = $this->client->links->first(function (\CharlotteDunois\Luna\Link $link) {
+                return ($link->status >= \CharlotteDunois\Luna\Link::STATUS_CONNECTED);
             });
             
-            if(!$node) {
+            if(!$link) {
                 throw new \UnderflowException('No node available');
             }
         }
         
-        if($autoConnect && $node->link->status === \CharlotteDunois\Luna\Link::STATUS_IDLE) {
-            $node->link->connect();
+        if($autoConnect && $link->status === \CharlotteDunois\Luna\Link::STATUS_IDLE) {
+            $link->connect();
         }
         
-        return $node;
+        return $link;
     }
     
     /**
@@ -104,7 +106,7 @@ class LoadBalancer {
                 $nodeStats[$node->region] = array();
             }
             
-            if($node->link->status < \CharlotteDunois\Luna\Link::STATUS_CONNECTED) {
+            if($link->status < \CharlotteDunois\Luna\Link::STATUS_CONNECTED) {
                 continue;
             }
             
@@ -135,10 +137,10 @@ class LoadBalancer {
      * Selects a node based on the stats.
      * @param array                                $nodeStats
      * @param string                               $region
-     * @return \CharlotteDunois\Luna\Node|null
+     * @return \CharlotteDunois\Luna\Link|null
      */
     protected function selectNode(array $nodeStats, string $region) {
-        $node = null;
+        $link = null;
         $low = null;
         
         if(!empty($nodeStats[$region])) {
@@ -158,9 +160,9 @@ class LoadBalancer {
         }
         
         if($low !== null) {
-            $node = $low['node'];
+            $link = $low['node'];
         }
         
-        return $node;
+        return $link;
     }
 }

@@ -11,22 +11,23 @@ namespace CharlotteDunois\Luna;
 
 /**
  * Represents a player of a guild on a node.
- * @property \CharlotteDunois\Luna\Node             $node               The node this player is on.
+ * @property \CharlotteDunois\Luna\Link             $link               The link this player is on.
  * @property int                                    $guildID            The guild ID this player is serving.
  * @property \CharlotteDunois\Luna\AudioTrack|null  $track              The currently playing audio track.
  * @property bool                                   $paused             Whether the track is currently paused.
  * @property int                                    $position           The position of the track in milliseconds.
  * @property int                                    $volume             The volume of the player from 0 to 100.
  * @property array                                  $voiceServerUpdate  The sent voice update event.
+ * @see \CharlotteDunois\Luna\PlayerEvents
  */
 class Player implements \CharlotteDunois\Events\EventEmitterInterface {
     use \CharlotteDunois\Events\EventEmitterTrait;
     
     /**
-     * The node this player is on.
-     * @var \CharlotteDunois\Luna\Node
+     * The link this player is on.
+     * @var \CharlotteDunois\Luna\Link
      */
-    protected $node;
+    protected $link;
     
     /**
      * The guild ID this player is serving.
@@ -72,15 +73,16 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
     
     /**
      * Constructor.
-     * @param \CharlotteDunois\Luna\Node  $node
+     * @param \CharlotteDunois\Luna\Link  $link
      * @param int                         $guildID
      */
-    function __construct(\CharlotteDunois\Luna\Node $node, int $guildID) {
-        $this->node = $node;
+    function __construct(\CharlotteDunois\Luna\Link $link, int $guildID) {
+        $this->link = $link;
         $this->guildID = $guildID;
     }
     
     /**
+     * @param string  $name
      * @return bool
      * @throws \RuntimeException
      * @internal
@@ -98,6 +100,7 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
     }
     
     /**
+     * @param string  $name
      * @return mixed
      * @throws \RuntimeException
      * @internal
@@ -134,7 +137,7 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
             $packet['endTime'] = $endTime;
         }
         
-        $this->node->link->send($packet);
+        $this->link->send($packet);
         $this->emit('debug', 'Started playing track "'.($track->author ? $track->author.' - ' : '').$track->title.'"');
         
         $this->paused = false;
@@ -157,7 +160,7 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
                 'guildId' => ((string) $this->guildID)
             );
             
-            $this->node->link->send($packet);
+            $this->link->send($packet);
             $this->emit('debug', 'Stopped music playback');
             
             $this->paused = false;
@@ -175,25 +178,25 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
      * @throws \RuntimeException
      */
     function destroy() {
-        if($this->node && $this->node->link) {
+        if($this->link) {
             $packet = array(
                 'op' => 'destroy',
                 'guildId' => ((string) $this->guildID)
             );
             
             try {
-                $this->node->link->send($packet);
+                $this->link->send($packet);
             } catch (\RuntimeException $e) {
                 /* Continue regardless of error */
             }
             
             $this->track = null;
-            $this->node->players->delete($this->guildID);
+            $this->link->players->delete($this->guildID);
             
             $this->emit('debug', 'Destroyed music playback');
             
             $this->emit('destroy');
-            $this->node = null;
+            $this->link = null;
         }
     }
     
@@ -228,7 +231,7 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
                     'position' => $pos
                 );
                 
-                $this->node->link->send($packet);
+                $this->link->send($packet);
                 $this->emit('debug', 'Seeked to position '.$pos.'ms');
                 
                 $this->position = $pos;
@@ -251,7 +254,7 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
                 'pause' => $paused
             );
             
-            $this->node->link->send($packet);
+            $this->link->send($packet);
             $this->emit('debug', 'Set paused to '.($paused ? 'true' : 'false'));
             
             $this->paused = $paused;
@@ -275,7 +278,7 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
                 'volume' => $volume
             );
             
-            $this->node->link->send($packet);
+            $this->link->send($packet);
             $this->emit('debug', 'Set volume to '.$volume);
             
             $this->volume = $volume;
@@ -297,9 +300,9 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
             'event' => $event
         );
         
-        $this->node->emit('debug', 'Sending voice update for guild '.$this->guildID);
+        $this->link->emit('debug', 'Sending voice update for guild '.$this->guildID);
         
-        $this->node->link->send($packet);
+        $this->link->send($packet);
         $this->setVoiceServerUpdate(array(
             'sessionID' => $sessionID,
             'event' => $event
@@ -309,7 +312,6 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
     /**
      * Clears the internal track.
      * @return void
-     * @internal
      */
     function clearTrack() {
         $this->track = null;
@@ -318,22 +320,20 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
     
     /**
      * Sets the node. Used for failover.
-     * @param \CharlotteDunois\Luna\Node  $node
+     * @param \CharlotteDunois\Luna\Link  $link
      * @return void
-     * @internal
      */
-    function setNode(\CharlotteDunois\Luna\Node $node) {
-        $this->node->players->delete($this->guildID);
+    function setNode(\CharlotteDunois\Luna\Link $link) {
+        $this->link->players->delete($this->guildID);
         
-        $this->node = $node;
-        $this->node->players->set($this->guildID, $this);
+        $this->link = $link;
+        $this->link->players->set($this->guildID, $this);
     }
     
     /**
      * Sets the Voice Server Update array.
      * @param array $voiceServerUpdate
      * @return void
-     * @internal
      */
     function setVoiceServerUpdate(array $voiceServerUpdate) {
         $this->voiceServerUpdate = $voiceServerUpdate;
@@ -343,7 +343,6 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
      * Updates the state.
      * @param array  $state
      * @return void
-     * @internal
      */
     function updateState(array $state) {
         $this->updateTime = (float) ($state['time'] / 1000);

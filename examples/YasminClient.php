@@ -15,6 +15,7 @@ require_once(__DIR__.'/vendor/autoload.php');
 
 function my_log_error(\Throwable $error) {
     // Log the error or something
+    echo $error.PHP_EOL;
 }
 
 $loop = \React\EventLoop\Factory::create();
@@ -91,7 +92,7 @@ $client->on('message', function (\CharlotteDunois\Yasmin\Models\Message $message
         }
         
         // Resolve the track and then play it, if possible
-        $player->node->resolveTrack(implode(' ', $args))->then(function ($result) use ($message, $player) {
+        $player->link->resolveTrack(implode(' ', $args))->then(function ($result) use ($message, $player) {
             // If it's a playlist or a search result, we just play the first one
             if($result instanceof \CharlotteDunois\Luna\AudioPlaylist) {
                 return $player->play($result->tracks->first());

@@ -11,19 +11,19 @@ namespace CharlotteDunois\Luna;
 
 /**
  * Represents an Audio Playlist.
- * @property string                               $name           The playlist's name.
- * @property int                                  $selectedTrack  Which track is selected.
+ * @property string                               $name           The playlist's name, or null for Lavalink v2.
+ * @property int                                  $selectedTrack  Which track is selected, or null for Lavalink v2.
  * @property \CharlotteDunois\Collect\Collection  $tracks         The playlist's tracks.
  */
 class AudioPlaylist {
     /**
-     * The playlist's name.
+     * The playlist's name, or null for Lavalink v2.
      * @var string
      */
     protected $name;
     
     /**
-     * Which track is selected.
+     * Which track is selected, or null for Lavalink v2.
      * @var int
      */
     protected $selectedTrack;
@@ -36,11 +36,11 @@ class AudioPlaylist {
     
     /**
      * Constructor.
-     * @param string   $name           The playlist's name.
-     * @param int      $selectedTrack  Which track is selected.
-     * @param array[]  $tracks         The track infos.
+     * @param string|null  $name           The playlist's name.
+     * @param int|null     $selectedTrack  Which track is selected.
+     * @param array[]      $tracks         The track infos.
      */
-    function __construct(string $name, int $selectedTrack, array $tracks) {
+    function __construct(?string $name, ?int $selectedTrack, array $tracks) {
         $this->name = $name;
         $this->selectedTrack = $selectedTrack;
         $this->tracks = new \CharlotteDunois\Collect\Collection();
@@ -52,6 +52,7 @@ class AudioPlaylist {
     }
     
     /**
+     * @param string  $name
      * @return bool
      * @throws \RuntimeException
      * @internal
@@ -69,6 +70,7 @@ class AudioPlaylist {
     }
     
     /**
+     * @param string  $name
      * @return mixed
      * @throws \RuntimeException
      * @internal

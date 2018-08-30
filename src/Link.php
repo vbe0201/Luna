@@ -11,11 +11,16 @@ namespace CharlotteDunois\Luna;
 
 /**
  * A link connects to the lavalink node and listens for events and sends packets.
- * @property \CharlotteDunois\Luna\Client  $client  The Luna client.
- * @property \CharlotteDunois\Luna\Node    $node    The node this link is for.
- * @property int                           $status  The connection status.
+ * @property \CharlotteDunois\Luna\Client            $client   The Luna client.
+ * @property \CharlotteDunois\Luna\Node              $node     The node this link is for.
+ * @property \CharlotteDunois\Collect\Collection     $players  All players of the node, mapped by guild ID.
+ * @property \CharlotteDunois\Luna\RemoteStats|null  $stats    The lavalink node's stats, or null.
+ * @property int                                     $status   The connection status.
+ * @see \CharlotteDunois\Luna\ClientEvents
  */
-class Link {
+class Link implements \CharlotteDunois\Events\EventEmitterInterface {
+    use \CharlotteDunois\Events\EventEmitterTrait;
+    
     /**
      * WS connection status: Disconnected.
      * @var int
@@ -57,6 +62,24 @@ class Link {
      * @var \CharlotteDunois\Luna\Node
      */
     protected $node;
+    
+    /**
+     * The lavalink version on the node.
+     * @var int
+     */
+    protected $nodeVersion;
+    
+    /**
+     * All players of the node, mapped by guild ID.
+     * @var \CharlotteDunois\Collect\Collection
+     */
+    protected $players;
+    
+    /**
+     * Lavalink stats.
+     * @var \CharlotteDunois\Luna\RemoteStats|null
+     */
+    protected $stats;
     
     /**
      * @var \Ratchet\Client\Connector
@@ -106,10 +129,13 @@ class Link {
     function __construct(\CharlotteDunois\Luna\Client $client, \CharlotteDunois\Luna\Node $node) {
         $this->client = $client;
         $this->node = $node;
+        
+        $this->players = new \CharlotteDunois\Collect\Collection();
         $this->connector = new \Ratchet\Client\Connector($client->getLoop(), $client->getOption('connector'));
     }
     
     /**
+     * @param string  $name
      * @return bool
      * @throws \Exception
      * @internal
@@ -127,6 +153,7 @@ class Link {
     }
     
     /**
+     * @param string  $name
      * @return mixed
      * @throws \RuntimeException
      */
@@ -156,7 +183,7 @@ class Link {
             $this->status = self::STATUS_CONNECTING;
         }
         
-        $this->node->emit('debug', 'Connecting to node');
+        $this->emit('debug', 'Connecting to node');
         $this->connectAttempts++;
         
         $connector = $this->connector;
@@ -167,18 +194,18 @@ class Link {
         ))->then(function (\Ratchet\Client\WebSocket $conn) {
             $this->setupWebsocket($conn);
         }, function (\Throwable $error) {
-            $this->node->emit('error', $error);
+            $this->emit('error', $error);
             
             if($this->ws) {
                 $this->ws->close(1006);
             }
             
-            $maxAttempts = $this->client->getOption('node.maxConnectAttempts');
+            $maxAttempts = $this->client->getOption('node.maxConnectAttempts', 0);
             if($maxAttempts > 0 && $maxAttempts <= $this->connectAttempts) {
                 $this->status = self::STATUS_IDLE;
+                $this->emit('debug', 'Reached maximum connect attempts');
                 
-                $this->node->emit('debug', 'Reached maximum connect attempts');
-                return;
+                throw new \RuntimeException('Reached maximum connect attempts');
             }
             
             $this->status = self::STATUS_DISCONNECTED;
@@ -211,12 +238,12 @@ class Link {
     protected function renewConnection(bool $try = true) {
         if($try) {
             return $this->connect()->otherwise(function () {
-                $this->node->emit('debug', 'Error reconnecting after failed connection attempt... retrying in 30 seconds');
+                $this->emit('debug', 'Error reconnecting after failed connection attempt... retrying in 30 seconds');
                 return $this->scheduleConnect();
             });
         }
         
-        $this->node->emit('debug', 'Scheduling reconnection for executing in 30 seconds');
+        $this->emit('debug', 'Scheduling reconnection for executing in 30 seconds');
         return $this->scheduleConnect();
     }
     
@@ -244,14 +271,93 @@ class Link {
                 $this->connectPromise->done(function () use ($packet) {
                     $this->send($packet);
                 });
+                
                 return;
             }
             
             throw new \RuntimeException('Unable to send WS message before a WS connection is established');
         }
         
-        $this->node->emit('debug', 'Sending WS packet');
+        $this->emit('debug', 'Sending WS packet');
         $this->ws->send(\json_encode($packet));
+    }
+    
+    /**
+     * Send a voice update event to the node, creates a new player and adds it to the collection.
+     * @param int     $guildID    The guild ID.
+     * @param string  $sessionID  The voice session ID.
+     * @param array   $event      The voice server update event from Discord.
+     * @return \CharlotteDunois\Luna\Player
+     * @throws \BadMethodCallException
+     */
+    function createPlayer(int $guildID, string $sessionID, array $event) {
+        $player = new \CharlotteDunois\Luna\Player($this, $guildID);
+        $player->sendVoiceUpdate($sessionID, $event);
+        
+        $this->players->set($guildID, $player);
+        $this->emit('newPlayer', $player);
+        
+        return $player;
+    }
+    
+    /**
+     * Resolves a track using Lavalink's REST API. Resolves with an instance of AudioTrack, an instance of AudioPlaylist or a Collection of AudioTrack instances (for search results), mapped by the track identifier.
+     * @param string  $search  The search query.
+     * @return \React\Promise\ExtendedPromiseInterface
+     * @throws \RangeException              The exception the promise gets rejected with, when there are no matches.
+     * @throws \UnexpectedValueException    The exception the promise gets rejected with, when loading the track failed.
+     * @see \CharlotteDunois\Luna\AudioTrack
+     * @see \CharlotteDunois\Luna\AudioPlaylist
+     */
+    function resolveTrack(string $search) {
+        $this->emit('debug', 'Resolving track "'.$search.'"');
+        
+        return $this->client->createHTTPRequest('GET', $this->node->httpHost.'/loadtracks?identifier='.\rawurlencode($search), array(
+            'Authorization' => $this->node->password
+        ))->then(function (\Psr\Http\Message\ResponseInterface $response) {
+            $body = (string) $response->getBody();
+            $data = \json_decode($body, true);
+            
+            if($data === false && \json_last_error() !== \JSON_ERROR_NONE) {
+                throw new \RuntimeException('Invalid JSON while trying to resolve tracks. Error: '.\json_last_error_msg());
+            }
+            
+            switch(($data['loadType'] ?? 'lavalink-v2')) {
+                case 'TRACK_LOADED':
+                    return \CharlotteDunois\Luna\AudioTrack::create($data['tracks'][0]);
+                break;
+                case 'PLAYLIST_LOADED':
+                    return (new \CharlotteDunois\Luna\AudioPlaylist(($data['playlistInfo']['name'] ?? ''), ($data['playlistInfo']['selectedTrack'] ?? 0), $data['tracks']));
+                break;
+                case 'SEARCH_RESULT':
+                    $bucket = new \CharlotteDunois\Collect\Collection();
+                    
+                    foreach($data['tracks'] as $track) {
+                        $audioTrack = \CharlotteDunois\Luna\AudioTrack::create($track);
+                        $bucket->set($audioTrack->identifier, $audioTrack);
+                    }
+                    
+                    return $bucket;
+                break;
+                case 'NO_MATCHES':
+                    throw new \RangeException('No matching tracks found');
+                break;
+                case 'LOAD_FAILED':
+                    throw new \UnexpectedValueException('Loading track failed');
+                break;
+                case 'lavalink-v2':
+                    if(empty($data)) {
+                        throw new \RangeException('No matching tracks found');
+                    }
+                    
+                    if(\count($data) > 1) {
+                        return \CharlotteDunois\Luna\AudioTrack::create($data[0]);
+                    } else {
+                        return (new \CharlotteDunois\Luna\AudioPlaylist(null, null, $data));
+                    }
+                break;
+            }
+        });
     }
     
     /**
@@ -261,8 +367,8 @@ class Link {
      * @throws \UnexpectedValueException
      */
     protected function setupWebsocket(\Ratchet\Client\WebSocket $conn) {
-        if(!$conn->response->hasHeader('Lavalink-Major-Version') || $conn->response->getHeader('Lavalink-Major-Version')[0] < 3) {
-            throw new \UnexpectedValueException('The Lavalink Server major version is below v3.0');
+        if($conn->response->hasHeader('Lavalink-Major-Version')) {
+            $this->nodeVersion = (int) $conn->response->getHeader('Lavalink-Major-Version')[0];
         }
         
         $this->ws = $conn;
@@ -286,7 +392,7 @@ class Link {
         });
         
         $this->ws->on('error', function (\Throwable $error) {
-            $this->node->emit('error', $error);
+            $this->emit('error', $error);
         });
         
         $this->ws->on('close', function (int $code, string $reason) {
@@ -302,10 +408,10 @@ class Link {
                 $this->status = self::STATUS_DISCONNECTED;
             }
             
-            $this->node->emit('debug', 'Disconnected from node');
-            $this->node->emit('disconnect', $code, $reason, $this->expectedClose);
+            $this->emit('debug', 'Disconnected from node');
+            $this->emit('disconnect', $code, $reason, $this->expectedClose);
             
-            foreach($this->node->players as $player) {
+            foreach($this->players as $player) {
                 $player->destroy();
             }
             
@@ -318,7 +424,7 @@ class Link {
             $this->renewConnection(true);
         });
         
-        $this->node->emit('debug', 'Connected to node');
+        $this->emit('debug', 'Connected to node');
     }
     
     /**
@@ -329,7 +435,7 @@ class Link {
     protected function handleMessage(string $payload) {
         $data = \json_decode($payload, true);
         if($data === false && \json_last_error() !== \JSON_ERROR_NONE) {
-            $this->node->emit('debug', 'Invalid message received');
+            $this->emit('debug', 'Invalid message received');
             return;
         }
         
@@ -339,22 +445,28 @@ class Link {
         
         switch(($data['op'] ?? null)) {
             case 'playerUpdate':
-                $player = $this->node->players->get($data['guildId']);
+                $player = $this->players->get($data['guildId']);
                 if(!$player) {
-                    $this->node->emit('debug', 'Unexpected playerUpdate for unknown player for guild '.($data['guildId'] ?? ''));
+                    $this->emit('debug', 'Unexpected playerUpdate for unknown player for guild '.($data['guildId'] ?? ''));
                     return;
                 }
                 
                 $player->updateState($data['state']);
             break;
             case 'stats':
-                $this->node->emit('stats', $this->node->updateStats($data));
+                if($this->stats) {
+                    $this->stats->update($data);
+                } else {
+                    $this->stats = new \CharlotteDunois\Luna\RemoteStats($this->node, $data);
+                }
+                
+                $this->emit('stats', $this->stats);
             break;
             case 'event':
                 $this->handleEvent($data);
             break;
             default:
-                $this->node->emit('debug', 'Unexpected message op: '.($data['op'] ?? ''));
+                $this->emit('debug', 'Unexpected message op: '.($data['op'] ?? ''));
             break;
         }
     }
@@ -365,7 +477,7 @@ class Link {
      * @return void
      */
     protected function handleEvent(array $data) {
-        $player = $this->node->players->get($data['guildId']);
+        $player = $this->players->get($data['guildId']);
         if(!$player) {
             return;
         }
@@ -387,7 +499,7 @@ class Link {
                 $player->emit('stuck', $track, ((int) $data['thresholdMs']));
             break;
             default:
-                $this->node->emit('debug', 'Unexpected event type: '.($data['type'] ?? ''));
+                $this->emit('debug', 'Unexpected event type: '.($data['type'] ?? ''));
             break;
         }
     }

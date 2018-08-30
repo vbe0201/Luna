@@ -102,6 +102,7 @@ class AudioTrack {
     }
     
     /**
+     * @param string  $name
      * @return bool
      * @throws \RuntimeException
      * @internal
@@ -119,6 +120,7 @@ class AudioTrack {
     }
     
     /**
+     * @param string  $name
      * @return mixed
      * @throws \RuntimeException
      * @internal
