@@ -11,20 +11,20 @@ namespace CharlotteDunois\Luna;
 
 /**
  * Represents a player of a guild on a node.
- * @property \CharlotteDunois\Luna\Link             $link               The link this player is on.
- * @property int                                    $guildID            The guild ID this player is serving.
- * @property \CharlotteDunois\Luna\AudioTrack|null  $track              The currently playing audio track.
- * @property bool                                   $paused             Whether the track is currently paused.
- * @property int                                    $position           The position of the track in milliseconds.
- * @property int                                    $volume             The volume of the player from 0 to 100.
- * @property array                                  $voiceServerUpdate  The sent voice update event.
+ * @property \CharlotteDunois\Luna\Link             $link         The link this player is connected to.
+ * @property int                                    $guildID      The guild ID this player is serving.
+ * @property \CharlotteDunois\Luna\AudioTrack|null  $track        The currently playing audio track.
+ * @property bool                                   $paused       Whether the track is currently paused.
+ * @property int                                    $position     The position of the track in milliseconds.
+ * @property int                                    $volume       The volume of the player from 0 to 1000(%).
+ * @property array                                  $voiceUpdate  The sent voice update event.
  * @see \CharlotteDunois\Luna\PlayerEvents
  */
 class Player implements \CharlotteDunois\Events\EventEmitterInterface {
     use \CharlotteDunois\Events\EventEmitterTrait;
     
     /**
-     * The link this player is on.
+     * The link this player is connected to.
      * @var \CharlotteDunois\Luna\Link
      */
     protected $link;
@@ -54,7 +54,7 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
     protected $position = 0;
     
     /**
-     * The volume of the player from 0 to 100.
+     * The volume of the player from 0 to 1000(%).
      * @var int
      */
     protected $volume = 100;
@@ -69,7 +69,7 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
      * The sent voice update event.
      * @var array|null
      */
-    protected $voiceServerUpdate;
+    protected $voiceUpdate;
     
     /**
      * Constructor.
@@ -264,7 +264,7 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
     
     /**
      * Sets the volume of the player.
-     * @param int  $volume
+     * @param int  $volume  Any integer in the range of 0..1000.
      * @return void
      * @throws \RuntimeException
      */
@@ -303,23 +303,14 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
         $this->link->emit('debug', 'Sending voice update for guild '.$this->guildID);
         
         $this->link->send($packet);
-        $this->setVoiceServerUpdate(array(
+        $this->setVoiceUpdate(array(
             'sessionID' => $sessionID,
             'event' => $event
         ));
     }
     
     /**
-     * Clears the internal track.
-     * @return void
-     */
-    function clearTrack() {
-        $this->track = null;
-        $this->emit('debug', 'Cleared the track');
-    }
-    
-    /**
-     * Sets the node. Used for failover.
+     * Sets the node. Used for the internal failover.
      * @param \CharlotteDunois\Luna\Link  $link
      * @return void
      */
@@ -331,16 +322,17 @@ class Player implements \CharlotteDunois\Events\EventEmitterInterface {
     }
     
     /**
-     * Sets the Voice Server Update array.
-     * @param array $voiceServerUpdate
+     * Sets the internal Voice Server Update array. Used by `sendVoiceUpdate`.
+     * @param array $voiceUpdate
      * @return void
+     * @internal
      */
-    function setVoiceServerUpdate(array $voiceServerUpdate) {
-        $this->voiceServerUpdate = $voiceServerUpdate;
+    function setVoiceUpdate(array $voiceUpdate) {
+        $this->voiceUpdate = $voiceUpdate;
     }
     
     /**
-     * Updates the state.
+     * Updates the player state. Invoked by Lavalink.
      * @param array  $state
      * @return void
      */
