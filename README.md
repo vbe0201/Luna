@@ -40,7 +40,7 @@ When you have sent a voice state update event and Discord responded with the two
 $link = $client->links->get($node->name);
 $player = $link->sendVoiceUpdate($guildID, $sessionID, $voiceServerUpdateEvent);
 
-$node->resolveTrack('DT61L8hbbJ4')->done(function ($audioTrack) use ($player) {
+$link->resolveTrack('DT61L8hbbJ4')->done(function ($audioTrack) use ($player) {
     $player->play($audioTrack);
 });
 ```
