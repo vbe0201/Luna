@@ -123,7 +123,7 @@
                                                                                 <a href="../../CharlotteDunois/Luna/Link.html"><abbr title="CharlotteDunois\Luna\Link">Link</abbr></a>
                 </td>
                 <td><a name="property_link" href="#property_link">$link</a></td>
-                <td class="last">The link this player is on.</td>
+                <td class="last">The link this player is connected to.</td>
                 <td></td>
             </tr>
                     <tr>
@@ -151,10 +151,10 @@
                 <td></td>
             </tr>
                     <tr>
-                <td class="type" id="property_voiceServerUpdate">
+                <td class="type" id="property_voiceUpdate">
                                                                                 array
                 </td>
-                <td><a name="property_voiceServerUpdate" href="#property_voiceServerUpdate">$voiceServerUpdate</a></td>
+                <td><a name="property_voiceUpdate" href="#property_voiceUpdate">$voiceUpdate</a></td>
                 <td class="last">The sent voice update event.</td>
                 <td></td>
             </tr>
@@ -163,7 +163,7 @@
                                                                                 int
                 </td>
                 <td><a name="property_volume" href="#property_volume">$volume</a></td>
-                <td class="last">The volume of the player from 0 to 100.</td>
+                <td class="last">The volume of the player from 0 to 1000(%).</td>
                 <td></td>
             </tr>
             </table>
@@ -180,16 +180,6 @@
                     <a href="#method___construct">__construct</a>(<a href="../../CharlotteDunois/Luna/Link.html"><abbr title="CharlotteDunois\Luna\Link">Link</abbr></a> $link, int $guildID)
         
                                             <p>Constructor.</p>                </div>
-                <div class="col-md-2"></div>
-            </div>
-                    <div class="row">
-                <div class="col-md-2 type">
-                    void
-                </div>
-                <div class="col-md-8 type">
-                    <a href="#method_clearTrack">clearTrack</a>()
-        
-                                            <p>Clears the internal track.</p>                </div>
                 <div class="col-md-2"></div>
             </div>
                     <div class="row">
@@ -249,7 +239,7 @@
                 <div class="col-md-8 type">
                     <a href="#method_setNode">setNode</a>(<a href="../../CharlotteDunois/Luna/Link.html"><abbr title="CharlotteDunois\Luna\Link">Link</abbr></a> $link)
         
-                                            <p>Sets the node. Used for failover.</p>                </div>
+                                            <p>Sets the node. Used for the internal failover.</p>                </div>
                 <div class="col-md-2"></div>
             </div>
                     <div class="row">
@@ -260,16 +250,6 @@
                     <a href="#method_setPaused">setPaused</a>(bool $paused)
         
                                             <p>Sets the paused state of the track.</p>                </div>
-                <div class="col-md-2"></div>
-            </div>
-                    <div class="row">
-                <div class="col-md-2 type">
-                    void
-                </div>
-                <div class="col-md-8 type">
-                    <a href="#method_setVoiceServerUpdate">setVoiceServerUpdate</a>(array $voiceServerUpdate)
-        
-                                            <p>Sets the Voice Server Update array.</p>                </div>
                 <div class="col-md-2"></div>
             </div>
                     <div class="row">
@@ -299,7 +279,7 @@
                 <div class="col-md-8 type">
                     <a href="#method_updateState">updateState</a>(array $state)
         
-                                            <p>Updates the state.</p>                </div>
+                                            <p>Updates the player state. Invoked by Lavalink.</p>                </div>
                 <div class="col-md-2"></div>
             </div>
             </div>
@@ -338,38 +318,6 @@
             </table>
 
             
-            
-            
-                        
-                        
-                    </div>
-    </div>
-
-            </div>
-                    <div class="method-item">
-                    <h3 id="method_clearTrack">
-        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Player.php#L316">line 316</a></div>
-        <code>                    void
-    <strong>clearTrack</strong>()
-        </code>
-    </h3>
-    <div class="details">
-            
-    
-
-                    <div class="method-description">
-                                    <p>Clears the internal track.</p>                                                </div>
-                <div class="tags">
-            
-                            <h4>Return Value</h4>
-
-                    <table class="table table-condensed">
-        <tr>
-            <td>void</td>
-            <td></td>
-        </tr>
-    </table>
-
             
             
                         
@@ -625,7 +573,7 @@
             </div>
                     <div class="method-item">
                     <h3 id="method_setNode">
-        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Player.php#L326">line 326</a></div>
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Player.php#L317">line 317</a></div>
         <code>                    void
     <strong>setNode</strong>(<a href="../../CharlotteDunois/Luna/Link.html"><abbr title="CharlotteDunois\Luna\Link">Link</abbr></a> $link)
         </code>
@@ -635,7 +583,7 @@
     
 
                     <div class="method-description">
-                                    <p>Sets the node. Used for failover.</p>                                                </div>
+                                    <p>Sets the node. Used for the internal failover.</p>                                                </div>
                 <div class="tags">
                             <h4>Parameters</h4>
 
@@ -717,48 +665,6 @@
 
             </div>
                     <div class="method-item">
-                    <h3 id="method_setVoiceServerUpdate">
-        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Player.php#L338">line 338</a></div>
-        <code>                    void
-    <strong>setVoiceServerUpdate</strong>(array $voiceServerUpdate)
-        </code>
-    </h3>
-    <div class="details">
-            
-    
-
-                    <div class="method-description">
-                                    <p>Sets the Voice Server Update array.</p>                                                </div>
-                <div class="tags">
-                            <h4>Parameters</h4>
-
-                    <table class="table table-condensed">
-                    <tr>
-                <td>array</td>
-                <td>$voiceServerUpdate</td>
-                <td></td>
-            </tr>
-            </table>
-
-            
-                            <h4>Return Value</h4>
-
-                    <table class="table table-condensed">
-        <tr>
-            <td>void</td>
-            <td></td>
-        </tr>
-    </table>
-
-            
-            
-                        
-                        
-                    </div>
-    </div>
-
-            </div>
-                    <div class="method-item">
                     <h3 id="method_setVolume">
         <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Player.php#L271">line 271</a></div>
         <code>                    void
@@ -778,7 +684,7 @@
                     <tr>
                 <td>int</td>
                 <td>$volume</td>
-                <td></td>
+                <td>Any integer in the range of 0..1000.</td>
             </tr>
             </table>
 
@@ -852,7 +758,7 @@
             </div>
                     <div class="method-item">
                     <h3 id="method_updateState">
-        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Player.php#L347">line 347</a></div>
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Player.php#L339">line 339</a></div>
         <code>                    void
     <strong>updateState</strong>(array $state)
         </code>
@@ -862,7 +768,7 @@
     
 
                     <div class="method-description">
-                                    <p>Updates the state.</p>                                                </div>
+                                    <p>Updates the player state. Invoked by Lavalink.</p>                                                </div>
                 <div class="tags">
                             <h4>Parameters</h4>
 
