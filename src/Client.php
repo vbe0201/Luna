@@ -13,10 +13,11 @@ namespace CharlotteDunois\Luna;
  * The generic Lavalink client. It does absolutely nothing for you on the Discord side.
  * The lavalink client implements automatic failover. That means, if a lavalink node unexpectedly disconnects,
  * the client will automatically look for a new node and starts playing the track on it.
- * @property \CharlotteDunois\Luna\LoadBalancer|null  $loadBalancer The Load Balancer.
- * @property \CharlotteDunois\Collect\Collection      $links        A collection of links, mapped by node name.
- * @property int                                      $numShards    The amount of shards the bot has.
- * @property int                                      $userID       The Discord User ID.
+ * @property \React\EventLoop\LoopInterface                    $loop          The used event loop.
+ * @property \CharlotteDunois\Luna\LoadBalancerInterface|null  $loadBalancer  The Load Balancer.
+ * @property \CharlotteDunois\Collect\Collection               $links         A collection of links, mapped by node name.
+ * @property int                                               $numShards     The amount of shards the bot has.
+ * @property int                                               $userID        The Discord User ID.
  * @see \CharlotteDunois\Luna\ClientEvents
  */
 class Client implements \CharlotteDunois\Events\EventEmitterInterface {
@@ -29,7 +30,7 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
     const VERSION = '0.1.0-dev';
     
     /**
-     * The event loop.
+     * The used event loop.
      * @var \React\EventLoop\LoopInterface
      */
     protected $loop;
@@ -186,14 +187,6 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
     }
     
     /**
-     * Returns the event loop.
-     * @return \React\EventLoop\LoopInterface
-     */
-    function getLoop() {
-        return $this->loop;
-    }
-    
-    /**
      * Get a specific option, or the default value.
      * @param string  $name
      * @param mixed   $default
@@ -209,10 +202,10 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
     
     /**
      * Sets a loadbalancer to use.
-     * @param \CharlotteDunois\Luna\LoadBalancer  $loadBalancer
+     * @param \CharlotteDunois\Luna\LoadBalancerInterface  $loadBalancer
      * @return void
      */
-    function setLoadBalancer(\CharlotteDunois\Luna\LoadBalancer $loadBalancer) {
+    function setLoadBalancer(\CharlotteDunois\Luna\LoadBalancerInterface $loadBalancer) {
         $this->loadBalancer = $loadBalancer;
         $this->loadBalancer->setClient($this);
     }
@@ -280,7 +273,7 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
      * @param string  $region
      * @param bool    $autoConnect  Automatically make the node connect if it is disconnected (idling).
      * @return \CharlotteDunois\Luna\Link
-     * @throws \UnderflowException  Thrown when no nodes are available
+     * @throws \UnderflowException  Thrown when no nodes are available.
      */
     function getIdealNode(string $region, bool $autoConnect = true) {
         if($this->links->count() === 0) {
@@ -348,7 +341,7 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
     }
     
     /**
-     * Executes an asychronous HTTP request. Resolves with an instance of ResponseInterface.
+     * Executes an asychronous HTTP request. Used by `Link::resolveTrack`. Resolves with an instance of ResponseInterface.
      * @param string       $method
      * @param string       $url
      * @param string[]     $headers

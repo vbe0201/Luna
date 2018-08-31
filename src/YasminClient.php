@@ -93,13 +93,13 @@ class YasminClient extends Client {
     /**
      * Joins a voice channel. The guild region will be stripped down to `eu`, `us`, etc. Resolves with an instance of Player.
      * @param \CharlotteDunois\Yasmin\Models\VoiceChannel  $channel
-     * @param \CharlotteDunois\Luna\Link|null              $node     The node to use, or automatically determine one.
+     * @param \CharlotteDunois\Luna\Link|null              $link     The node to use, or automatically determine one.
      * @return \React\Promise\ExtendedPromiseInterface
      * @throws \BadMethodCallException  Thrown when the client is not ready.
      * @throws \LogicException          Thrown when we have insufficient permissions.
      * @see \CharlotteDunois\Luna\Player
      */
-    function joinChannel(\CharlotteDunois\Yasmin\Models\VoiceChannel $channel, ?\CharlotteDunois\Luna\Link $node = null) {
+    function joinChannel(\CharlotteDunois\Yasmin\Models\VoiceChannel $channel, ?\CharlotteDunois\Luna\Link $link = null) {
         if($this->client->readyTimestamp === null) {
             throw new \BadMethodCallException('Client is not ready yet');
         }
@@ -110,14 +110,14 @@ class YasminClient extends Client {
         
         $this->checkPermissions($channel);
         
-        if(!$node) {
+        if(!$link) {
             $region = \str_replace('vip-', '', $channel->guild->region);
             $region = \substr($region, 0, (\strpos($region, '-') ?: \strlen($region)));
             
             if($this->loadBalancer) {
-                $node = $this->loadBalancer->getIdealNode($region);
+                $link = $this->loadBalancer->getIdealNode($region);
             } else {
-                $node = $this->getIdealNode($region);
+                $link = $this->getIdealNode($region);
             }
         }
         
@@ -152,8 +152,8 @@ class YasminClient extends Client {
             )
         ));
         
-        return \React\Promise\all(array($voiceState, $voiceServer))->then(function ($events) use (&$channel, &$node) {
-            $player = $node->createPlayer(((int) $channel->guild->id), $events[0][0]->voiceSessionID, $events[1][0]);
+        return \React\Promise\all(array($voiceState, $voiceServer))->then(function ($events) use (&$channel, &$link) {
+            $player = $link->createPlayer(((int) $channel->guild->id), $events[0][0]->voiceSessionID, $events[1][0]);
             
             $player->on('destroy', function () use (&$player) {
                 $this->connections->delete($player->guildID);
@@ -340,9 +340,9 @@ class YasminClient extends Client {
             $guild = $this->client->guilds->get(($data['guild_id'] ?? null));
             
             if($guild instanceof \CharlotteDunois\Yasmin\Models\Guild && $this->connections->has($guild->id)) {
-                $node = $this->connections->get($guild->id)->node;
+                $link = $this->connections->get($guild->id)->link;
                 
-                foreach($node->players as $player) {
+                foreach($link->players as $player) {
                     $player->sendVoiceUpdate($player->voiceServerUpdate['sessionID'], $data);
                 }
             }

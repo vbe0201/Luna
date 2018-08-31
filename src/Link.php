@@ -131,7 +131,7 @@ class Link implements \CharlotteDunois\Events\EventEmitterInterface {
         $this->node = $node;
         
         $this->players = new \CharlotteDunois\Collect\Collection();
-        $this->connector = new \Ratchet\Client\Connector($client->getLoop(), $client->getOption('connector'));
+        $this->connector = new \Ratchet\Client\Connector($client->loop, $client->getOption('connector'));
     }
     
     /**
@@ -254,7 +254,7 @@ class Link implements \CharlotteDunois\Events\EventEmitterInterface {
      */
     protected function scheduleConnect() {
         return (new \React\Promise\Promise(function (callable $resolve, callable $reject) {
-            $this->client->getLoop()->addTimer(30, function () use ($resolve, $reject) {
+            $this->client->loop->addTimer(30, function () use ($resolve, $reject) {
                 $this->renewConnection()->done($resolve, $reject);
             });
         }));
@@ -375,7 +375,7 @@ class Link implements \CharlotteDunois\Events\EventEmitterInterface {
         $this->ws = $conn;
         $this->status = self::STATUS_CONNECTED;
         
-        $this->connectTimer = $this->client->getLoop()->addTimer(10, function () {
+        $this->connectTimer = $this->client->loop->addTimer(10, function () {
             if($this->status === self::STATUS_CONNECTED) {
                 $this->connectAttempts = 0;
             }
@@ -401,7 +401,7 @@ class Link implements \CharlotteDunois\Events\EventEmitterInterface {
             $this->connectPromise = null;
             
             if($this->connectTimer) {
-                $this->client->getLoop()->cancelTimer($this->connectTimer);
+                $this->client->loop->cancelTimer($this->connectTimer);
                 $this->connectTimer = null;
             }
             
