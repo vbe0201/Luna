@@ -11,11 +11,12 @@ namespace CharlotteDunois\Luna;
 
 /**
  * A link connects to the lavalink node and listens for events and sends packets.
- * @property \CharlotteDunois\Luna\Client            $client   The Luna client.
- * @property \CharlotteDunois\Luna\Node              $node     The node this link is for.
- * @property \CharlotteDunois\Collect\Collection     $players  All players of the node, mapped by guild ID.
- * @property \CharlotteDunois\Luna\RemoteStats|null  $stats    The lavalink node's stats, or null.
- * @property int                                     $status   The connection status.
+ * @property \CharlotteDunois\Luna\Client            $client       The Luna client.
+ * @property \CharlotteDunois\Luna\Node              $node         The node this link is for.
+ * @property int                                     $nodeVersion  The lavalink version on the node.
+ * @property \CharlotteDunois\Collect\Collection     $players      All players of the node, mapped by guild ID.
+ * @property \CharlotteDunois\Luna\RemoteStats|null  $stats        The lavalink node's stats, or null.
+ * @property int                                     $status       The connection status.
  * @see \CharlotteDunois\Luna\ClientEvents
  */
 class Link implements \CharlotteDunois\Events\EventEmitterInterface {
@@ -67,7 +68,7 @@ class Link implements \CharlotteDunois\Events\EventEmitterInterface {
      * The lavalink version on the node.
      * @var int
      */
-    protected $nodeVersion;
+    protected $nodeVersion = 2;
     
     /**
      * All players of the node, mapped by guild ID.
