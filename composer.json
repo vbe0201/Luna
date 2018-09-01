@@ -21,7 +21,7 @@
     },
     "require-dev": {
         "psr/http-message": "^1.0",
-        "charlottedunois/yasmin": "^0.5.0|^0.4.2|dev-master"
+        "charlottedunois/yasmin": "^0.5.0|^0.4.3|dev-master"
     },
     "suggest": {
         "charlottedunois/yasmin": "The Discord API library for PHP."
