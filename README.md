@@ -3,6 +3,7 @@
 Luna is a [Lavalink](https://github.com/Frederikam/Lavalink) client for PHP. This client is built for Lavalink v3+ - v2 (legacy) is supported, but not recommended.
 
 For use with [Yasmin](https://github.com/CharlotteDunois/Yasmin), there is a `YasminClient` included, which does the heavy liftings.
+If you use Yasmin <= v0.4.2, please use `v0.1.0` - newer versions of Luna do not support v0.4.2 and below.
 
 This library is **only** for PHP 7.1 (and later).
 
