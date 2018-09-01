@@ -11,11 +11,12 @@ namespace CharlotteDunois\Luna;
 
 /**
  * A link connects to the lavalink node and listens for events and sends packets.
- * @property \CharlotteDunois\Luna\Client            $client   The Luna client.
- * @property \CharlotteDunois\Luna\Node              $node     The node this link is for.
- * @property \CharlotteDunois\Collect\Collection     $players  All players of the node, mapped by guild ID.
- * @property \CharlotteDunois\Luna\RemoteStats|null  $stats    The lavalink node's stats, or null.
- * @property int                                     $status   The connection status.
+ * @property \CharlotteDunois\Luna\Client            $client       The Luna client.
+ * @property \CharlotteDunois\Luna\Node              $node         The node this link is for.
+ * @property int                                     $nodeVersion  The lavalink version on the node.
+ * @property \CharlotteDunois\Collect\Collection     $players      All players of the node, mapped by guild ID.
+ * @property \CharlotteDunois\Luna\RemoteStats|null  $stats        The lavalink node's stats, or null.
+ * @property int                                     $status       The connection status.
  * @see \CharlotteDunois\Luna\ClientEvents
  */
 class Link implements \CharlotteDunois\Events\EventEmitterInterface {
@@ -67,7 +68,7 @@ class Link implements \CharlotteDunois\Events\EventEmitterInterface {
      * The lavalink version on the node.
      * @var int
      */
-    protected $nodeVersion;
+    protected $nodeVersion = 2;
     
     /**
      * All players of the node, mapped by guild ID.
@@ -131,7 +132,7 @@ class Link implements \CharlotteDunois\Events\EventEmitterInterface {
         $this->node = $node;
         
         $this->players = new \CharlotteDunois\Collect\Collection();
-        $this->connector = new \Ratchet\Client\Connector($client->getLoop(), $client->getOption('connector'));
+        $this->connector = new \Ratchet\Client\Connector($client->loop, $client->getOption('connector'));
     }
     
     /**
@@ -195,6 +196,10 @@ class Link implements \CharlotteDunois\Events\EventEmitterInterface {
         ))->then(function (\Ratchet\Client\WebSocket $conn) {
             $this->setupWebsocket($conn);
         }, function (\Throwable $error) {
+            if($this->expectedClose) {
+                return;
+            }
+            
             $this->emit('error', $error);
             
             if($this->ws) {
@@ -223,11 +228,16 @@ class Link implements \CharlotteDunois\Events\EventEmitterInterface {
      * @return void
      */
     function disconnect(int $code = 1000, string $reason = '') {
+        $this->expectedClose = true;
+        
+        if($this->connectPromise !== null) {
+            $this->connectPromise->cancel();
+        }
+        
         if(!$this->ws) {
             return;
         }
         
-        $this->expectedClose = true;
         $this->ws->close($code, $reason);
     }
     
@@ -254,8 +264,12 @@ class Link implements \CharlotteDunois\Events\EventEmitterInterface {
      */
     protected function scheduleConnect() {
         return (new \React\Promise\Promise(function (callable $resolve, callable $reject) {
-            $this->client->getLoop()->addTimer(30, function () use ($resolve, $reject) {
-                $this->renewConnection()->done($resolve, $reject);
+            $this->client->loop->addTimer(30, function () use ($resolve, $reject) {
+                if($this->client->links->has($this->node->name)) {
+                    $this->renewConnection()->done($resolve, $reject);
+                } else {
+                    $resolve();
+                }
             });
         }));
     }
@@ -375,7 +389,7 @@ class Link implements \CharlotteDunois\Events\EventEmitterInterface {
         $this->ws = $conn;
         $this->status = self::STATUS_CONNECTED;
         
-        $this->connectTimer = $this->client->getLoop()->addTimer(10, function () {
+        $this->connectTimer = $this->client->loop->addTimer(10, function () {
             if($this->status === self::STATUS_CONNECTED) {
                 $this->connectAttempts = 0;
             }
@@ -401,7 +415,7 @@ class Link implements \CharlotteDunois\Events\EventEmitterInterface {
             $this->connectPromise = null;
             
             if($this->connectTimer) {
-                $this->client->getLoop()->cancelTimer($this->connectTimer);
+                $this->client->loop->cancelTimer($this->connectTimer);
                 $this->connectTimer = null;
             }
             

@@ -13,7 +13,7 @@ namespace CharlotteDunois\Luna;
  * A load balacer chooses the node based on the node's stats.
  * @property \CharlotteDunois\Luna\Client  $client  The Luna client.
  */
-class LoadBalancer {
+class LoadBalancer implements LoadBalancerInterface {
     /**
      *  The Luna client.
      * @var \CharlotteDunois\Luna\Client
@@ -57,7 +57,7 @@ class LoadBalancer {
      * @param \CharlotteDunois\Luna\Client  $client
      * @return void
      */
-    function setClient(\CharlotteDunois\Luna\Client $client) {
+    function setClient(\CharlotteDunois\Luna\Client $client): void {
         $this->client = $client;
     }
     
@@ -66,9 +66,9 @@ class LoadBalancer {
      * @param string  $region
      * @param bool    $autoConnect  Automatically make the node connect if it is disconnected (idling).
      * @return \CharlotteDunois\Luna\Link
-     * @throws \UnderflowException  Thrown when no nodes are available
+     * @throws \UnderflowException  Thrown when no nodes are available.
      */
-    function getIdealNode(string $region, bool $autoConnect = true) {
+    function getIdealNode(string $region, bool $autoConnect = true): \CharlotteDunois\Luna\Link {
         if($this->client->links->count() === 0) {
             throw new \UnderflowException('No nodes added');
         }
