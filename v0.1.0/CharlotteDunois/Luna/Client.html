@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="robots" content="index, follow, all" />
-    <title>CharlotteDunois\Luna\Player | Luna</title>
+    <title>CharlotteDunois\Luna\Client | Luna</title>
 
             <link rel="stylesheet" type="text/css" href="../../css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="../../css/bootstrap-theme.min.css">
@@ -21,7 +21,7 @@
     
     </head>
 
-    <body id="class" data-name="class:CharlotteDunois_Luna_Player" data-root-path="../../">
+    <body id="class" data-name="class:CharlotteDunois_Luna_Client" data-root-path="../../">
             <div id="content">
         <div id="left-column">
                 <div id="control-panel">
@@ -74,28 +74,29 @@
                         <div class="namespace-breadcrumbs">
             <ol class="breadcrumb">
                 <li><span class="label label-default">class</span></li>
-                        <li><a href="../../CharlotteDunois.html">CharlotteDunois</a></li><li class="backslash">\</li><li><a href="../../CharlotteDunois/Luna.html">Luna</a></li><li class="backslash">\</li><li>Player</li>
+                        <li><a href="../../CharlotteDunois.html">CharlotteDunois</a></li><li class="backslash">\</li><li><a href="../../CharlotteDunois/Luna.html">Luna</a></li><li class="backslash">\</li><li>Client</li>
             </ol>
         </div>
                 <div id="page-content">
                 
     <div class="page-header">
         <h1>
-            Player
+            Client
                 
         </h1>
     </div>
 
     <p>    class
-    <strong>Player</strong>        implements
-        <abbr title="CharlotteDunois\Events\EventEmitterInterface">EventEmitterInterface</abbr>        (<a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Player.php" target="_blank">View source</a>)
+    <strong>Client</strong>        implements
+        <abbr title="CharlotteDunois\Events\EventEmitterInterface">EventEmitterInterface</abbr>        (<a href="https://github.com/CharlotteDunois/Luna/blob/v0.1.0/src/Client.php" target="_blank">View source</a>)
 </p>
 
         
     
 
             <div class="description">
-            <p>Represents a player of a guild on a node.</p>                                </div>
+            <p>The generic Lavalink client. It does absolutely nothing for you on the Discord side.</p>            <p>The lavalink client implements automatic failover. That means, if a lavalink node unexpectedly disconnects,
+the client will automatically look for a new node and starts playing the track on it.</p>                    </div>
     
             <h2>Traits</h2>
 
@@ -112,64 +113,60 @@
             </div>
             </div>
     
+            <h2>Constants</h2>
+
+            <table class="table table-condensed">
+                    <tr>
+                <td>VERSION</td>
+                <td class="last">
+                    <p><em>The version of Luna.</em></p>
+                    <p></p>
+                                    </td>
+            </tr>
+            </table>
+
     
             <h2>Properties</h2>
 
             <table class="table table-condensed">
                     <tr>
-                <td class="type" id="property_guildID">
+                <td class="type" id="property_links">
+                                                                                <abbr title="CharlotteDunois\Collect\Collection">Collection</abbr>
+                </td>
+                <td><a name="property_links" href="#property_links">$links</a></td>
+                <td class="last">A collection of links, mapped by node name.</td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td class="type" id="property_loadBalancer">
+                                                                                <a href="../../CharlotteDunois/Luna/LoadBalancerInterface.html"><abbr title="CharlotteDunois\Luna\LoadBalancerInterface">LoadBalancerInterface</abbr></a>|null
+                </td>
+                <td><a name="property_loadBalancer" href="#property_loadBalancer">$loadBalancer</a></td>
+                <td class="last">The Load Balancer.</td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td class="type" id="property_loop">
+                                                                                <abbr title="React\EventLoop\LoopInterface">LoopInterface</abbr>
+                </td>
+                <td><a name="property_loop" href="#property_loop">$loop</a></td>
+                <td class="last">The used event loop.</td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td class="type" id="property_numShards">
                                                                                 int
                 </td>
-                <td><a name="property_guildID" href="#property_guildID">$guildID</a></td>
-                <td class="last">The guild ID this player is serving.</td>
+                <td><a name="property_numShards" href="#property_numShards">$numShards</a></td>
+                <td class="last">The amount of shards the bot has.</td>
                 <td></td>
             </tr>
                     <tr>
-                <td class="type" id="property_link">
-                                                                                <a href="../../CharlotteDunois/Luna/Link.html"><abbr title="CharlotteDunois\Luna\Link">Link</abbr></a>
-                </td>
-                <td><a name="property_link" href="#property_link">$link</a></td>
-                <td class="last">The link this player is connected to.</td>
-                <td></td>
-            </tr>
-                    <tr>
-                <td class="type" id="property_paused">
-                                                                                bool
-                </td>
-                <td><a name="property_paused" href="#property_paused">$paused</a></td>
-                <td class="last">Whether the track is currently paused.</td>
-                <td></td>
-            </tr>
-                    <tr>
-                <td class="type" id="property_position">
+                <td class="type" id="property_userID">
                                                                                 int
                 </td>
-                <td><a name="property_position" href="#property_position">$position</a></td>
-                <td class="last">The position of the track in milliseconds.</td>
-                <td></td>
-            </tr>
-                    <tr>
-                <td class="type" id="property_track">
-                                                                                <a href="../../CharlotteDunois/Luna/AudioTrack.html"><abbr title="CharlotteDunois\Luna\AudioTrack">AudioTrack</abbr></a>|null
-                </td>
-                <td><a name="property_track" href="#property_track">$track</a></td>
-                <td class="last">The currently playing audio track.</td>
-                <td></td>
-            </tr>
-                    <tr>
-                <td class="type" id="property_voiceUpdate">
-                                                                                array
-                </td>
-                <td><a name="property_voiceUpdate" href="#property_voiceUpdate">$voiceUpdate</a></td>
-                <td class="last">The sent voice update event.</td>
-                <td></td>
-            </tr>
-                    <tr>
-                <td class="type" id="property_volume">
-                                                                                int
-                </td>
-                <td><a name="property_volume" href="#property_volume">$volume</a></td>
-                <td class="last">The volume of the player from 0 to 1000(%).</td>
+                <td><a name="property_userID" href="#property_userID">$userID</a></td>
+                <td class="last">The Discord User ID.</td>
                 <td></td>
             </tr>
             </table>
@@ -183,79 +180,69 @@
                     
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method___construct">__construct</a>(<a href="../../CharlotteDunois/Luna/Link.html"><abbr title="CharlotteDunois\Luna\Link">Link</abbr></a> $link, int $guildID)
+                    <a href="#method___construct">__construct</a>(<abbr title="React\EventLoop\LoopInterface">LoopInterface</abbr> $loop, int $userID, int $numShards = 1, array $options = array())
         
                                             <p>Constructor.</p>                </div>
                 <div class="col-md-2"></div>
             </div>
                     <div class="row">
                 <div class="col-md-2 type">
-                    void
+                    $this
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_destroy">destroy</a>()
+                    <a href="#method_addNode">addNode</a>(<a href="../../CharlotteDunois/Luna/Node.html"><abbr title="CharlotteDunois\Luna\Node">Node</abbr></a> $node)
         
-                                            <p>Destroys the player.</p>                </div>
+                                            <p>Adds a node.</p>                </div>
                 <div class="col-md-2"></div>
             </div>
                     <div class="row">
                 <div class="col-md-2 type">
-                    int
+                    <abbr title="React\Promise\ExtendedPromiseInterface">ExtendedPromiseInterface</abbr>
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_getLastPosition">getLastPosition</a>()
+                    <a href="#method_createHTTPRequest">createHTTPRequest</a>(string $method, string $url, array $headers, string $body = null)
         
-                                            <p>Gets the last position of the played track in milliseconds.</p>                </div>
+                                            <p>Executes an asychronous HTTP request. Used by <code>Link::resolveTrack</code>. Resolves with an instance of ResponseInterface.</p>                </div>
                 <div class="col-md-2"></div>
             </div>
                     <div class="row">
                 <div class="col-md-2 type">
-                    void
+                    <a href="../../CharlotteDunois/Luna/Node.html"><abbr title="CharlotteDunois\Luna\Node">Node</abbr></a>[]
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_play">play</a>(<a href="../../CharlotteDunois/Luna/AudioTrack.html"><abbr title="CharlotteDunois\Luna\AudioTrack">AudioTrack</abbr></a> $track, int $startTime = 0, int $endTime = 0)
+                    <a href="#method_createNodes">createNodes</a>(array $nodes)
         
-                                            <p>Plays a track.</p>                </div>
+                                            <p>Creates nodes as part of a factory and adds them to the client. This is useful to import node configurations from a file.</p>                </div>
                 <div class="col-md-2"></div>
             </div>
                     <div class="row">
                 <div class="col-md-2 type">
-                    void
+                    <a href="../../CharlotteDunois/Luna/Link.html"><abbr title="CharlotteDunois\Luna\Link">Link</abbr></a>
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_seekTo">seekTo</a>(int $position)
+                    <a href="#method_getIdealNode">getIdealNode</a>(string $region, bool $autoConnect = true)
         
-                                            <p>Seeks the track.</p>                </div>
+                                            <p>Get an ideal node for the region solely based on region. If there is no ideal node, this will return the first connected node in the list.</p>                </div>
                 <div class="col-md-2"></div>
             </div>
                     <div class="row">
                 <div class="col-md-2 type">
-                    void
+                    mixed
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_sendVoiceUpdate">sendVoiceUpdate</a>(string $sessionID, array $event)
+                    <a href="#method_getOption">getOption</a>(string $name, mixed $default = null)
         
-                                            <p>Send a voice update event for the player.</p>                </div>
+                                            <p>Get a specific option, or the default value.</p>                </div>
                 <div class="col-md-2"></div>
             </div>
                     <div class="row">
                 <div class="col-md-2 type">
-                    void
+                    $this
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_setNode">setNode</a>(<a href="../../CharlotteDunois/Luna/Link.html"><abbr title="CharlotteDunois\Luna\Link">Link</abbr></a> $link)
+                    <a href="#method_removeNode">removeNode</a>(<a href="../../CharlotteDunois/Luna/Node.html"><abbr title="CharlotteDunois\Luna\Node">Node</abbr></a> $node, bool $autoDisconnect = true)
         
-                                            <p>Sets the node. Used for the internal failover.</p>                </div>
-                <div class="col-md-2"></div>
-            </div>
-                    <div class="row">
-                <div class="col-md-2 type">
-                    void
-                </div>
-                <div class="col-md-8 type">
-                    <a href="#method_setPaused">setPaused</a>(bool $paused)
-        
-                                            <p>Sets the paused state of the track.</p>                </div>
+                                            <p>Removes a node.</p>                </div>
                 <div class="col-md-2"></div>
             </div>
                     <div class="row">
@@ -263,9 +250,19 @@
                     void
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_setVolume">setVolume</a>(int $volume)
+                    <a href="#method_setLoadBalancer">setLoadBalancer</a>(<a href="../../CharlotteDunois/Luna/LoadBalancerInterface.html"><abbr title="CharlotteDunois\Luna\LoadBalancerInterface">LoadBalancerInterface</abbr></a> $loadBalancer)
         
-                                            <p>Sets the volume of the player.</p>                </div>
+                                            <p>Sets a loadbalancer to use.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <abbr title="React\Promise\ExtendedPromiseInterface">ExtendedPromiseInterface</abbr>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_start">start</a>()
+        
+                                            <p>Starts all connections to the links.</p>                </div>
                 <div class="col-md-2"></div>
             </div>
                     <div class="row">
@@ -275,17 +272,7 @@
                 <div class="col-md-8 type">
                     <a href="#method_stop">stop</a>()
         
-                                            <p>Stops playing a track.</p>                </div>
-                <div class="col-md-2"></div>
-            </div>
-                    <div class="row">
-                <div class="col-md-2 type">
-                    void
-                </div>
-                <div class="col-md-8 type">
-                    <a href="#method_updateState">updateState</a>(array $state)
-        
-                                            <p>Updates the player state. Invoked by Lavalink.</p>                </div>
+                                            <p>Stops all connections to the links.</p>                </div>
                 <div class="col-md-2"></div>
             </div>
             </div>
@@ -296,9 +283,9 @@
             <div id="method-details">
                     <div class="method-item">
                     <h3 id="method___construct">
-        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Player.php#L79">line 79</a></div>
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/v0.1.0/src/Client.php#L97">line 97</a></div>
         <code>                    
-    <strong>__construct</strong>(<a href="../../CharlotteDunois/Luna/Link.html"><abbr title="CharlotteDunois\Luna\Link">Link</abbr></a> $link, int $guildID)
+    <strong>__construct</strong>(<abbr title="React\EventLoop\LoopInterface">LoopInterface</abbr> $loop, int $userID, int $numShards = 1, array $options = array())
         </code>
     </h3>
     <div class="details">
@@ -306,97 +293,41 @@
     
 
                     <div class="method-description">
-                                    <p>Constructor.</p>                                                </div>
+                                    <p>Constructor.</p>                    <p>Optional options are as following:</p>
+
+<pre><code>array(
+    'connector' =&gt; \React\Socket\Connector, (a specific connector instance to use for both the websocket and the HTTP client)
+    'node.maxConnectAttempts' =&gt; int, (maximum attempts at (re)connecting to a node, defaults to 0 (unlimited))
+)
+</code></pre>
+</p>                            </div>
                 <div class="tags">
                             <h4>Parameters</h4>
 
                     <table class="table table-condensed">
                     <tr>
-                <td><a href="../../CharlotteDunois/Luna/Link.html"><abbr title="CharlotteDunois\Luna\Link">Link</abbr></a></td>
-                <td>$link</td>
+                <td><abbr title="React\EventLoop\LoopInterface">LoopInterface</abbr></td>
+                <td>$loop</td>
                 <td></td>
             </tr>
                     <tr>
                 <td>int</td>
-                <td>$guildID</td>
-                <td></td>
+                <td>$userID</td>
+                <td>The Discord User ID.</td>
             </tr>
-            </table>
-
-            
-            
-            
-                        
-                        
-                    </div>
-    </div>
-
-            </div>
-                    <div class="method-item">
-                    <h3 id="method_destroy">
-        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Player.php#L180">line 180</a></div>
-        <code>                    void
-    <strong>destroy</strong>()
-        </code>
-    </h3>
-    <div class="details">
-            
-    
-
-                    <div class="method-description">
-                                    <p>Destroys the player.</p>                                                </div>
-                <div class="tags">
-            
-                            <h4>Return Value</h4>
-
-                    <table class="table table-condensed">
-        <tr>
-            <td>void</td>
-            <td></td>
-        </tr>
-    </table>
-
-            
-                            <h4>Exceptions</h4>
-
-                    <table class="table table-condensed">
                     <tr>
-                <td><a href="https://secure.php.net/RuntimeException" target="_blank">RuntimeException</a></td>
-                <td></td>
+                <td>int</td>
+                <td>$numShards</td>
+                <td>The amount of shards the bot has.</td>
+            </tr>
+                    <tr>
+                <td>array</td>
+                <td>$options</td>
+                <td>Optional options.</td>
             </tr>
             </table>
 
             
-                        
-                        
-                    </div>
-    </div>
-
-            </div>
-                    <div class="method-item">
-                    <h3 id="method_getLastPosition">
-        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Player.php#L207">line 207</a></div>
-        <code>                    int
-    <strong>getLastPosition</strong>()
-        </code>
-    </h3>
-    <div class="details">
-            
-    
-
-                    <div class="method-description">
-                                    <p>Gets the last position of the played track in milliseconds.</p>                                                </div>
-                <div class="tags">
-            
-                            <h4>Return Value</h4>
-
-                    <table class="table table-condensed">
-        <tr>
-            <td>int</td>
-            <td></td>
-        </tr>
-    </table>
-
             
             
                         
@@ -406,10 +337,10 @@
 
             </div>
                     <div class="method-item">
-                    <h3 id="method_play">
-        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Player.php#L124">line 124</a></div>
-        <code>                    void
-    <strong>play</strong>(<a href="../../CharlotteDunois/Luna/AudioTrack.html"><abbr title="CharlotteDunois\Luna\AudioTrack">AudioTrack</abbr></a> $track, int $startTime = 0, int $endTime = 0)
+                    <h3 id="method_addNode">
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/v0.1.0/src/Client.php#L218">line 218</a></div>
+        <code>                    $this
+    <strong>addNode</strong>(<a href="../../CharlotteDunois/Luna/Node.html"><abbr title="CharlotteDunois\Luna\Node">Node</abbr></a> $node)
         </code>
     </h3>
     <div class="details">
@@ -417,75 +348,14 @@
     
 
                     <div class="method-description">
-                                    <p>Plays a track.</p>                                                </div>
+                                    <p>Adds a node.</p>                                                </div>
                 <div class="tags">
                             <h4>Parameters</h4>
 
                     <table class="table table-condensed">
                     <tr>
-                <td><a href="../../CharlotteDunois/Luna/AudioTrack.html"><abbr title="CharlotteDunois\Luna\AudioTrack">AudioTrack</abbr></a></td>
-                <td>$track</td>
-                <td></td>
-            </tr>
-                    <tr>
-                <td>int</td>
-                <td>$startTime</td>
-                <td>The start time in milliseconds to seek to.</td>
-            </tr>
-                    <tr>
-                <td>int</td>
-                <td>$endTime</td>
-                <td>The end time when to stop playing in milliseconds.</td>
-            </tr>
-            </table>
-
-            
-                            <h4>Return Value</h4>
-
-                    <table class="table table-condensed">
-        <tr>
-            <td>void</td>
-            <td></td>
-        </tr>
-    </table>
-
-            
-                            <h4>Exceptions</h4>
-
-                    <table class="table table-condensed">
-                    <tr>
-                <td><a href="https://secure.php.net/RuntimeException" target="_blank">RuntimeException</a></td>
-                <td></td>
-            </tr>
-            </table>
-
-            
-                        
-                        
-                    </div>
-    </div>
-
-            </div>
-                    <div class="method-item">
-                    <h3 id="method_seekTo">
-        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Player.php#L219">line 219</a></div>
-        <code>                    void
-    <strong>seekTo</strong>(int $position)
-        </code>
-    </h3>
-    <div class="details">
-            
-    
-
-                    <div class="method-description">
-                                    <p>Seeks the track.</p>                                                </div>
-                <div class="tags">
-                            <h4>Parameters</h4>
-
-                    <table class="table table-condensed">
-                    <tr>
-                <td>int</td>
-                <td>$position</td>
+                <td><a href="../../CharlotteDunois/Luna/Node.html"><abbr title="CharlotteDunois\Luna\Node">Node</abbr></a></td>
+                <td>$node</td>
                 <td></td>
             </tr>
             </table>
@@ -495,25 +365,12 @@
 
                     <table class="table table-condensed">
         <tr>
-            <td>void</td>
+            <td>$this</td>
             <td></td>
         </tr>
     </table>
 
             
-                            <h4>Exceptions</h4>
-
-                    <table class="table table-condensed">
-                    <tr>
-                <td><a href="https://secure.php.net/RuntimeException" target="_blank">RuntimeException</a></td>
-                <td></td>
-            </tr>
-                    <tr>
-                <td><a href="https://secure.php.net/BadMethodCallException" target="_blank">BadMethodCallException</a></td>
-                <td></td>
-            </tr>
-            </table>
-
             
                         
                         
@@ -522,10 +379,10 @@
 
             </div>
                     <div class="method-item">
-                    <h3 id="method_sendVoiceUpdate">
-        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Player.php#L295">line 295</a></div>
-        <code>                    void
-    <strong>sendVoiceUpdate</strong>(string $sessionID, array $event)
+                    <h3 id="method_createHTTPRequest">
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/v0.1.0/src/Client.php#L352">line 352</a></div>
+        <code>                    <abbr title="React\Promise\ExtendedPromiseInterface">ExtendedPromiseInterface</abbr>
+    <strong>createHTTPRequest</strong>(string $method, string $url, array $headers, string $body = null)
         </code>
     </h3>
     <div class="details">
@@ -533,20 +390,30 @@
     
 
                     <div class="method-description">
-                                    <p>Send a voice update event for the player.</p>                                                </div>
+                                    <p>Executes an asychronous HTTP request. Used by <code>Link::resolveTrack</code>. Resolves with an instance of ResponseInterface.</p>                                                </div>
                 <div class="tags">
                             <h4>Parameters</h4>
 
                     <table class="table table-condensed">
                     <tr>
                 <td>string</td>
-                <td>$sessionID</td>
-                <td>The voice session ID.</td>
+                <td>$method</td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td>string</td>
+                <td>$url</td>
+                <td></td>
             </tr>
                     <tr>
                 <td>array</td>
-                <td>$event</td>
-                <td>The voice server update event from Discord.</td>
+                <td>$headers</td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td>string</td>
+                <td>$body</td>
+                <td></td>
             </tr>
             </table>
 
@@ -555,7 +422,7 @@
 
                     <table class="table table-condensed">
         <tr>
-            <td>void</td>
+            <td><abbr title="React\Promise\ExtendedPromiseInterface">ExtendedPromiseInterface</abbr></td>
             <td></td>
         </tr>
     </table>
@@ -578,10 +445,10 @@
 
             </div>
                     <div class="method-item">
-                    <h3 id="method_setNode">
-        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Player.php#L317">line 317</a></div>
-        <code>                    void
-    <strong>setNode</strong>(<a href="../../CharlotteDunois/Luna/Link.html"><abbr title="CharlotteDunois\Luna\Link">Link</abbr></a> $link)
+                    <h3 id="method_createNodes">
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/v0.1.0/src/Client.php#L329">line 329</a></div>
+        <code>                    <a href="../../CharlotteDunois/Luna/Node.html"><abbr title="CharlotteDunois\Luna\Node">Node</abbr></a>[]
+    <strong>createNodes</strong>(array $nodes)
         </code>
     </h3>
     <div class="details">
@@ -589,14 +456,14 @@
     
 
                     <div class="method-description">
-                                    <p>Sets the node. Used for the internal failover.</p>                                                </div>
+                                    <p>Creates nodes as part of a factory and adds them to the client. This is useful to import node configurations from a file.</p>                                                </div>
                 <div class="tags">
                             <h4>Parameters</h4>
 
                     <table class="table table-condensed">
                     <tr>
-                <td><a href="../../CharlotteDunois/Luna/Link.html"><abbr title="CharlotteDunois\Luna\Link">Link</abbr></a></td>
-                <td>$link</td>
+                <td>array</td>
+                <td>$nodes</td>
                 <td></td>
             </tr>
             </table>
@@ -606,7 +473,7 @@
 
                     <table class="table table-condensed">
         <tr>
-            <td>void</td>
+            <td><a href="../../CharlotteDunois/Luna/Node.html"><abbr title="CharlotteDunois\Luna\Node">Node</abbr></a>[]</td>
             <td></td>
         </tr>
     </table>
@@ -620,10 +487,10 @@
 
             </div>
                     <div class="method-item">
-                    <h3 id="method_setPaused">
-        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Player.php#L249">line 249</a></div>
-        <code>                    void
-    <strong>setPaused</strong>(bool $paused)
+                    <h3 id="method_getIdealNode">
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/v0.1.0/src/Client.php#L278">line 278</a></div>
+        <code>                    <a href="../../CharlotteDunois/Luna/Link.html"><abbr title="CharlotteDunois\Luna\Link">Link</abbr></a>
+    <strong>getIdealNode</strong>(string $region, bool $autoConnect = true)
         </code>
     </h3>
     <div class="details">
@@ -631,15 +498,20 @@
     
 
                     <div class="method-description">
-                                    <p>Sets the paused state of the track.</p>                                                </div>
+                                    <p>Get an ideal node for the region solely based on region. If there is no ideal node, this will return the first connected node in the list.</p>                                                </div>
                 <div class="tags">
                             <h4>Parameters</h4>
 
                     <table class="table table-condensed">
+                    <tr>
+                <td>string</td>
+                <td>$region</td>
+                <td></td>
+            </tr>
                     <tr>
                 <td>bool</td>
-                <td>$paused</td>
-                <td></td>
+                <td>$autoConnect</td>
+                <td>Automatically make the node connect if it is disconnected (idling).</td>
             </tr>
             </table>
 
@@ -648,7 +520,7 @@
 
                     <table class="table table-condensed">
         <tr>
-            <td>void</td>
+            <td><a href="../../CharlotteDunois/Luna/Link.html"><abbr title="CharlotteDunois\Luna\Link">Link</abbr></a></td>
             <td></td>
         </tr>
     </table>
@@ -658,8 +530,8 @@
 
                     <table class="table table-condensed">
                     <tr>
-                <td><a href="https://secure.php.net/RuntimeException" target="_blank">RuntimeException</a></td>
-                <td></td>
+                <td><a href="https://secure.php.net/UnderflowException" target="_blank">UnderflowException</a></td>
+                <td>Thrown when no nodes are available.</td>
             </tr>
             </table>
 
@@ -671,10 +543,10 @@
 
             </div>
                     <div class="method-item">
-                    <h3 id="method_setVolume">
-        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Player.php#L271">line 271</a></div>
-        <code>                    void
-    <strong>setVolume</strong>(int $volume)
+                    <h3 id="method_getOption">
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/v0.1.0/src/Client.php#L195">line 195</a></div>
+        <code>                    mixed
+    <strong>getOption</strong>(string $name, mixed $default = null)
         </code>
     </h3>
     <div class="details">
@@ -682,15 +554,109 @@
     
 
                     <div class="method-description">
-                                    <p>Sets the volume of the player.</p>                                                </div>
+                                    <p>Get a specific option, or the default value.</p>                                                </div>
                 <div class="tags">
                             <h4>Parameters</h4>
 
                     <table class="table table-condensed">
                     <tr>
-                <td>int</td>
-                <td>$volume</td>
-                <td>Any integer in the range of 0..1000.</td>
+                <td>string</td>
+                <td>$name</td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td>mixed</td>
+                <td>$default</td>
+                <td></td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>mixed</td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+            
+                        
+                        
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_removeNode">
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/v0.1.0/src/Client.php#L249">line 249</a></div>
+        <code>                    $this
+    <strong>removeNode</strong>(<a href="../../CharlotteDunois/Luna/Node.html"><abbr title="CharlotteDunois\Luna\Node">Node</abbr></a> $node, bool $autoDisconnect = true)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Removes a node.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="../../CharlotteDunois/Luna/Node.html"><abbr title="CharlotteDunois\Luna\Node">Node</abbr></a></td>
+                <td>$node</td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td>bool</td>
+                <td>$autoDisconnect</td>
+                <td>Whether we automatically disconnect from the node.</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>$this</td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+            
+                        
+                        
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_setLoadBalancer">
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/v0.1.0/src/Client.php#L208">line 208</a></div>
+        <code>                    void
+    <strong>setLoadBalancer</strong>(<a href="../../CharlotteDunois/Luna/LoadBalancerInterface.html"><abbr title="CharlotteDunois\Luna\LoadBalancerInterface">LoadBalancerInterface</abbr></a> $loadBalancer)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Sets a loadbalancer to use.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="../../CharlotteDunois/Luna/LoadBalancerInterface.html"><abbr title="CharlotteDunois\Luna\LoadBalancerInterface">LoadBalancerInterface</abbr></a></td>
+                <td>$loadBalancer</td>
+                <td></td>
             </tr>
             </table>
 
@@ -705,15 +671,38 @@
     </table>
 
             
-                            <h4>Exceptions</h4>
+            
+                        
+                        
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_start">
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/v0.1.0/src/Client.php#L308">line 308</a></div>
+        <code>                    <abbr title="React\Promise\ExtendedPromiseInterface">ExtendedPromiseInterface</abbr>
+    <strong>start</strong>()
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Starts all connections to the links.</p>                                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
 
                     <table class="table table-condensed">
-                    <tr>
-                <td><a href="https://secure.php.net/RuntimeException" target="_blank">RuntimeException</a></td>
-                <td></td>
-            </tr>
-            </table>
+        <tr>
+            <td><abbr title="React\Promise\ExtendedPromiseInterface">ExtendedPromiseInterface</abbr></td>
+            <td></td>
+        </tr>
+    </table>
 
+            
             
                         
                         
@@ -723,7 +712,7 @@
             </div>
                     <div class="method-item">
                     <h3 id="method_stop">
-        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Player.php#L156">line 156</a></div>
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/v0.1.0/src/Client.php#L318">line 318</a></div>
         <code>                    void
     <strong>stop</strong>()
         </code>
@@ -733,59 +722,8 @@
     
 
                     <div class="method-description">
-                                    <p>Stops playing a track.</p>                                                </div>
+                                    <p>Stops all connections to the links.</p>                                                </div>
                 <div class="tags">
-            
-                            <h4>Return Value</h4>
-
-                    <table class="table table-condensed">
-        <tr>
-            <td>void</td>
-            <td></td>
-        </tr>
-    </table>
-
-            
-                            <h4>Exceptions</h4>
-
-                    <table class="table table-condensed">
-                    <tr>
-                <td><a href="https://secure.php.net/RuntimeException" target="_blank">RuntimeException</a></td>
-                <td></td>
-            </tr>
-            </table>
-
-            
-                        
-                        
-                    </div>
-    </div>
-
-            </div>
-                    <div class="method-item">
-                    <h3 id="method_updateState">
-        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/Player.php#L339">line 339</a></div>
-        <code>                    void
-    <strong>updateState</strong>(array $state)
-        </code>
-    </h3>
-    <div class="details">
-            
-    
-
-                    <div class="method-description">
-                                    <p>Updates the player state. Invoked by Lavalink.</p>                                                </div>
-                <div class="tags">
-                            <h4>Parameters</h4>
-
-                    <table class="table table-condensed">
-                    <tr>
-                <td>array</td>
-                <td>$state</td>
-                <td></td>
-            </tr>
-            </table>
-
             
                             <h4>Return Value</h4>
 

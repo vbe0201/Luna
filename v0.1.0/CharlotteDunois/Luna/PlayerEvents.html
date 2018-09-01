@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="robots" content="index, follow, all" />
-    <title>CharlotteDunois\Luna\LoadBalancerInterface | Luna</title>
+    <title>CharlotteDunois\Luna\PlayerEvents | Luna</title>
 
             <link rel="stylesheet" type="text/css" href="../../css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="../../css/bootstrap-theme.min.css">
@@ -21,7 +21,7 @@
     
     </head>
 
-    <body id="class" data-name="class:CharlotteDunois_Luna_LoadBalancerInterface" data-root-path="../../">
+    <body id="class" data-name="class:CharlotteDunois_Luna_PlayerEvents" data-root-path="../../">
             <div id="content">
         <div id="left-column">
                 <div id="control-panel">
@@ -74,27 +74,27 @@
                         <div class="namespace-breadcrumbs">
             <ol class="breadcrumb">
                 <li><span class="label label-default">interface</span></li>
-                        <li><a href="../../CharlotteDunois.html">CharlotteDunois</a></li><li class="backslash">\</li><li><a href="../../CharlotteDunois/Luna.html">Luna</a></li><li class="backslash">\</li><li>LoadBalancerInterface</li>
+                        <li><a href="../../CharlotteDunois.html">CharlotteDunois</a></li><li class="backslash">\</li><li><a href="../../CharlotteDunois/Luna.html">Luna</a></li><li class="backslash">\</li><li>PlayerEvents</li>
             </ol>
         </div>
                 <div id="page-content">
                 
     <div class="page-header">
         <h1>
-            LoadBalancerInterface
+            PlayerEvents
                 
         </h1>
     </div>
 
     <p>    interface
-    <strong>LoadBalancerInterface</strong>        (<a href="https://github.com/CharlotteDunois/Luna/blob/master/src/LoadBalancerInterface.php" target="_blank">View source</a>)
+    <strong>PlayerEvents</strong>        (<a href="https://github.com/CharlotteDunois/Luna/blob/v0.1.0/src/PlayerEvents.php" target="_blank">View source</a>)
 </p>
 
         
     
 
             <div class="description">
-            <p>The load balancer chooses the ideal node based on the load balancer's algorithm.</p>                                </div>
+            <p>This interface documents all events emitted on the player.</p>                                </div>
     
     
     
@@ -104,12 +104,12 @@
             <div class="container-fluid underlined">
                     <div class="row">
                 <div class="col-md-2 type">
-                    <a href="../../CharlotteDunois/Luna/Link.html"><abbr title="CharlotteDunois\Luna\Link">Link</abbr></a>
+                    void
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_getIdealNode">getIdealNode</a>(string $region, bool $autoConnect = true)
+                    <a href="#method_end">end</a>(<a href="../../CharlotteDunois/Luna/AudioTrack.html"><abbr title="CharlotteDunois\Luna\AudioTrack">AudioTrack</abbr></a>|string $track, string $reason, bool $mayStartNext)
         
-                                            <p>Get an ideal node for the region.</p>                </div>
+                                            <p>Emitted when the track ends.</p>                </div>
                 <div class="col-md-2"></div>
             </div>
                     <div class="row">
@@ -117,9 +117,19 @@
                     void
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_setClient">setClient</a>(<a href="../../CharlotteDunois/Luna/Client.html"><abbr title="CharlotteDunois\Luna\Client">Client</abbr></a> $client)
+                    <a href="#method_error">error</a>(<a href="../../CharlotteDunois/Luna/AudioTrack.html"><abbr title="CharlotteDunois\Luna\AudioTrack">AudioTrack</abbr></a>|string $track, <a href="../../CharlotteDunois/Luna/RemoteTrackException.html"><abbr title="CharlotteDunois\Luna\RemoteTrackException">RemoteTrackException</abbr></a> $error)
         
-                                            <p>Sets the client. Invoked by <code>Client::setLoadBalancer</code>.</p>                </div>
+                                            <p>Emitted when an error happens.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    void
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_stuck">stuck</a>(<a href="../../CharlotteDunois/Luna/AudioTrack.html"><abbr title="CharlotteDunois\Luna\AudioTrack">AudioTrack</abbr></a>|string $track, int $threshold)
+        
+                                            <p>Emitted when the track gets stuck.</p>                </div>
                 <div class="col-md-2"></div>
             </div>
             </div>
@@ -129,10 +139,10 @@
 
             <div id="method-details">
                     <div class="method-item">
-                    <h3 id="method_getIdealNode">
-        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/LoadBalancerInterface.php#L30">line 30</a></div>
-        <code>                    <a href="../../CharlotteDunois/Luna/Link.html"><abbr title="CharlotteDunois\Luna\Link">Link</abbr></a>
-    <strong>getIdealNode</strong>(string $region, bool $autoConnect = true)
+                    <h3 id="method_end">
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/v0.1.0/src/PlayerEvents.php#L24">line 24</a></div>
+        <code>                    void
+    <strong>end</strong>(<a href="../../CharlotteDunois/Luna/AudioTrack.html"><abbr title="CharlotteDunois\Luna\AudioTrack">AudioTrack</abbr></a>|string $track, string $reason, bool $mayStartNext)
         </code>
     </h3>
     <div class="details">
@@ -140,20 +150,25 @@
     
 
                     <div class="method-description">
-                                    <p>Get an ideal node for the region.</p>                                                </div>
+                                    <p>Emitted when the track ends.</p>                                                </div>
                 <div class="tags">
                             <h4>Parameters</h4>
 
                     <table class="table table-condensed">
                     <tr>
+                <td><a href="../../CharlotteDunois/Luna/AudioTrack.html"><abbr title="CharlotteDunois\Luna\AudioTrack">AudioTrack</abbr></a>|string</td>
+                <td>$track</td>
+                <td></td>
+            </tr>
+                    <tr>
                 <td>string</td>
-                <td>$region</td>
+                <td>$reason</td>
                 <td></td>
             </tr>
                     <tr>
                 <td>bool</td>
-                <td>$autoConnect</td>
-                <td>Automatically make the node connect if it is disconnected (idling).</td>
+                <td>$mayStartNext</td>
+                <td>See the <code>see</code> section.</td>
             </tr>
             </table>
 
@@ -162,21 +177,70 @@
 
                     <table class="table table-condensed">
         <tr>
-            <td><a href="../../CharlotteDunois/Luna/Link.html"><abbr title="CharlotteDunois\Luna\Link">Link</abbr></a></td>
+            <td>void</td>
             <td></td>
         </tr>
     </table>
 
             
-                            <h4>Exceptions</h4>
+            
+                            <h4>See also</h4>
 
                     <table class="table table-condensed">
                     <tr>
-                <td><a href="https://secure.php.net/UnderflowException" target="_blank">UnderflowException</a></td>
-                <td>Thrown when no nodes are available.</td>
+                <td>
+                                            <abbr title="CharlotteDunois\Luna\AudioTrack::AUDIO_END_REASON_CONTINUE">AudioTrack::AUDIO_END_REASON_CONTINUE</abbr>
+                                    </td>
+                <td></td>
             </tr>
             </table>
 
+                        
+                        
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_error">
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/v0.1.0/src/PlayerEvents.php#L32">line 32</a></div>
+        <code>                    void
+    <strong>error</strong>(<a href="../../CharlotteDunois/Luna/AudioTrack.html"><abbr title="CharlotteDunois\Luna\AudioTrack">AudioTrack</abbr></a>|string $track, <a href="../../CharlotteDunois/Luna/RemoteTrackException.html"><abbr title="CharlotteDunois\Luna\RemoteTrackException">RemoteTrackException</abbr></a> $error)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Emitted when an error happens.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="../../CharlotteDunois/Luna/AudioTrack.html"><abbr title="CharlotteDunois\Luna\AudioTrack">AudioTrack</abbr></a>|string</td>
+                <td>$track</td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td><a href="../../CharlotteDunois/Luna/RemoteTrackException.html"><abbr title="CharlotteDunois\Luna\RemoteTrackException">RemoteTrackException</abbr></a></td>
+                <td>$error</td>
+                <td></td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>void</td>
+            <td></td>
+        </tr>
+    </table>
+
+            
             
                         
                         
@@ -185,10 +249,10 @@
 
             </div>
                     <div class="method-item">
-                    <h3 id="method_setClient">
-        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/master/src/LoadBalancerInterface.php#L21">line 21</a></div>
+                    <h3 id="method_stuck">
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/v0.1.0/src/PlayerEvents.php#L40">line 40</a></div>
         <code>                    void
-    <strong>setClient</strong>(<a href="../../CharlotteDunois/Luna/Client.html"><abbr title="CharlotteDunois\Luna\Client">Client</abbr></a> $client)
+    <strong>stuck</strong>(<a href="../../CharlotteDunois/Luna/AudioTrack.html"><abbr title="CharlotteDunois\Luna\AudioTrack">AudioTrack</abbr></a>|string $track, int $threshold)
         </code>
     </h3>
     <div class="details">
@@ -196,15 +260,20 @@
     
 
                     <div class="method-description">
-                                    <p>Sets the client. Invoked by <code>Client::setLoadBalancer</code>.</p>                                                </div>
+                                    <p>Emitted when the track gets stuck.</p>                                                </div>
                 <div class="tags">
                             <h4>Parameters</h4>
 
                     <table class="table table-condensed">
                     <tr>
-                <td><a href="../../CharlotteDunois/Luna/Client.html"><abbr title="CharlotteDunois\Luna\Client">Client</abbr></a></td>
-                <td>$client</td>
+                <td><a href="../../CharlotteDunois/Luna/AudioTrack.html"><abbr title="CharlotteDunois\Luna\AudioTrack">AudioTrack</abbr></a>|string</td>
+                <td>$track</td>
                 <td></td>
+            </tr>
+                    <tr>
+                <td>int</td>
+                <td>$threshold</td>
+                <td>In milliseconds.</td>
             </tr>
             </table>
 
