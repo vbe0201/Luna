@@ -27,7 +27,7 @@ class Client implements \CharlotteDunois\Events\EventEmitterInterface {
      * The version of Luna.
      * @var string
      */
-    const VERSION = '0.1.0-dev';
+    const VERSION = '0.2.0-dev';
     
     /**
      * The used event loop.
