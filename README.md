@@ -5,7 +5,7 @@ Luna is a [Lavalink](https://github.com/Frederikam/Lavalink) client for PHP. Thi
 For use with [Yasmin](https://github.com/CharlotteDunois/Yasmin), there is a `YasminClient` included, which does the heavy liftings.
 If you use Yasmin <= v0.4.2, please use `v0.1.0` - newer versions of Luna do not support v0.4.2 and below.
 
-This library is **only** for PHP 7.1 (and later).
+This library is **only** for PHP x64 7.1 (and later).
 
 # Getting Started
 Getting started with Luna is pretty straight forward. All you need to do is to use [composer](https://packagist.org/packages/charlottedunois/luna) to install Luna and its dependencies.
