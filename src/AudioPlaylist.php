@@ -11,6 +11,7 @@ namespace CharlotteDunois\Luna;
 
 /**
  * Represents an Audio Playlist.
+ *
  * @property string|null                          $name           The playlist's name, or null for Lavalink v2.
  * @property int|null                             $selectedTrack  Which track is selected, or null for Lavalink v2.
  * @property \CharlotteDunois\Collect\Collection  $tracks         The playlist's tracks.

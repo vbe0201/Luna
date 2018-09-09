@@ -11,6 +11,7 @@ namespace CharlotteDunois\Luna;
 
 /**
  * This class represents a node.
+ *
  * @property string  $name      The name of the node.
  * @property string  $password  The password of th enode.
  * @property string  $httpHost  The HTTP host address.

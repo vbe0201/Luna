@@ -13,6 +13,7 @@ namespace CharlotteDunois\Luna;
  * The generic Lavalink client. It does absolutely nothing for you on the Discord side.
  * The lavalink client implements automatic failover. That means, if a lavalink node unexpectedly disconnects,
  * the client will automatically look for a new node and starts playing the track on it.
+ *
  * @property \React\EventLoop\LoopInterface                    $loop          The used event loop.
  * @property \CharlotteDunois\Luna\LoadBalancerInterface|null  $loadBalancer  The Load Balancer.
  * @property \CharlotteDunois\Collect\Collection               $links         A collection of links, mapped by node name.

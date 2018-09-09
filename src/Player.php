@@ -11,6 +11,7 @@ namespace CharlotteDunois\Luna;
 
 /**
  * Represents a player of a guild on a node.
+ *
  * @property \CharlotteDunois\Luna\Link             $link         The link this player is connected to.
  * @property int                                    $guildID      The guild ID this player is serving.
  * @property \CharlotteDunois\Luna\AudioTrack|null  $track        The currently playing audio track.

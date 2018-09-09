@@ -11,6 +11,7 @@ namespace CharlotteDunois\Luna;
 
 /**
  * A load balacer chooses the node based on the node's stats.
+ *
  * @property \CharlotteDunois\Luna\Client  $client  The Luna client.
  */
 class LoadBalancer implements LoadBalancerInterface {

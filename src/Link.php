@@ -11,6 +11,7 @@ namespace CharlotteDunois\Luna;
 
 /**
  * A link connects to the lavalink node and listens for events and sends packets.
+ *
  * @property \CharlotteDunois\Luna\Client            $client       The Luna client.
  * @property \CharlotteDunois\Luna\Node              $node         The node this link is for.
  * @property int                                     $nodeVersion  The lavalink version on the node.

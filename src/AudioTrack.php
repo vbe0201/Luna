@@ -11,6 +11,7 @@ namespace CharlotteDunois\Luna;
 
 /**
  * Represents an Audio Track.
+ *
  * @property string       $track       The base64 encoded string from Lavalink.
  * @property string       $title       The track title.
  * @property string       $author      The track author.

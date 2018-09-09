@@ -11,6 +11,7 @@ namespace CharlotteDunois\Luna;
 
 /**
  * Represents a node's stats. The lavalink node sends every minute stats, which updates any existing instances.
+ *
  * @property \CharlotteDunois\Luna\Node  $node              The node these stats are for.
  * @property int                         $players           How many players the node is running.
  * @property int                         $playingPlayers    How many players are currently playing.
