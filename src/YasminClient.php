@@ -153,8 +153,8 @@ class YasminClient extends Client {
             return ($new->id === $this->client->user->id && $new->voiceChannelID === $channel->id && $new->voiceSessionID !== null);
         };
         
-        $vsef = function (array $data) use (&$channel) {
-            return (((int) $data['guild_id']) === ((int) $channel->guild->id));
+        $vsef = function (?array $data) use (&$channel) {
+            return ($data !== null && ((int) $data['guild_id']) === ((int) $channel->guild->id));
         };
         
         $opts = array(
