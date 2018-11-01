@@ -13,8 +13,8 @@ namespace CharlotteDunois\Luna;
  * The Lavalink client for Yasmin. This class interacts with Yasmin to do all the updates for you.
  * If you get disconnected from the Discord Gateway, then all players will be destroyed (which is a consequence of the disconnect).
  *
- * @property \CharlotteDunois\Yasmin\Client            $client       The yasmin client.
- * @property \CharlotteDunois\Yasmin\Utils\Collection  $connections  The open connections, mapped by guild ID (as int) to players.
+ * @property \CharlotteDunois\Yasmin\Client       $client       The yasmin client.
+ * @property \CharlotteDunois\Collect\Collection  $connections  The open connections, mapped by guild ID (as int) to players.
  */
 class YasminClient extends Client {
     /**
@@ -25,7 +25,7 @@ class YasminClient extends Client {
     
     /**
      * The open connections, mapped by guild ID (as int) to players.
-     * @var \CharlotteDunois\Yasmin\Utils\Collection
+     * @var \CharlotteDunois\Collect\Collection
      */
     protected $connections;
     
@@ -64,7 +64,7 @@ class YasminClient extends Client {
      */
     function __construct(\CharlotteDunois\Yasmin\Client $client, array $options = array()) {
         $this->client = $client;
-        $this->connections = new \CharlotteDunois\Yasmin\Utils\Collection();
+        $this->connections = new \CharlotteDunois\Collect\Collection();
         
         $options['internal.disableBrowser'] = true;
         $numShards = 1;
