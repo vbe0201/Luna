@@ -161,8 +161,8 @@ class YasminClient extends Client {
             'time' => 30
         );
         
-        $voiceState = \CharlotteDunois\Yasmin\Utils\DataHelpers::waitForEvent($this->client, 'voiceStateUpdate', $vstf, $opts);
-        $voiceServer = \CharlotteDunois\Yasmin\Utils\DataHelpers::waitForEvent($this->client, 'voiceServerUpdate', $vsef, $opts);
+        $voiceState = \CharlotteDunois\Yasmin\Utils\EventHelpers::waitForEvent($this->client, 'voiceStateUpdate', $vstf, $opts);
+        $voiceServer = \CharlotteDunois\Yasmin\Utils\EventHelpers::waitForEvent($this->client, 'voiceServerUpdate', $vsef, $opts);
         
         $shard = $this->client->shards->get($channel->guild->shardID);
         $shard->ws->send(array(
