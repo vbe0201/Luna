@@ -13,7 +13,7 @@
     "require": {
         "php-64bit": ">=7.1",
         "ext-json": "*",
-        "charlottedunois/collection": "^0.2.0",
+        "charlottedunois/collection": "^0.2.0|^0.1.0",
         "charlottedunois/eventemitter": "^0.1.4",
         "clue/buzz-react": "^2.3",
         "ratchet/pawl": "^0.3.1",
