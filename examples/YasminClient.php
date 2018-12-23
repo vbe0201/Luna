@@ -55,7 +55,7 @@ $client->on('message', function (\CharlotteDunois\Yasmin\Models\Message $message
         }
         
         // Check whether the user limit has been reached
-        if($channel->members->count() >= $channel->userLimit && !$perms->has('MOVE_MEMBERS')) {
+        if($channel->userLimit > 0 && $channel->members->count() >= $channel->userLimit && !$perms->has('MOVE_MEMBERS')) {
             return $message->reply('Voice channel user limit reached, unable to join the voice channel')
                 ->done(null, 'my_log_error');
         }
@@ -80,7 +80,7 @@ $client->on('message', function (\CharlotteDunois\Yasmin\Models\Message $message
         }
         
         // Get the guild's player
-        $player = $luna->connections->get($message->guild->id);
+        $player = $luna->connections->get(((int) $message->guild->id));
         
         // Sanity check
         if($player === null) {
