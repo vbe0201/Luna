@@ -1,7 +1,7 @@
 <?php
 /**
  * Luna
- * Copyright 2018 Charlotte Dunois, All Rights Reserved
+ * Copyright 2018-2019 Charlotte Dunois, All Rights Reserved
  *
  * Website: https://charuru.moe
  * License: https://github.com/CharlotteDunois/Luna/blob/master/LICENSE
