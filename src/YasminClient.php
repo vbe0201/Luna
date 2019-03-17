@@ -60,9 +60,14 @@ class YasminClient extends Client {
      *
      * @param \CharlotteDunois\Yasmin\Client  $client
      * @param array                           $options    Optional options.
+     * @throws \LogicException
      * @see \CharlotteDunois\Luna\Client
      */
     function __construct(\CharlotteDunois\Yasmin\Client $client, array $options = array()) {
+        if(\version_compare(\CharlotteDunois\Yasmin\Client::VERSION, '0.6.0-dev', '<')) {
+            throw new \LogicException('The Yasmin Client requires at least Yasmin v0.6.0');
+        }
+        
         $this->client = $client;
         $this->connections = new \CharlotteDunois\Collect\Collection();
         

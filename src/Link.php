@@ -101,7 +101,7 @@ class Link implements \CharlotteDunois\Events\EventEmitterInterface {
     
     /**
      * The timer to acknowledge a connect as successful.
-     * @var \React\EventLoop\TimerInterface|\React\EventLoop\Timer\TimerInterface|null
+     * @var \React\EventLoop\TimerInterface|null
      */
     protected $connectTimer;
     

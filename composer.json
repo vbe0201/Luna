@@ -15,14 +15,13 @@
         "ext-json": "*",
         "charlottedunois/collection": "^0.2.0|^0.1.0",
         "charlottedunois/eventemitter": "^0.1.4",
-        "clue/buzz-react": "^2.3",
         "ratchet/pawl": "^0.3.1",
         "react/event-loop": "^1.0|^0.5|^0.4.3",
         "react/promise": "^2.7.0"
     },
     "require-dev": {
-        "psr/http-message": "^1.0",
-        "charlottedunois/yasmin": "^0.6.0|dev-master"
+        "charlottedunois/yasmin": "^0.6.0|dev-master",
+        "psr/http-message": "^1.0"
     },
     "suggest": {
         "charlottedunois/yasmin": "The Discord API library for PHP."
