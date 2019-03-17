@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="robots" content="index, follow, all" />
+    <title>CharlotteDunois\Luna\Player | Luna</title>
+
+            <link rel="stylesheet" type="text/css" href="../../css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="../../css/bootstrap-theme.min.css">
+        <link rel="stylesheet" type="text/css" href="../../css/sami.css">
+        <link rel="stylesheet" type="text/css" href="../../css/prism.css">
+        <script src="../../js/jquery-1.11.1.min.js"></script>
+        <script src="../../js/bootstrap.min.js"></script>
+        <script src="../../js/typeahead.min.js"></script>
+        <script src="../../sami.js"></script>
+        <script src="../../js/prism.js"></script>
+        <meta name="MobileOptimized" content="width">
+        <meta name="HandheldFriendly" content="true">
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+    
+    
+    </head>
+
+    <body id="class" data-name="class:CharlotteDunois_Luna_Player" data-root-path="../../">
+            <div id="content">
+        <div id="left-column">
+                <div id="control-panel">
+                    <form action="#" method="GET">
+                <select id="version-switcher" name="version">
+                                            <option value="../../../v0.1.0/index.html" data-version="v0.1.0">v0.1.0</option>
+                                            <option value="../../../v0.2.0/index.html" data-version="v0.2.0">v0.2.0</option>
+                                            <option value="../../../v0.2.1/index.html" data-version="v0.2.1">v0.2.1</option>
+                                            <option value="../../../v0.2.2/index.html" data-version="v0.2.2">v0.2.2</option>
+                                            <option value="../../../master/index.html" data-version="master">master</option>
+                                    </select>
+            </form>
+                <script>
+            $('option[data-version="'+window.projectVersion+'"]').prop('selected', true);
+        </script>
+        <form id="search-form" action="../../search.html" method="GET">
+            <span class="glyphicon glyphicon-search"></span>
+            <input name="search"
+                   class="typeahead form-control"
+                   type="search"
+                   placeholder="Search">
+        </form>
+    </div>
+
+                <div id="api-tree"></div>
+
+        </div>
+        <div id="right-column">
+                <nav id="site-nav" class="navbar navbar-default" role="navigation">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-elements">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="../../index.html">Luna</a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar-elements">
+                <ul class="nav navbar-nav">
+                    <li><a href="../../classes.html">Classes</a></li>
+                                                                <li><a href="../../namespaces.html">Namespaces</a></li>
+                                        <li><a href="../../interfaces.html">Interfaces</a></li>
+                    <li><a href="../../traits.html">Traits</a></li>
+                    <li><a href="../../doc-index.html">Index</a></li>
+                    <li><a href="../../search.html">Search</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+                        <div class="namespace-breadcrumbs">
+            <ol class="breadcrumb">
+                <li><span class="label label-default">class</span></li>
+                        <li><a href="../../CharlotteDunois.html">CharlotteDunois</a></li><li class="backslash">\</li><li><a href="../../CharlotteDunois/Luna.html">Luna</a></li><li class="backslash">\</li><li>Player</li>
+            </ol>
+        </div>
+                <div id="page-content">
+                
+    <div class="page-header">
+        <h1>
+            Player
+                
+        </h1>
+    </div>
+
+    <p>    class
+    <strong>Player</strong>        implements
+        <abbr title="CharlotteDunois\Events\EventEmitterInterface">EventEmitterInterface</abbr>        (<a href="https://github.com/CharlotteDunois/Luna/blob/v0.2.2/src/Player.php" target="_blank">View source</a>)
+</p>
+
+        
+    
+
+            <div class="description">
+            <p>Represents a player of a guild on a node.</p>                                </div>
+    
+            <h2>Traits</h2>
+
+        
+    <div class="container-fluid underlined">
+                    <div class="row">
+                <div class="col-md-6">
+                                            <abbr title="CharlotteDunois\Events\EventEmitterTrait">EventEmitterTrait</abbr>
+                                            
+                </div>
+                <div class="col-md-6">
+                    
+                </div>
+            </div>
+            </div>
+    
+    
+            <h2>Properties</h2>
+
+            <table class="table table-condensed">
+                    <tr>
+                <td class="type" id="property_guildID">
+                                                                                int
+                </td>
+                <td><a name="property_guildID" href="#property_guildID">$guildID</a></td>
+                <td class="last">The guild ID this player is serving.</td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td class="type" id="property_link">
+                                                                                <a href="../../CharlotteDunois/Luna/Link.html"><abbr title="CharlotteDunois\Luna\Link">Link</abbr></a>
+                </td>
+                <td><a name="property_link" href="#property_link">$link</a></td>
+                <td class="last">The link this player is connected to.</td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td class="type" id="property_paused">
+                                                                                bool
+                </td>
+                <td><a name="property_paused" href="#property_paused">$paused</a></td>
+                <td class="last">Whether the track is currently paused.</td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td class="type" id="property_position">
+                                                                                int
+                </td>
+                <td><a name="property_position" href="#property_position">$position</a></td>
+                <td class="last">The position of the track in milliseconds.</td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td class="type" id="property_track">
+                                                                                <a href="../../CharlotteDunois/Luna/AudioTrack.html"><abbr title="CharlotteDunois\Luna\AudioTrack">AudioTrack</abbr></a>|null
+                </td>
+                <td><a name="property_track" href="#property_track">$track</a></td>
+                <td class="last">The currently playing audio track.</td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td class="type" id="property_voiceUpdate">
+                                                                                array
+                </td>
+                <td><a name="property_voiceUpdate" href="#property_voiceUpdate">$voiceUpdate</a></td>
+                <td class="last">The sent voice update event.</td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td class="type" id="property_volume">
+                                                                                int
+                </td>
+                <td><a name="property_volume" href="#property_volume">$volume</a></td>
+                <td class="last">The volume of the player from 0 to 1000(%).</td>
+                <td></td>
+            </tr>
+            </table>
+
+    
+            <h2>Methods</h2>
+
+            <div class="container-fluid underlined">
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method___construct">__construct</a>(<a href="../../CharlotteDunois/Luna/Link.html"><abbr title="CharlotteDunois\Luna\Link">Link</abbr></a> $link, int $guildID)
+        
+                                            <p>Constructor.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    void
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_destroy">destroy</a>()
+        
+                                            <p>Destroys the player.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    int
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_getLastPosition">getLastPosition</a>()
+        
+                                            <p>Gets the last position of the played track in milliseconds.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    void
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_play">play</a>(<a href="../../CharlotteDunois/Luna/AudioTrack.html"><abbr title="CharlotteDunois\Luna\AudioTrack">AudioTrack</abbr></a> $track, int $startTime = 0, int $endTime = 0)
+        
+                                            <p>Plays a track.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    void
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_seekTo">seekTo</a>(int $position)
+        
+                                            <p>Seeks the track.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    void
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_sendVoiceUpdate">sendVoiceUpdate</a>(string $sessionID, array $event)
+        
+                                            <p>Send a voice update event for the player.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    void
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_setNode">setNode</a>(<a href="../../CharlotteDunois/Luna/Link.html"><abbr title="CharlotteDunois\Luna\Link">Link</abbr></a> $link)
+        
+                                            <p>Sets the node. Used for the internal failover.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    void
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_setPaused">setPaused</a>(bool $paused)
+        
+                                            <p>Sets the paused state of the track.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    void
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_setVolume">setVolume</a>(int $volume)
+        
+                                            <p>Sets the volume of the player.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    void
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_stop">stop</a>()
+        
+                                            <p>Stops playing a track.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    void
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_updateState">updateState</a>(array $state)
+        
+                                            <p>Updates the player state. Invoked by Lavalink.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+            </div>
+
+
+        <h2>Details</h2>
+
+            <div id="method-details">
+                    <div class="method-item">
+                    <h3 id="method___construct">
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/v0.2.2/src/Player.php#L80">line 80</a></div>
+        <code>                    
+    <strong>__construct</strong>(<a href="../../CharlotteDunois/Luna/Link.html"><abbr title="CharlotteDunois\Luna\Link">Link</abbr></a> $link, int $guildID)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Constructor.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="../../CharlotteDunois/Luna/Link.html"><abbr title="CharlotteDunois\Luna\Link">Link</abbr></a></td>
+                <td>$link</td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td>int</td>
+                <td>$guildID</td>
+                <td></td>
+            </tr>
+            </table>
+
+            
+            
+            
+                        
+                        
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_destroy">
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/v0.2.2/src/Player.php#L181">line 181</a></div>
+        <code>                    void
+    <strong>destroy</strong>()
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Destroys the player.</p>                                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>void</td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+                            <h4>Exceptions</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="https://secure.php.net/RuntimeException" target="_blank">RuntimeException</a></td>
+                <td></td>
+            </tr>
+            </table>
+
+            
+                        
+                        
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_getLastPosition">
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/v0.2.2/src/Player.php#L208">line 208</a></div>
+        <code>                    int
+    <strong>getLastPosition</strong>()
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Gets the last position of the played track in milliseconds.</p>                                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>int</td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+            
+                        
+                        
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_play">
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/v0.2.2/src/Player.php#L125">line 125</a></div>
+        <code>                    void
+    <strong>play</strong>(<a href="../../CharlotteDunois/Luna/AudioTrack.html"><abbr title="CharlotteDunois\Luna\AudioTrack">AudioTrack</abbr></a> $track, int $startTime = 0, int $endTime = 0)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Plays a track.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="../../CharlotteDunois/Luna/AudioTrack.html"><abbr title="CharlotteDunois\Luna\AudioTrack">AudioTrack</abbr></a></td>
+                <td>$track</td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td>int</td>
+                <td>$startTime</td>
+                <td>The start time in milliseconds to seek to.</td>
+            </tr>
+                    <tr>
+                <td>int</td>
+                <td>$endTime</td>
+                <td>The end time when to stop playing in milliseconds.</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>void</td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+                            <h4>Exceptions</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="https://secure.php.net/RuntimeException" target="_blank">RuntimeException</a></td>
+                <td></td>
+            </tr>
+            </table>
+
+            
+                        
+                        
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_seekTo">
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/v0.2.2/src/Player.php#L220">line 220</a></div>
+        <code>                    void
+    <strong>seekTo</strong>(int $position)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Seeks the track.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>int</td>
+                <td>$position</td>
+                <td></td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>void</td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+                            <h4>Exceptions</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="https://secure.php.net/RuntimeException" target="_blank">RuntimeException</a></td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td><a href="https://secure.php.net/BadMethodCallException" target="_blank">BadMethodCallException</a></td>
+                <td></td>
+            </tr>
+            </table>
+
+            
+                        
+                        
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_sendVoiceUpdate">
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/v0.2.2/src/Player.php#L296">line 296</a></div>
+        <code>                    void
+    <strong>sendVoiceUpdate</strong>(string $sessionID, array $event)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Send a voice update event for the player.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>string</td>
+                <td>$sessionID</td>
+                <td>The voice session ID.</td>
+            </tr>
+                    <tr>
+                <td>array</td>
+                <td>$event</td>
+                <td>The voice server update event from Discord.</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>void</td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+                            <h4>Exceptions</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="https://secure.php.net/BadMethodCallException" target="_blank">BadMethodCallException</a></td>
+                <td></td>
+            </tr>
+            </table>
+
+            
+                        
+                        
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_setNode">
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/v0.2.2/src/Player.php#L318">line 318</a></div>
+        <code>                    void
+    <strong>setNode</strong>(<a href="../../CharlotteDunois/Luna/Link.html"><abbr title="CharlotteDunois\Luna\Link">Link</abbr></a> $link)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Sets the node. Used for the internal failover.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="../../CharlotteDunois/Luna/Link.html"><abbr title="CharlotteDunois\Luna\Link">Link</abbr></a></td>
+                <td>$link</td>
+                <td></td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>void</td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+            
+                        
+                        
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_setPaused">
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/v0.2.2/src/Player.php#L250">line 250</a></div>
+        <code>                    void
+    <strong>setPaused</strong>(bool $paused)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Sets the paused state of the track.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>bool</td>
+                <td>$paused</td>
+                <td></td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>void</td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+                            <h4>Exceptions</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="https://secure.php.net/RuntimeException" target="_blank">RuntimeException</a></td>
+                <td></td>
+            </tr>
+            </table>
+
+            
+                        
+                        
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_setVolume">
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/v0.2.2/src/Player.php#L272">line 272</a></div>
+        <code>                    void
+    <strong>setVolume</strong>(int $volume)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Sets the volume of the player.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>int</td>
+                <td>$volume</td>
+                <td>Any integer in the range of 0..1000.</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>void</td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+                            <h4>Exceptions</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="https://secure.php.net/RuntimeException" target="_blank">RuntimeException</a></td>
+                <td></td>
+            </tr>
+            </table>
+
+            
+                        
+                        
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_stop">
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/v0.2.2/src/Player.php#L157">line 157</a></div>
+        <code>                    void
+    <strong>stop</strong>()
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Stops playing a track.</p>                                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>void</td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+                            <h4>Exceptions</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="https://secure.php.net/RuntimeException" target="_blank">RuntimeException</a></td>
+                <td></td>
+            </tr>
+            </table>
+
+            
+                        
+                        
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_updateState">
+        <div class="location">at         <a href="https://github.com/CharlotteDunois/Luna/blob/v0.2.2/src/Player.php#L340">line 340</a></div>
+        <code>                    void
+    <strong>updateState</strong>(array $state)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Updates the player state. Invoked by Lavalink.</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>array</td>
+                <td>$state</td>
+                <td></td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>void</td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+            
+                        
+                        
+                    </div>
+    </div>
+
+            </div>
+            </div>
+
+    
+            </div>
+                <div id="footer">
+        Generated by <a href="http://sami.sensiolabs.org/">Sami, the API Documentation Generator</a>.
+    </div>
+
+        </div>
+    </div>
+    </body>
+
+</html>
